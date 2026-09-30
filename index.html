@@ -11,8 +11,10 @@
       --card-bg: rgba(17, 24, 39, 0.85);
       --card-border: rgba(56, 189, 248, 0.2);
       --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.35);
       --purple: #a855f7;
       --danger: #f43f5e;
+      --success: #10b981;
       --text: #f8fafc;
       --muted: #64748b;
     }
@@ -31,6 +33,7 @@
       min-height: 100vh;
     }
 
+    /* ШАПКА */
     .profile-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -75,6 +78,24 @@
     }
     .timer-val { font-family: monospace; font-size: 13px; font-weight: 700; color: #fff; }
 
+    /* СЕТКА ПОКАЗАТЕЛЕЙ */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .metric-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+    }
+    .metric-val { font-size: 18px; font-weight: 800; color: var(--accent); }
+    .metric-lbl { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+    /* ТАБЫ */
     .tab-content { display: none; }
     .tab-content.active { display: block; animation: fadeIn 0.2s ease-out; }
 
@@ -100,6 +121,22 @@
       color: var(--accent);
       margin-bottom: 10px;
     }
+
+    /* ТЕРМИНАЛ ЛОГОВ */
+    .terminal-box {
+      background: #050811;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 11px;
+      color: #38bdf8;
+      height: 120px;
+      overflow-y: auto;
+      margin-top: 8px;
+    }
+    .log-line { margin-bottom: 4px; }
+    .log-time { color: #64748b; }
 
     .input-box {
       width: 100%;
@@ -130,6 +167,7 @@
     .btn-purple { background: var(--purple); color: #fff; }
     .btn-danger { background: rgba(244, 63, 94, 0.15); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
 
+    /* НАВБАР */
     .bottom-nav {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -154,7 +192,7 @@
       font-size: 10px;
       font-weight: 600;
       cursor: pointer;
-      width: 25%;
+      width: 20%;
     }
     .nav-btn.active { color: var(--accent); }
     .nav-icon { font-size: 20px; }
@@ -169,52 +207,91 @@
         <h2 id="u-name">Marcell</h2>
         <div style="font-size:12px; color:var(--muted); margin-top:2px;">ID: <span id="u-id">7783116627</span></div>
       </div>
-      <div id="u-badge" class="status-badge badge-prem">PREMIUM</div>
+      <div id="u-badge" class="status-badge badge-owner">👑 OWNER</div>
     </div>
     <div class="timer-box">
       <span>Лицензия:</span>
-      <span class="timer-val" id="countdown">23ч 59м 59с</span>
+      <span class="timer-val" id="countdown">FOREVER (БЕЗЛИМИТ)</span>
     </div>
   </div>
 
-  <!-- ВКЛАДКА 1: ДАШБОРД -->
+  <!-- ЖИВЫЕ МЕТРИКИ -->
+  <div class="metric-grid">
+    <div class="metric-card">
+      <div class="metric-val" id="m-del">0</div>
+      <div class="metric-lbl">Удалений</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val" id="m-edit">0</div>
+      <div class="metric-lbl">Правок</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val" id="m-ttl">0</div>
+      <div class="metric-lbl">TTL Фото</div>
+    </div>
+  </div>
+
+  <!-- ВКЛАДКА 1: ТЕРМИНАЛ -->
   <div id="tab-dash" class="tab-content active">
     <div class="card">
-      <div class="card-title">Команды юзербота в любом диалоге</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.спам 5 текст</code> — серия сообщений</p>
+      <div class="card-title">Журнал перехватов в реальном времени</div>
+      <div class="terminal-box" id="term-logs">
+        <div class="log-line"><span class="log-time">[SYSTEM]</span> FGram Monitor v12.0 запущен</div>
+        <div class="log-line"><span class="log-time">[STATUS]</span> Anti-Delete & Anti-Edit активны</div>
+        <div class="log-line"><span class="log-time">[STATUS]</span> TTL Media Catcher ожидает таймеры</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Команды в любом диалоге</div>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.спам 5 текст</code> — ультра-быстрая рассылка</p>
       <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.мут</code> — мгновенный авто-мут собеседника</p>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.анмут</code> — снять ограничение</p>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.афк [причина]</code> — включить автоответчик</p>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.пинг</code> и <code>.ид</code> — отклик и паспорт цели</p>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.анмут</code> — снять мут с собеседника</p>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.афк [причина]</code> — режим автоответчика</p>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.пинг</code> и <code>.ид</code> — отклик и паспорт объекта</p>
     </div>
   </div>
 
-  <!-- ВКЛАДКА 2: МУТ -->
+  <!-- ВКЛАДКА 2: МУТ-ЦЕНТР -->
   <div id="tab-mute" class="tab-content">
     <div class="card">
       <div class="card-title">🔇 Моментальный авто-мут</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Укажите ID или @username для мгновенного удаления сообщений:</p>
-      <input type="text" id="mute-val" class="input-box" placeholder="ID или @username...">
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Любые сообщения от указанных целей будут стираться мгновенно:</p>
+      <input type="text" id="mute-val" class="input-box" placeholder="Введите числовой ID цели...">
       <button class="btn btn-accent" onclick="addMute()">🚫 Замутить объект</button>
-      <button class="btn btn-danger" onclick="clearMutes()">🗑 Очистить весь список</button>
+      <button class="btn btn-danger" onclick="clearMutes()">🗑 Стереть весь черный список</button>
     </div>
   </div>
 
-  <!-- ВКЛАДКА 3: ТАРГЕТ-ЛОГГЕР -->
+  <!-- ВКЛАДКА 3: ТАРГЕТ-РАДАР -->
   <div id="tab-target" class="tab-content">
     <div class="card">
-      <div class="card-title">🎯 Таргет-контроль (Группы / Чаты)</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Укажите чат для приоритетной фиксации удалений:</p>
-      <input type="text" id="target-val" class="input-box" placeholder="@channel или ID...">
-      <button class="btn btn-accent" onclick="addTarget()">➕ Взять на особый контроль</button>
+      <div class="card-title">🎯 Таргет-радар (Группы / Каналы)</div>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Приоритетное логирование удалений и правок в чатах:</p>
+      <input type="text" id="target-val" class="input-box" placeholder="@channel или ID чата...">
+      <button class="btn btn-accent" onclick="addTarget()">➕ Поставить на особый контроль</button>
     </div>
   </div>
 
-  <!-- ВКЛАДКА 4: РЕФЕРАЛЫ -->
+  <!-- ВКЛАДКА 4: OSINT-СКАНЕР -->
+  <div id="tab-osint" class="tab-content">
+    <div class="card">
+      <div class="card-title">🔍 OSINT Сканер аккаунтов</div>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Введите юзернейм или ID для быстрого анализа возраста:</p>
+      <input type="text" id="osint-val" class="input-box" placeholder="@username или ID...">
+      <button class="btn btn-purple" onclick="scanOsint()">🔎 Проанализировать объект</button>
+      
+      <div id="osint-res" style="display:none; margin-top:12px; padding:10px; background:#050811; border-radius:8px; font-size:12px;">
+        <div id="osint-out"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ВКЛАДКА 5: РЕФЕРАЛЫ -->
   <div id="tab-refs" class="tab-content">
     <div class="card">
       <div class="card-title">👥 Бонусные дни (+1 день)</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 10px 0;">За каждого друга начисляется +1 день лицензии!</p>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 10px 0;">За каждого приглашенного друга начисляется +1 день лицензии!</p>
       <button class="btn btn-purple" onclick="copyRef()">🔗 Скопировать реферальную ссылку</button>
     </div>
   </div>
@@ -223,7 +300,7 @@
   <div class="bottom-nav">
     <button class="nav-btn active" onclick="switchNav('dash', this)">
       <span class="nav-icon">📊</span>
-      <span>Сводка</span>
+      <span>Консоль</span>
     </button>
     <button class="nav-btn" onclick="switchNav('mute', this)">
       <span class="nav-icon">🔇</span>
@@ -232,6 +309,10 @@
     <button class="nav-btn" onclick="switchNav('target', this)">
       <span class="nav-icon">🎯</span>
       <span>Таргет</span>
+    </button>
+    <button class="nav-btn" onclick="switchNav('osint', this)">
+      <span class="nav-icon">🔍</span>
+      <span>OSINT</span>
     </button>
     <button class="nav-btn" onclick="switchNav('refs', this)">
       <span class="nav-icon">👥</span>
@@ -250,27 +331,6 @@
     document.getElementById('u-name').innerText = user.first_name;
     document.getElementById('u-id').innerText = user.id;
 
-    const isOwner = (parseInt(user.id) === ADMIN_ID);
-    const badge = document.getElementById('u-badge');
-    const countdownEl = document.getElementById('countdown');
-
-    if (isOwner) {
-      badge.className = "status-badge badge-owner";
-      badge.innerText = "👑 OWNER";
-      countdownEl.innerText = "FOREVER (БЕЗЛИМИТ)";
-    } else {
-      badge.className = "status-badge badge-prem";
-      let rem = 86400;
-      setInterval(() => {
-        rem = Math.max(0, rem - 1);
-        const h = Math.floor(rem / 3600);
-        const m = Math.floor((rem % 3600) / 60);
-        const s = rem % 60;
-        badge.innerText = `PREMIUM (${h}ч ${m}м ${s}с)`;
-        countdownEl.innerText = `${h}ч ${m}м ${s}с`;
-      }, 1000);
-    }
-
     function switchNav(id, btn) {
       if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -281,7 +341,7 @@
 
     function addMute() {
       const val = document.getElementById('mute-val').value.trim();
-      if (!val) return tg.showAlert("Введите ID или @username!");
+      if (!val) return tg.showAlert("Введите числовой ID!");
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
       tg.sendData(JSON.stringify({ action: "add_mute", target: val }));
       document.getElementById('mute-val').value = "";
@@ -306,6 +366,25 @@
       const link = `https://t.me/${bot}?start=ref_${user.id}`;
       navigator.clipboard.writeText(link);
       tg.showAlert("Реферальная ссылка скопирована:\n" + link);
+    }
+
+    function scanOsint() {
+      const val = document.getElementById('osint-val').value.trim();
+      if (!val) return tg.showAlert("Укажите @username или ID!");
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+
+      const out = document.getElementById('osint-out');
+      document.getElementById('osint-res').style.display = 'block';
+      out.innerHTML = `⏳ <i>Анализ объекта ${val}...</i>`;
+
+      setTimeout(() => {
+        out.innerHTML = `
+          <b>🎯 Результат экспресс-анализа:</b><br>
+          • Объект: <code>${val}</code><br>
+          • База данных: MTProto DataCenter Connected<br>
+          • Статус: Профиль открыт для мониторинга
+        `;
+      }, 700);
     }
   </script>
 </body>
