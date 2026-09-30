@@ -2,92 +2,93 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>FGram Platform Suite</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
       --bg: #090d16;
-      --card-bg: rgba(22, 30, 46, 0.7);
-      --card-border: rgba(56, 189, 248, 0.15);
+      --card-bg: rgba(22, 30, 46, 0.75);
+      --card-border: rgba(56, 189, 248, 0.18);
       --accent: #38bdf8;
-      --accent-glow: rgba(56, 189, 248, 0.35);
+      --accent-glow: rgba(56, 189, 248, 0.3);
+      --purple: #818cf8;
       --danger: #fb7185;
       --success: #34d399;
-      --text: #f1f5f9;
-      --subtext: #818cf8;
+      --text: #f8fafc;
       --muted: #64748b;
     }
 
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     body {
       margin: 0;
       padding: 14px 14px 85px 14px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       background-color: var(--bg);
       background-image: 
-        radial-gradient(at 10% 20%, rgba(56, 189, 248, 0.08) 0px, transparent 40%),
-        radial-gradient(at 90% 80%, rgba(99, 102, 241, 0.08) 0px, transparent 40%);
+        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(129, 140, 248, 0.1) 0px, transparent 50%);
       color: var(--text);
       min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
 
-    /* Верхняя карточка профиля */
+    /* Верхняя карточка оператора */
     .profile-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 16px;
+      border-radius: 18px;
       padding: 16px;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .profile-info h2 {
-      margin: 0 0 4px 0;
-      font-size: 19px;
+      margin: 0 0 3px 0;
+      font-size: 18px;
       font-weight: 700;
-      letter-spacing: -0.02em;
     }
 
     .profile-info p {
       margin: 0;
-      font-size: 13px;
+      font-size: 12px;
       color: var(--muted);
+      cursor: pointer;
     }
 
-    .status-badge {
+    .badge-status {
       display: inline-flex;
       align-items: center;
       gap: 6px;
       background: rgba(56, 189, 248, 0.12);
-      border: 1px solid rgba(56, 189, 248, 0.25);
+      border: 1px solid rgba(56, 189, 248, 0.3);
       color: var(--accent);
-      padding: 6px 12px;
+      padding: 5px 12px;
       border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
     }
 
-    .status-dot {
-      width: 7px;
-      height: 7px;
+    .dot {
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: var(--accent);
       box-shadow: 0 0 8px var(--accent);
     }
 
-    /* Навигация / Вкладки */
+    /* Табы и контент */
     .tab-content { display: none; }
-    .tab-content.active { display: block; animation: fadeIn 0.25s ease-out; }
+    .tab-content.active { display: block; animation: slideUp 0.22s ease-out; }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
@@ -97,60 +98,33 @@
       border-radius: 14px;
       padding: 15px;
       margin-bottom: 12px;
-      backdrop-filter: blur(10px);
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
+      backdrop-filter: blur(12px);
     }
 
     .card-title {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
       color: var(--accent);
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .metric-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .metric-box {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 10px;
-      padding: 10px;
-      text-align: center;
-    }
-
-    .metric-val {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .metric-lbl {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    /* Свитчеры */
-    .switch-row {
+    /* Тумблеры модулей */
+    .toggle-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 10px 0;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
-    .switch-row:last-child { border-bottom: none; }
+    .toggle-row:last-child { border-bottom: none; }
+
+    .toggle-label b { display: block; font-size: 14px; margin-bottom: 2px; }
+    .toggle-label span { font-size: 11px; color: var(--muted); }
 
     .switch {
       position: relative;
@@ -163,8 +137,9 @@
       position: absolute;
       inset: 0;
       background-color: #334155;
-      transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: .25s ease;
       border-radius: 24px;
+      cursor: pointer;
     }
     .slider:before {
       position: absolute;
@@ -173,64 +148,69 @@
       width: 18px;
       left: 3px;
       bottom: 3px;
-      background-color: white;
-      transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+      background-color: #fff;
+      transition: .25s ease;
       border-radius: 50%;
     }
     input:checked + .slider { background-color: var(--accent); }
     input:checked + .slider:before { transform: translateX(20px); }
 
     /* Поля ввода и кнопки */
-    .input-field {
+    .input-box {
       width: 100%;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid #334155;
-      padding: 12px;
-      border-radius: 9px;
-      color: white;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: #fff;
       font-size: 14px;
       outline: none;
       margin-top: 8px;
+      transition: border-color 0.2s;
     }
-    .input-field:focus { border-color: var(--accent); }
+    .input-box:focus { border-color: var(--accent); }
 
     .btn {
       width: 100%;
       padding: 13px;
       border: none;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
+      border-radius: 11px;
+      font-size: 13px;
+      font-weight: 700;
       cursor: pointer;
       margin-top: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: opacity 0.2s, transform 0.1s;
+      transition: transform 0.1s, opacity 0.2s;
     }
-    .btn:active { transform: scale(0.98); opacity: 0.9; }
+    .btn:active { transform: scale(0.98); opacity: 0.85; }
     .btn-accent { background: var(--accent); color: #090d16; }
+    .btn-purple { background: var(--purple); color: #fff; }
     .btn-danger { background: rgba(251, 113, 133, 0.15); color: var(--danger); border: 1px solid rgba(251, 113, 133, 0.3); }
 
     .code-chip {
       background: rgba(15, 23, 42, 0.8);
-      border: 1px solid #334155;
-      border-radius: 6px;
-      padding: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 8px 12px;
       font-family: monospace;
       font-size: 12px;
       margin-top: 6px;
-      color: #38bdf8;
+      color: var(--accent);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    /* Навбар */
+    /* Нижняя навигация */
     .bottom-nav {
       position: fixed;
       bottom: 0; left: 0; right: 0;
       height: 64px;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(16px);
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(20px);
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
       justify-content: space-around;
@@ -245,7 +225,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
       font-size: 10px;
       font-weight: 600;
       cursor: pointer;
@@ -253,128 +233,138 @@
       transition: color 0.2s;
     }
     .nav-btn.active { color: var(--accent); }
-    .nav-icon { font-size: 20px; }
+    .nav-icon { font-size: 19px; }
   </style>
 </head>
 <body>
 
-  <!-- ПРОФИЛЬ -->
+  <!-- ВЕРХНЯЯ КАРТОЧКА ПРОФИЛЯ -->
   <div class="profile-card">
     <div class="profile-info">
-      <h2 id="user-display">Operator</h2>
-      <p>ID: <span id="user-id">---</span></p>
+      <h2 id="u-name">Marcell</h2>
+      <p onclick="copyId()">ID: <span id="u-id">7783116627</span> 📋</p>
     </div>
-    <div class="status-badge">
-      <span class="status-dot"></span>
-      <span id="user-role">ADMIN</span>
+    <div class="badge-status">
+      <span class="dot"></span>
+      <span id="u-status">PRO OPERATOR</span>
     </div>
   </div>
 
-  <!-- ВКЛАДКА 1: МОНИТОРИНГ И ДАШБОРД -->
+  <!-- ВКЛАДКА 1: МОНИТОРИНГ И МОДУЛИ -->
   <div id="tab-dash" class="tab-content active">
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">Системные показатели</span>
-      </div>
-      <div class="metric-grid">
-        <div class="metric-box">
-          <div class="metric-val" id="metric-deleted">0</div>
-          <div class="metric-lbl">Удалений в перехвате</div>
+      <div class="card-title">Состояние перехватчиков</div>
+      <div class="toggle-row">
+        <div class="toggle-label">
+          <b>Anti-Delete Логгер</b>
+          <span>Фиксация удалений в Избранное</span>
         </div>
-        <div class="metric-box">
-          <div class="metric-val" id="metric-edited">0</div>
-          <div class="metric-lbl">Правок обнаружено</div>
-        </div>
+        <label class="switch">
+          <input type="checkbox" id="tog-del" checked onchange="notifyToggle('anti_delete', this.checked)">
+          <span class="slider"></span>
+        </label>
       </div>
-      <button class="btn btn-accent" onclick="syncAction('get_stats')">📊 Запросить данные базы</button>
+
+      <div class="toggle-row">
+        <div class="toggle-label">
+          <b>Anti-Edit Детектор</b>
+          <span>Лог изменений «Было / Стало»</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="tog-edit" checked onchange="notifyToggle('anti_edit', this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-label">
+          <b>Моментальный Мут</b>
+          <span>Авто-стирание сообщений цели</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="tog-mute" checked onchange="notifyToggle('auto_mute', this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-label">
+          <b>AFK Автоответчик</b>
+          <span>Оповещение собеседников о паузе</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="tog-afk" onchange="notifyToggle('afk', this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
     </div>
 
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">Активные модули контроля</span>
-      </div>
-      <div class="switch-row">
-        <div>
-          <b>Anti-Delete Логгер</b>
-          <div style="font-size:12px; color:var(--muted)">Отправка удаленного в Избранное</div>
-        </div>
-        <label class="switch">
-          <input type="checkbox" checked onchange="hapticTick()">
-          <span class="slider"></span>
-        </label>
-      </div>
-      <div class="switch-row">
-        <div>
-          <b>Мгновенный авто-мут</b>
-          <div style="font-size:12px; color:var(--muted)">Стирание входящих сообщений</div>
-        </div>
-        <label class="switch">
-          <input type="checkbox" checked onchange="hapticTick()">
-          <span class="slider"></span>
-        </label>
-      </div>
+      <div class="card-title">Синхронизация</div>
+      <button class="btn btn-accent" onclick="sendAction('get_stats')">📊 Запросить сводку базы данных</button>
     </div>
   </div>
 
-  <!-- ВКЛАДКА 2: МУТ-ФИЛЬТРЫ -->
+  <!-- ВКЛАДКА 2: ТАРГЕТ-ЛОГГЕР -->
+  <div id="tab-target" class="tab-content">
+    <div class="card">
+      <div class="card-title">🎯 Таргет-контроль диалогов</div>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Укажите ID или юзернейм канала, чата или ЛС для приоритетного логирования удалений.</p>
+      <input type="text" id="target-input" class="input-box" placeholder="@channel или ID чата...">
+      <button class="btn btn-accent" onclick="addTargetChat()">➕ Поставить на особый контроль</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Команды таргет-слежки в чате</div>
+      <div class="code-chip">.таргет + @username <span>Взять цель</span></div>
+      <div class="code-chip">.таргет - @username <span>Снять цель</span></div>
+      <div class="code-chip">.таргет <span>Список целей</span></div>
+    </div>
+  </div>
+
+  <!-- ВКЛАДКА 3: МУТ-ФИЛЬТРЫ -->
   <div id="tab-filters" class="tab-content">
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">Ручное управление фильтром</span>
-      </div>
-      <p style="font-size:13px; color:var(--muted); margin:0;">Добавьте ID пользователя для моментального удаления его сообщений в ваших беседах.</p>
-      <input type="number" id="mute-input" class="input-field" placeholder="Введите ID собеседника...">
-      <button class="btn btn-accent" onclick="addMuteDirect()">➕ Внести в черный список</button>
-      <button class="btn btn-danger" onclick="syncAction('clear_mutes')">🗑 Очистить весь список мута</button>
+      <div class="card-title">🔇 Управление черным списком</div>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Внесите Telegram ID пользователя, чтобы любые его сообщения моментально стирались.</p>
+      <input type="number" id="mute-id-input" class="input-box" placeholder="Введите ID собеседника...">
+      <button class="btn btn-accent" onclick="addMuteDirect()">🚫 Заблокировать сообщения</button>
+      <button class="btn btn-danger" onclick="sendAction('clear_mutes')">🗑 Сбросить весь мут-лист</button>
     </div>
   </div>
 
-  <!-- ВКЛАДКА 3: БЫСТРЫЕ КОМАНДЫ И ТУЛЗЫ -->
-  <div id="tab-tools" class="tab-content">
+  <!-- ВКЛАДКА 4: РЕФЕРАЛЫ И ПОДПИСКА -->
+  <div id="tab-profile" class="tab-content">
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">Команды юзербота в чате</span>
-      </div>
-      <div class="code-chip">.мут — моментальный авто-мут собеседника</div>
-      <div class="code-chip">.размут — снять ограничение</div>
-      <div class="code-chip">.повтор 5 текст — отправка серии сообщений</div>
-      <div class="code-chip">.пинг — проверка отклика клиента</div>
-      <div class="code-chip">.афк [причина] — включить статус AFK</div>
-      <div class="code-chip">.унафк — выключить режим AFK</div>
-      <div class="code-chip">.ид — получение ID чата и сообщения</div>
+      <div class="card-title">👥 Реферальная система</div>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 10px 0;">Приглашайте друзей в FGram и получайте автоматическое продление Premium-тарифа.</p>
+      <button class="btn btn-purple" onclick="copyRefLink()">🔗 Скопировать реферальную ссылку</button>
     </div>
-  </div>
 
-  <!-- ВКЛАДКА 4: ДОСТУП И СИСТЕМА -->
-  <div id="tab-system" class="tab-content">
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">Управление подписками</span>
-      </div>
-      <p style="font-size:13px; color:var(--muted); margin:0 0 10px 0;">Команды бота в чате для контроля доступа:</p>
-      <div class="code-chip">/giveprem ID 30 — премиум на 30 дней</div>
-      <div class="code-chip">/giveprem ID forever — доступ навсегда</div>
-      <div class="code-chip">/whitelist ID — внести в белый список</div>
+      <div class="card-title">💎 Тарифный план</div>
+      <p style="font-size:13px; margin:0 0 6px 0;">Текущий статус: <b id="sub-level" style="color:var(--accent)">FGram Infinite</b></p>
+      <button class="btn btn-accent" onclick="sendAction('req_prem')">⭐ Продлить / Запросить Premium</button>
     </div>
   </div>
 
   <!-- НАВБАР -->
   <div class="bottom-nav">
-    <button class="nav-btn active" onclick="switchNav('dash', this)">
+    <button class="nav-btn active" onclick="switchTab('dash', this)">
       <span class="nav-icon">📊</span>
       <span>Консоль</span>
     </button>
-    <button class="nav-btn" onclick="switchNav('filters', this)">
+    <button class="nav-btn" onclick="switchTab('target', this)">
+      <span class="nav-icon">🎯</span>
+      <span>Таргет</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('filters', this)">
       <span class="nav-icon">🔇</span>
       <span>Фильтры</span>
     </button>
-    <button class="nav-btn" onclick="switchNav('tools', this)">
-      <span class="nav-icon">⌨️</span>
-      <span>Тулзы</span>
-    </button>
-    <button class="nav-btn" onclick="switchNav('system', this)">
-      <span class="nav-icon">👑</span>
-      <span>Система</span>
+    <button class="nav-btn" onclick="switchTab('profile', this)">
+      <span class="nav-icon">⭐</span>
+      <span>Профиль</span>
     </button>
   </div>
 
@@ -383,40 +373,73 @@
     tg.ready();
     tg.expand();
 
-    // Автоматическая подстановка профиля Telegram
-    const user = tg.initDataUnsafe?.user;
-    if (user) {
-      document.getElementById('user-display').innerText = user.first_name;
-      document.getElementById('user-id').innerText = user.id;
+    const u = tg.initDataUnsafe?.user;
+    if (u) {
+      document.getElementById('u-name').innerText = u.first_name || 'Оператор';
+      document.getElementById('u-id').innerText = u.id;
     }
 
-    function hapticTick() {
-      if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
+    function haptic(type = 'light') {
+      if (!tg.HapticFeedback) return;
+      if (type === 'light') tg.HapticFeedback.selectionChanged();
+      else if (type === 'medium') tg.HapticFeedback.impactOccurred('medium');
+      else if (type === 'heavy') tg.HapticFeedback.impactOccurred('heavy');
     }
 
-    function switchNav(tabId, el) {
-      hapticTick();
-      document.querySelectorAll('.tab-content').forEach(d => d.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    function switchTab(tabId, btn) {
+      haptic('light');
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
       document.getElementById('tab-' + tabId).classList.add('active');
-      el.classList.add('active');
+      btn.classList.add('active');
     }
 
-    function syncAction(actionName) {
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-      tg.sendData(JSON.stringify({ action: actionName }));
+    function sendAction(action) {
+      haptic('heavy');
+      tg.sendData(JSON.stringify({ action: action }));
+    }
+
+    function notifyToggle(module, state) {
+      haptic('medium');
+      tg.sendData(JSON.stringify({ action: "toggle_setting", module: module, state: state }));
     }
 
     function addMuteDirect() {
-      const input = document.getElementById('mute-input');
-      const val = input.value.trim();
+      const val = document.getElementById('mute-id-input').value.trim();
       if (!val) {
-        tg.showAlert("Введите корректный Telegram ID!");
+        tg.showAlert("Введите числовой ID пользователя!");
         return;
       }
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
+      haptic('heavy');
       tg.sendData(JSON.stringify({ action: "add_mute", target_id: parseInt(val) }));
-      input.value = "";
+      document.getElementById('mute-id-input').value = "";
+    }
+
+    function addTargetChat() {
+      const val = document.getElementById('target-input').value.trim();
+      if (!val) {
+        tg.showAlert("Укажите @username или ID чата!");
+        return;
+      }
+      haptic('heavy');
+      tg.sendData(JSON.stringify({ action: "add_target", target: val }));
+      document.getElementById('target-input').value = "";
+    }
+
+    function copyId() {
+      haptic('light');
+      const id = document.getElementById('u-id').innerText;
+      navigator.clipboard.writeText(id);
+      tg.showAlert("ID скопирован в буфер обмена: " + id);
+    }
+
+    function copyRefLink() {
+      haptic('medium');
+      const myId = u ? u.id : '7783116627';
+      const botUser = tg.initDataUnsafe?.bot?.username || 'fgram_dox_bot';
+      const link = `https://t.me/${botUser}?start=ref_${myId}`;
+      navigator.clipboard.writeText(link);
+      tg.showAlert("Реферальная ссылка скопирована:\n" + link);
     }
   </script>
 </body>
