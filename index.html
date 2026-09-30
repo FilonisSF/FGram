@@ -7,14 +7,14 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg: #090d16;
-      --card-bg: rgba(22, 30, 46, 0.75);
-      --card-border: rgba(56, 189, 248, 0.18);
+      --bg: #070b13;
+      --card-bg: rgba(18, 25, 38, 0.85);
+      --card-border: rgba(56, 189, 248, 0.2);
       --accent: #38bdf8;
-      --accent-glow: rgba(56, 189, 248, 0.3);
-      --purple: #818cf8;
-      --danger: #fb7185;
-      --success: #34d399;
+      --accent-glow: rgba(56, 189, 248, 0.4);
+      --purple: #a855f7;
+      --danger: #f43f5e;
+      --success: #10b981;
       --text: #f8fafc;
       --muted: #64748b;
     }
@@ -23,72 +23,68 @@
 
     body {
       margin: 0;
-      padding: 14px 14px 85px 14px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      padding: 12px 12px 85px 12px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background-color: var(--bg);
       background-image: 
-        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.12) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(129, 140, 248, 0.1) 0px, transparent 50%);
+        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.12) 0px, transparent 50%);
       color: var(--text);
       min-height: 100vh;
-      overflow-x: hidden;
     }
 
-    /* Верхняя карточка оператора */
+    /* Карточка статуса с динамическим таймером */
     .profile-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 18px;
       padding: 16px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
       margin-bottom: 14px;
     }
 
-    .profile-info h2 {
-      margin: 0 0 3px 0;
-      font-size: 18px;
-      font-weight: 700;
+    .profile-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
     }
 
-    .profile-info p {
-      margin: 0;
-      font-size: 12px;
-      color: var(--muted);
-      cursor: pointer;
-    }
-
-    .badge-status {
+    .profile-top h2 { margin: 0; font-size: 19px; font-weight: 800; }
+    
+    .status-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(56, 189, 248, 0.12);
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      color: var(--accent);
-      padding: 5px 12px;
+      padding: 6px 14px;
       border-radius: 20px;
       font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.03em;
+      font-weight: 800;
+      letter-spacing: 0.04em;
     }
+    .badge-owner { background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.4); color: #facc15; }
+    .badge-prem { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: var(--accent); }
 
-    .dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 8px var(--accent);
+    .timer-box {
+      background: rgba(7, 11, 19, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--muted);
     }
+    .timer-val { font-family: monospace; font-size: 14px; font-weight: 700; color: #fff; }
 
-    /* Табы и контент */
+    /* Табы */
     .tab-content { display: none; }
-    .tab-content.active { display: block; animation: slideUp 0.22s ease-out; }
+    .tab-content.active { display: block; animation: slideUp 0.2s ease-out; }
 
     @keyframes slideUp {
-      from { opacity: 0; transform: translateY(8px); }
+      from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
@@ -96,9 +92,9 @@
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 14px;
-      padding: 15px;
+      padding: 14px;
       margin-bottom: 12px;
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
     }
 
     .card-title {
@@ -110,106 +106,43 @@
       margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
-      align-items: center;
     }
 
-    /* Тумблеры модулей */
-    .toggle-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    .toggle-row:last-child { border-bottom: none; }
-
-    .toggle-label b { display: block; font-size: 14px; margin-bottom: 2px; }
-    .toggle-label span { font-size: 11px; color: var(--muted); }
-
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 44px;
-      height: 24px;
-    }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider {
-      position: absolute;
-      inset: 0;
-      background-color: #334155;
-      transition: .25s ease;
-      border-radius: 24px;
-      cursor: pointer;
-    }
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-      background-color: #fff;
-      transition: .25s ease;
-      border-radius: 50%;
-    }
-    input:checked + .slider { background-color: var(--accent); }
-    input:checked + .slider:before { transform: translateX(20px); }
-
-    /* Поля ввода и кнопки */
     .input-box {
       width: 100%;
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 12px 14px;
+      background: rgba(7, 11, 19, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 12px;
       border-radius: 10px;
       color: #fff;
       font-size: 14px;
       outline: none;
-      margin-top: 8px;
-      transition: border-color 0.2s;
+      margin-top: 6px;
     }
     .input-box:focus { border-color: var(--accent); }
 
     .btn {
       width: 100%;
-      padding: 13px;
+      padding: 12px;
       border: none;
-      border-radius: 11px;
+      border-radius: 10px;
       font-size: 13px;
       font-weight: 700;
       cursor: pointer;
       margin-top: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
       transition: transform 0.1s, opacity 0.2s;
     }
     .btn:active { transform: scale(0.98); opacity: 0.85; }
-    .btn-accent { background: var(--accent); color: #090d16; }
+    .btn-accent { background: var(--accent); color: #070b13; }
     .btn-purple { background: var(--purple); color: #fff; }
-    .btn-danger { background: rgba(251, 113, 133, 0.15); color: var(--danger); border: 1px solid rgba(251, 113, 133, 0.3); }
+    .btn-danger { background: rgba(244, 63, 94, 0.15); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
 
-    .code-chip {
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 8px;
-      padding: 8px 12px;
-      font-family: monospace;
-      font-size: 12px;
-      margin-top: 6px;
-      color: var(--accent);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    /* Нижняя навигация */
+    /* Навбар */
     .bottom-nav {
       position: fixed;
       bottom: 0; left: 0; right: 0;
       height: 64px;
-      background: rgba(15, 23, 42, 0.9);
+      background: rgba(11, 17, 29, 0.95);
       backdrop-filter: blur(20px);
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
@@ -229,142 +162,101 @@
       font-size: 10px;
       font-weight: 600;
       cursor: pointer;
-      width: 25%;
-      transition: color 0.2s;
+      width: 20%;
     }
     .nav-btn.active { color: var(--accent); }
-    .nav-icon { font-size: 19px; }
+    .nav-icon { font-size: 20px; }
   </style>
 </head>
 <body>
 
-  <!-- ВЕРХНЯЯ КАРТОЧКА ПРОФИЛЯ -->
+  <!-- КАРТОЧКА ПРОФИЛЯ -->
   <div class="profile-card">
-    <div class="profile-info">
-      <h2 id="u-name">Marcell</h2>
-      <p onclick="copyId()">ID: <span id="u-id">7783116627</span> 📋</p>
+    <div class="profile-top">
+      <div>
+        <h2 id="u-name">Marcell</h2>
+        <div style="font-size:12px; color:var(--muted); margin-top:2px;">ID: <span id="u-id">7783116627</span></div>
+      </div>
+      <div id="u-badge" class="status-badge badge-prem">PREMIUM</div>
     </div>
-    <div class="badge-status">
-      <span class="dot"></span>
-      <span id="u-status">PRO OPERATOR</span>
+    <div class="timer-box">
+      <span>Активность лицензии:</span>
+      <span class="timer-val" id="countdown">Загрузка...</span>
     </div>
   </div>
 
-  <!-- ВКЛАДКА 1: МОНИТОРИНГ И МОДУЛИ -->
+  <!-- ВКЛАДКА 1: МОДУЛИ И СТАТИСТИКА -->
   <div id="tab-dash" class="tab-content active">
     <div class="card">
-      <div class="card-title">Состояние перехватчиков</div>
-      <div class="toggle-row">
-        <div class="toggle-label">
-          <b>Anti-Delete Логгер</b>
-          <span>Фиксация удалений в Избранное</span>
-        </div>
-        <label class="switch">
-          <input type="checkbox" id="tog-del" checked onchange="notifyToggle('anti_delete', this.checked)">
-          <span class="slider"></span>
-        </label>
-      </div>
-
-      <div class="toggle-row">
-        <div class="toggle-label">
-          <b>Anti-Edit Детектор</b>
-          <span>Лог изменений «Было / Стало»</span>
-        </div>
-        <label class="switch">
-          <input type="checkbox" id="tog-edit" checked onchange="notifyToggle('anti_edit', this.checked)">
-          <span class="slider"></span>
-        </label>
-      </div>
-
-      <div class="toggle-row">
-        <div class="toggle-label">
-          <b>Моментальный Мут</b>
-          <span>Авто-стирание сообщений цели</span>
-        </div>
-        <label class="switch">
-          <input type="checkbox" id="tog-mute" checked onchange="notifyToggle('auto_mute', this.checked)">
-          <span class="slider"></span>
-        </label>
-      </div>
-
-      <div class="toggle-row">
-        <div class="toggle-label">
-          <b>AFK Автоответчик</b>
-          <span>Оповещение собеседников о паузе</span>
-        </div>
-        <label class="switch">
-          <input type="checkbox" id="tog-afk" onchange="notifyToggle('afk', this.checked)">
-          <span class="slider"></span>
-        </label>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Синхронизация</div>
-      <button class="btn btn-accent" onclick="sendAction('get_stats')">📊 Запросить сводку базы данных</button>
+      <div class="card-title">Состояние системы</div>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 10px 0;">Управление фоновыми службами и перехватчиками.</p>
+      <button class="btn btn-accent" onclick="sendAction('get_stats')">📊 Запросить журнал перехватов</button>
     </div>
   </div>
 
-  <!-- ВКЛАДКА 2: ТАРГЕТ-ЛОГГЕР -->
+  <!-- ВКЛАДКА 2: ТАРГЕТ-МОНИТОРИНГ -->
   <div id="tab-target" class="tab-content">
     <div class="card">
-      <div class="card-title">🎯 Таргет-контроль диалогов</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Укажите ID или юзернейм канала, чата или ЛС для приоритетного логирования удалений.</p>
-      <input type="text" id="target-input" class="input-box" placeholder="@channel или ID чата...">
-      <button class="btn btn-accent" onclick="addTargetChat()">➕ Поставить на особый контроль</button>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Команды таргет-слежки в чате</div>
-      <div class="code-chip">.таргет + @username <span>Взять цель</span></div>
-      <div class="code-chip">.таргет - @username <span>Снять цель</span></div>
-      <div class="code-chip">.таргет <span>Список целей</span></div>
+      <div class="card-title">🎯 Таргет-контроль (Группы / Каналы)</div>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Укажите @username или ID чата, за которым нужно активно следить (удаления/правки):</p>
+      <input type="text" id="target-input" class="input-box" placeholder="@channel или -100...">
+      <button class="btn btn-accent" onclick="addTarget()">➕ Поставить на таргет-слежку</button>
     </div>
   </div>
 
-  <!-- ВКЛАДКА 3: МУТ-ФИЛЬТРЫ -->
+  <!-- ВКЛАДКА 3: ЧЕРНЫЙ СПИСОК (МУТ) -->
   <div id="tab-filters" class="tab-content">
     <div class="card">
-      <div class="card-title">🔇 Управление черным списком</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Внесите Telegram ID пользователя, чтобы любые его сообщения моментально стирались.</p>
-      <input type="number" id="mute-id-input" class="input-box" placeholder="Введите ID собеседника...">
-      <button class="btn btn-accent" onclick="addMuteDirect()">🚫 Заблокировать сообщения</button>
-      <button class="btn btn-danger" onclick="sendAction('clear_mutes')">🗑 Сбросить весь мут-лист</button>
+      <div class="card-title">🔇 Моментальный авто-мут</div>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Сообщения пользователей из этого списка будут стираться мгновенно:</p>
+      <input type="number" id="mute-input" class="input-box" placeholder="Введите ID собеседника...">
+      <button class="btn btn-accent" onclick="addMute()">🚫 Заглушить ID навсегда</button>
+      <button class="btn btn-danger" onclick="sendAction('clear_mutes')">🗑 Стереть весь черный список</button>
     </div>
   </div>
 
-  <!-- ВКЛАДКА 4: РЕФЕРАЛЫ И ПОДПИСКА -->
-  <div id="tab-profile" class="tab-content">
+  <!-- ВКЛАДКА 4: РЕФЕРАЛЫ -->
+  <div id="tab-refs" class="tab-content">
     <div class="card">
-      <div class="card-title">👥 Реферальная система</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 10px 0;">Приглашайте друзей в FGram и получайте автоматическое продление Premium-тарифа.</p>
-      <button class="btn btn-purple" onclick="copyRefLink()">🔗 Скопировать реферальную ссылку</button>
+      <div class="card-title">👥 Бонусные дни (+1 день)</div>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 10px 0;">За каждого приглашенного друга вам начисляется <b>+1 день</b>, а другу дается 2 дня триала!</p>
+      <button class="btn btn-purple" onclick="copyRef()">🔗 Скопировать реферальную ссылку</button>
     </div>
+  </div>
 
+  <!-- ВКЛАДКА 5: АДМИН-ПАНЕЛЬ (ВЫДАЧА ПРЕМИУМА) -->
+  <div id="tab-admin" class="tab-content">
     <div class="card">
-      <div class="card-title">💎 Тарифный план</div>
-      <p style="font-size:13px; margin:0 0 6px 0;">Текущий статус: <b id="sub-level" style="color:var(--accent)">FGram Infinite</b></p>
-      <button class="btn btn-accent" onclick="sendAction('req_prem')">⭐ Продлить / Запросить Premium</button>
+      <div class="card-title">👑 Выдача Premium пользователю</div>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Введите Telegram ID и выберите срок активации:</p>
+      <input type="number" id="admin-user-id" class="input-box" placeholder="ID пользователя...">
+      <button class="btn btn-accent" onclick="adminGive(7)">⚡ Выдать на 7 дней</button>
+      <button class="btn btn-accent" onclick="adminGive(30)">⭐ Выдать на 30 дней</button>
+      <button class="btn btn-purple" onclick="adminGive('forever')">💎 Выдать Навсегда</button>
     </div>
   </div>
 
   <!-- НАВБАР -->
   <div class="bottom-nav">
-    <button class="nav-btn active" onclick="switchTab('dash', this)">
+    <button class="nav-btn active" onclick="switchNav('dash', this)">
       <span class="nav-icon">📊</span>
-      <span>Консоль</span>
+      <span>Сводка</span>
     </button>
-    <button class="nav-btn" onclick="switchTab('target', this)">
+    <button class="nav-btn" onclick="switchNav('target', this)">
       <span class="nav-icon">🎯</span>
       <span>Таргет</span>
     </button>
-    <button class="nav-btn" onclick="switchTab('filters', this)">
+    <button class="nav-btn" onclick="switchNav('filters', this)">
       <span class="nav-icon">🔇</span>
-      <span>Фильтры</span>
+      <span>Мут</span>
     </button>
-    <button class="nav-btn" onclick="switchTab('profile', this)">
-      <span class="nav-icon">⭐</span>
-      <span>Профиль</span>
+    <button class="nav-btn" onclick="switchNav('refs', this)">
+      <span class="nav-icon">👥</span>
+      <span>Рефералы</span>
+    </button>
+    <button class="nav-btn" id="admin-nav-btn" onclick="switchNav('admin', this)">
+      <span class="nav-icon">👑</span>
+      <span>Админ</span>
     </button>
   </div>
 
@@ -373,71 +265,77 @@
     tg.ready();
     tg.expand();
 
-    const u = tg.initDataUnsafe?.user;
-    if (u) {
-      document.getElementById('u-name').innerText = u.first_name || 'Оператор';
-      document.getElementById('u-id').innerText = u.id;
+    const ADMIN_ID = 7783116627;
+    const user = tg.initDataUnsafe?.user || { id: ADMIN_ID, first_name: "Marcell" };
+    
+    document.getElementById('u-name').innerText = user.first_name;
+    document.getElementById('u-id').innerText = user.id;
+
+    // Проверка прав администратора
+    const isOwner = (parseInt(user.id) === ADMIN_ID);
+    const badge = document.getElementById('u-badge');
+    const countdownEl = document.getElementById('countdown');
+
+    if (isOwner) {
+      badge.className = "status-badge badge-owner";
+      badge.innerText = "👑 OWNER (FOREVER)";
+      countdownEl.innerText = "БЕЗЛИМИТНЫЙ ДОСТУП";
+    } else {
+      badge.className = "status-badge badge-prem";
+      // Динамический таймер на клиенте (отсчет 24ч триала)
+      let remain = 86400; // 24 часа
+      setInterval(() => {
+        remain = Math.max(0, remain - 1);
+        const h = Math.floor(remain / 3600);
+        const m = Math.floor((remain % 3600) / 60);
+        const s = remain % 60;
+        badge.innerText = `PREMIUM (${h}ч ${m}м ${s}с)`;
+        countdownEl.innerText = `${h}ч ${m}м ${s}с до окончания`;
+      }, 1000);
+      document.getElementById('admin-nav-btn').style.display = 'none';
     }
 
-    function haptic(type = 'light') {
-      if (!tg.HapticFeedback) return;
-      if (type === 'light') tg.HapticFeedback.selectionChanged();
-      else if (type === 'medium') tg.HapticFeedback.impactOccurred('medium');
-      else if (type === 'heavy') tg.HapticFeedback.impactOccurred('heavy');
-    }
-
-    function switchTab(tabId, btn) {
-      haptic('light');
+    function switchNav(id, btn) {
+      if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-      document.getElementById('tab-' + tabId).classList.add('active');
+      document.getElementById('tab-' + id).classList.add('active');
       btn.classList.add('active');
     }
 
     function sendAction(action) {
-      haptic('heavy');
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
       tg.sendData(JSON.stringify({ action: action }));
     }
 
-    function notifyToggle(module, state) {
-      haptic('medium');
-      tg.sendData(JSON.stringify({ action: "toggle_setting", module: module, state: state }));
-    }
-
-    function addMuteDirect() {
-      const val = document.getElementById('mute-id-input').value.trim();
-      if (!val) {
-        tg.showAlert("Введите числовой ID пользователя!");
-        return;
-      }
-      haptic('heavy');
+    function addMute() {
+      const val = document.getElementById('mute-input').value.trim();
+      if (!val) return tg.showAlert("Введите числовой ID!");
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
       tg.sendData(JSON.stringify({ action: "add_mute", target_id: parseInt(val) }));
-      document.getElementById('mute-id-input').value = "";
+      document.getElementById('mute-input').value = "";
     }
 
-    function addTargetChat() {
+    function addTarget() {
       const val = document.getElementById('target-input').value.trim();
-      if (!val) {
-        tg.showAlert("Укажите @username или ID чата!");
-        return;
-      }
-      haptic('heavy');
+      if (!val) return tg.showAlert("Введите @username или ID чата!");
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
       tg.sendData(JSON.stringify({ action: "add_target", target: val }));
       document.getElementById('target-input').value = "";
     }
 
-    function copyId() {
-      haptic('light');
-      const id = document.getElementById('u-id').innerText;
-      navigator.clipboard.writeText(id);
-      tg.showAlert("ID скопирован в буфер обмена: " + id);
+    function adminGive(days) {
+      const uId = document.getElementById('admin-user-id').value.trim();
+      if (!uId) return tg.showAlert("Введите ID пользователя!");
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
+      tg.sendData(JSON.stringify({ action: "give_prem_admin", target_id: uId, days: days }));
+      document.getElementById('admin-user-id').value = "";
     }
 
-    function copyRefLink() {
-      haptic('medium');
-      const myId = u ? u.id : '7783116627';
-      const botUser = tg.initDataUnsafe?.bot?.username || 'fgram_dox_bot';
-      const link = `https://t.me/${botUser}?start=ref_${myId}`;
+    function copyRef() {
+      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      const bot = tg.initDataUnsafe?.bot?.username || "fgram_dox_bot";
+      const link = `https://t.me/${bot}?start=ref_${user.id}`;
       navigator.clipboard.writeText(link);
       tg.showAlert("Реферальная ссылка скопирована:\n" + link);
     }
