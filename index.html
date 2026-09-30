@@ -11,10 +11,8 @@
       --card-bg: rgba(17, 24, 39, 0.85);
       --card-border: rgba(56, 189, 248, 0.2);
       --accent: #38bdf8;
-      --accent-glow: rgba(56, 189, 248, 0.35);
       --purple: #a855f7;
       --danger: #f43f5e;
-      --success: #10b981;
       --text: #f8fafc;
       --muted: #64748b;
     }
@@ -27,31 +25,12 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background-color: var(--bg);
       background-image: 
-        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.14) 0px, transparent 50%),
+        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
         radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.12) 0px, transparent 50%);
       color: var(--text);
       min-height: 100vh;
     }
 
-    /* СКРЫТЫЙ РЕЖИМ (STEALTH OVERLAY) */
-    #stealth-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: #0f172a;
-      z-index: 9999;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      text-align: center;
-    }
-    #stealth-overlay.active { display: flex; }
-    .stealth-icon { font-size: 52px; margin-bottom: 16px; color: var(--accent); }
-    .stealth-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-    .stealth-desc { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 24px; }
-
-    /* ШАПКА ПРОФИЛЯ */
     .profile-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -79,7 +58,6 @@
       border-radius: 20px;
       font-size: 11px;
       font-weight: 800;
-      letter-spacing: 0.04em;
     }
     .badge-owner { background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.4); color: #facc15; }
     .badge-prem { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: var(--accent); }
@@ -97,12 +75,11 @@
     }
     .timer-val { font-family: monospace; font-size: 13px; font-weight: 700; color: #fff; }
 
-    /* ТАБЫ */
     .tab-content { display: none; }
-    .tab-content.active { display: block; animation: slideUp 0.2s ease-out; }
+    .tab-content.active { display: block; animation: fadeIn 0.2s ease-out; }
 
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(6px); }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
@@ -122,53 +99,8 @@
       letter-spacing: 0.05em;
       color: var(--accent);
       margin-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
 
-    /* СВИТЧЕРЫ */
-    .switch-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    .switch-row:last-child { border-bottom: none; }
-    .switch-label b { display: block; font-size: 14px; margin-bottom: 2px; }
-    .switch-label span { font-size: 11px; color: var(--muted); }
-
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 44px;
-      height: 24px;
-    }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider {
-      position: absolute;
-      inset: 0;
-      background-color: #334155;
-      transition: .25s ease;
-      border-radius: 24px;
-      cursor: pointer;
-    }
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-      background-color: #fff;
-      transition: .25s ease;
-      border-radius: 50%;
-    }
-    input:checked + .slider { background-color: var(--accent); }
-    input:checked + .slider:before { transform: translateX(20px); }
-
-    /* ПОЛЯ ВВОДА И КНОПКИ */
     .input-box {
       width: 100%;
       background: rgba(7, 11, 20, 0.9);
@@ -191,14 +123,13 @@
       font-weight: 700;
       cursor: pointer;
       margin-top: 10px;
-      transition: transform 0.1s, opacity 0.2s;
+      transition: transform 0.1s;
     }
-    .btn:active { transform: scale(0.98); opacity: 0.85; }
+    .btn:active { transform: scale(0.98); }
     .btn-accent { background: var(--accent); color: #070b14; }
     .btn-purple { background: var(--purple); color: #fff; }
     .btn-danger { background: rgba(244, 63, 94, 0.15); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
 
-    /* НАВБАР */
     .bottom-nav {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -223,7 +154,7 @@
       font-size: 10px;
       font-weight: 600;
       cursor: pointer;
-      width: 20%;
+      width: 25%;
     }
     .nav-btn.active { color: var(--accent); }
     .nav-icon { font-size: 20px; }
@@ -231,18 +162,7 @@
 </head>
 <body>
 
-  <!-- STEALTH MODE OVERLAY -->
-  <div id="stealth-overlay">
-    <div class="stealth-icon">🛡</div>
-    <div class="stealth-title">Telegram Security Management</div>
-    <div class="stealth-desc">
-      Бот управляет этим чатом и обеспечивает безопасность соединения.<br>
-      Шифрование сессии активно.
-    </div>
-    <button class="btn btn-purple" style="max-width:200px;" onclick="exitStealth()">🔓 Выйти из защиты</button>
-  </div>
-
-  <!-- ШАПКА ПРОФИЛЯ -->
+  <!-- ШАПКА -->
   <div class="profile-card">
     <div class="profile-top">
       <div>
@@ -257,94 +177,36 @@
     </div>
   </div>
 
-  <!-- ВКЛАДКА 1: МОНИТОРИНГ И ПЕРЕКЛЮЧАТЕЛИ -->
+  <!-- ВКЛАДКА 1: ДАШБОРД -->
   <div id="tab-dash" class="tab-content active">
     <div class="card">
-      <div class="card-title">Модули управления</div>
-      
-      <div class="switch-row">
-        <div class="switch-label">
-          <b>Anti-Delete Логгер</b>
-          <span>Перехват удалений в Избранное</span>
-        </div>
-        <label class="switch">
-          <input type="checkbox" checked onchange="toggleMod('anti_delete', this.checked)">
-          <span class="slider"></span>
-        </label>
-      </div>
-
-      <div class="switch-row">
-        <div class="switch-label">
-          <b>Anti-Edit Детектор</b>
-          <span>Фиксация изменений сообщений</span>
-        </div>
-        <label class="switch">
-          <input type="checkbox" checked onchange="toggleMod('anti_edit', this.checked)">
-          <span class="slider"></span>
-        </label>
-      </div>
-
-      <div class="switch-row">
-        <div class="switch-label">
-          <b>Моментальный Мут</b>
-          <span>Автоматическое стирание спама цели</span>
-        </div>
-        <label class="switch">
-          <input type="checkbox" checked onchange="toggleMod('auto_mute', this.checked)">
-          <span class="slider"></span>
-        </label>
-      </div>
-
-      <div class="switch-row">
-        <div class="switch-label">
-          <b>AFK Режим</b>
-          <span>Автоответчик об отсутствии</span>
-        </div>
-        <label class="switch">
-          <input type="checkbox" onchange="toggleMod('afk', this.checked)">
-          <span class="slider"></span>
-        </label>
-      </div>
-
-      <div class="switch-row">
-        <div class="switch-label">
-          <b style="color:var(--accent)">🛡 FGram Privacy Shield</b>
-          <span>Защита от пробива, спама и мута</span>
-        </div>
-        <label class="switch">
-          <input type="checkbox" checked onchange="toggleMod('shield', this.checked)">
-          <span class="slider"></span>
-        </label>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Маскировка</div>
-      <button class="btn btn-purple" onclick="enterStealth()">🕵️‍♂️ Включить скрытый режим (Mock Screen)</button>
-      <button class="btn btn-accent" onclick="sendAction('get_stats')">📊 Запросить журнал перехватов</button>
+      <div class="card-title">Команды юзербота в любом диалоге</div>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.спам 5 текст</code> — серия сообщений</p>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.мут</code> — мгновенный авто-мут собеседника</p>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.анмут</code> — снять ограничение</p>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.афк [причина]</code> — включить автоответчик</p>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.пинг</code> и <code>.ид</code> — отклик и паспорт цели</p>
     </div>
   </div>
 
-  <!-- ВКЛАДКА 2: ТАРГЕТ-МОНИТОРИНГ -->
-  <div id="tab-target" class="tab-content">
-    <div class="card">
-      <div class="card-title">🎯 Таргет-контроль (Каналы/Чаты)</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Укажите @username, ссылку t.me/... или ID чата:</p>
-      <input type="text" id="target-input" class="input-box" placeholder="@channel или ID...">
-      <button class="btn btn-accent" onclick="addTarget()">➕ Взять цель на контроль</button>
-      <button class="btn btn-danger" onclick="removeTarget()">➖ Снять цель с контроля</button>
-    </div>
-  </div>
-
-  <!-- ВКЛАДКА 3: МУТ-ФИЛЬТРЫ -->
-  <div id="tab-filters" class="tab-content">
+  <!-- ВКЛАДКА 2: МУТ -->
+  <div id="tab-mute" class="tab-content">
     <div class="card">
       <div class="card-title">🔇 Моментальный авто-мут</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Введите @username или числовой ID нарушителя:</p>
-      <input type="text" id="mute-input" class="input-box" placeholder="@username или ID юзера...">
-      <button class="btn btn-accent" onclick="addMute()">🚫 Замутить (Стирать сообщения)</button>
-      <button class="btn btn-purple" onclick="removeMute()">🔊 Размутить пользователя</button>
-      <button class="btn btn-danger" onclick="sendAction('clear_mutes')">🗑 Очистить весь список</button>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Укажите ID или @username для мгновенного удаления сообщений:</p>
+      <input type="text" id="mute-val" class="input-box" placeholder="ID или @username...">
+      <button class="btn btn-accent" onclick="addMute()">🚫 Замутить объект</button>
+      <button class="btn btn-danger" onclick="clearMutes()">🗑 Очистить весь список</button>
+    </div>
+  </div>
+
+  <!-- ВКЛАДКА 3: ТАРГЕТ-ЛОГГЕР -->
+  <div id="tab-target" class="tab-content">
+    <div class="card">
+      <div class="card-title">🎯 Таргет-контроль (Группы / Чаты)</div>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Укажите чат для приоритетной фиксации удалений:</p>
+      <input type="text" id="target-val" class="input-box" placeholder="@channel или ID...">
+      <button class="btn btn-accent" onclick="addTarget()">➕ Взять на особый контроль</button>
     </div>
   </div>
 
@@ -352,22 +214,8 @@
   <div id="tab-refs" class="tab-content">
     <div class="card">
       <div class="card-title">👥 Бонусные дни (+1 день)</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 10px 0;">За каждого приглашенного друга вам начисляется <b>+1 день</b>, а другу дается 2 дня триала!</p>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 10px 0;">За каждого друга начисляется +1 день лицензии!</p>
       <button class="btn btn-purple" onclick="copyRef()">🔗 Скопировать реферальную ссылку</button>
-    </div>
-  </div>
-
-  <!-- ВКЛАДКА 5: АДМИН (ГИБКИЙ ВВОД ВРЕМЕНИ) -->
-  <div id="tab-admin" class="tab-content">
-    <div class="card">
-      <div class="card-title">👑 Гибкая выдача Premium</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">ID или @username получателя:</p>
-      <input type="text" id="admin-user-target" class="input-box" placeholder="@username или ID...">
-      
-      <p style="font-size:12px; color:var(--muted); margin:10px 0 6px 0;">Срок действия (например: 30s, 15m, 2h, 7d, forever):</p>
-      <input type="text" id="admin-user-time" class="input-box" placeholder="30s, 2h, 30d или forever...">
-
-      <button class="btn btn-accent" onclick="adminGiveCustom()">⚡ Активировать доступ</button>
     </div>
   </div>
 
@@ -377,21 +225,17 @@
       <span class="nav-icon">📊</span>
       <span>Сводка</span>
     </button>
+    <button class="nav-btn" onclick="switchNav('mute', this)">
+      <span class="nav-icon">🔇</span>
+      <span>Мут</span>
+    </button>
     <button class="nav-btn" onclick="switchNav('target', this)">
       <span class="nav-icon">🎯</span>
       <span>Таргет</span>
     </button>
-    <button class="nav-btn" onclick="switchNav('filters', this)">
-      <span class="nav-icon">🔇</span>
-      <span>Мут</span>
-    </button>
     <button class="nav-btn" onclick="switchNav('refs', this)">
       <span class="nav-icon">👥</span>
       <span>Рефералы</span>
-    </button>
-    <button class="nav-btn" id="admin-nav-btn" onclick="switchNav('admin', this)">
-      <span class="nav-icon">👑</span>
-      <span>Админ</span>
     </button>
   </div>
 
@@ -402,7 +246,7 @@
 
     const ADMIN_ID = 7783116627;
     const user = tg.initDataUnsafe?.user || { id: ADMIN_ID, first_name: "Marcell" };
-    
+
     document.getElementById('u-name').innerText = user.first_name;
     document.getElementById('u-id').innerText = user.id;
 
@@ -423,9 +267,8 @@
         const m = Math.floor((rem % 3600) / 60);
         const s = rem % 60;
         badge.innerText = `PREMIUM (${h}ч ${m}м ${s}с)`;
-        countdownEl.innerText = `${h}ч ${m}м ${s}с до конца`;
+        countdownEl.innerText = `${h}ч ${m}м ${s}с`;
       }, 1000);
-      document.getElementById('admin-nav-btn').style.display = 'none';
     }
 
     function switchNav(id, btn) {
@@ -436,56 +279,25 @@
       btn.classList.add('active');
     }
 
-    function sendAction(action) {
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-      tg.sendData(JSON.stringify({ action: action }));
-    }
-
-    function toggleMod(mod, state) {
-      if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
-      tg.sendData(JSON.stringify({ action: "toggle_setting", module: mod, state: state }));
-    }
-
     function addMute() {
-      const val = document.getElementById('mute-input').value.trim();
-      if (!val) return tg.showAlert("Введите @username или числовой ID!");
+      const val = document.getElementById('mute-val').value.trim();
+      if (!val) return tg.showAlert("Введите ID или @username!");
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
       tg.sendData(JSON.stringify({ action: "add_mute", target: val }));
-      document.getElementById('mute-input').value = "";
+      document.getElementById('mute-val').value = "";
     }
 
-    function removeMute() {
-      const val = document.getElementById('mute-input').value.trim();
-      if (!val) return tg.showAlert("Введите @username или числовой ID!");
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-      tg.sendData(JSON.stringify({ action: "remove_mute", target: val }));
-      document.getElementById('mute-input').value = "";
+    function clearMutes() {
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
+      tg.sendData(JSON.stringify({ action: "clear_mutes" }));
     }
 
     function addTarget() {
-      const val = document.getElementById('target-input').value.trim();
-      if (!val) return tg.showAlert("Введите @username, ссылку или ID!");
+      const val = document.getElementById('target-val').value.trim();
+      if (!val) return tg.showAlert("Введите @channel или ID чата!");
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
       tg.sendData(JSON.stringify({ action: "add_target", target: val }));
-      document.getElementById('target-input').value = "";
-    }
-
-    function removeTarget() {
-      const val = document.getElementById('target-input').value.trim();
-      if (!val) return tg.showAlert("Введите @username или ID!");
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-      tg.sendData(JSON.stringify({ action: "remove_target", target: val }));
-      document.getElementById('target-input').value = "";
-    }
-
-    function adminGiveCustom() {
-      const target = document.getElementById('admin-user-target').value.trim();
-      const dur = document.getElementById('admin-user-time').value.trim();
-      if (!target || !dur) return tg.showAlert("Заполните оба поля!");
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
-      tg.sendData(JSON.stringify({ action: "give_prem_custom", target: target, duration: dur }));
-      document.getElementById('admin-user-target').value = "";
-      document.getElementById('admin-user-time').value = "";
+      document.getElementById('target-val').value = "";
     }
 
     function copyRef() {
@@ -494,16 +306,6 @@
       const link = `https://t.me/${bot}?start=ref_${user.id}`;
       navigator.clipboard.writeText(link);
       tg.showAlert("Реферальная ссылка скопирована:\n" + link);
-    }
-
-    function enterStealth() {
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
-      document.getElementById('stealth-overlay').classList.add('active');
-    }
-
-    function exitStealth() {
-      if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
-      document.getElementById('stealth-overlay').classList.remove('active');
     }
   </script>
 </body>
