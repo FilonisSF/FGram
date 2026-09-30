@@ -3,68 +3,155 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>FGram Client Dashboard</title>
+  <title>FGram Platform Suite</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
+      --bg: #090d16;
+      --card-bg: rgba(22, 30, 46, 0.7);
+      --card-border: rgba(56, 189, 248, 0.15);
       --accent: #38bdf8;
-      --danger: #f43f5e;
-      --text: #f8fafc;
-      --subtext: #94a3b8;
-    }
-    body {
-      margin: 0;
-      padding: 16px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-    }
-    .header-card {
-      background: linear-gradient(135deg, #1e293b, #0f172a);
-      border: 1px solid #334155;
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-    }
-    .badge {
-      display: inline-block;
-      background: rgba(56, 189, 248, 0.15);
-      color: var(--accent);
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-    h2 { margin: 0 0 4px 0; font-size: 20px; }
-    p { margin: 0; color: var(--subtext); font-size: 13px; }
-    
-    .section-title {
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--subtext);
-      margin: 16px 4px 8px 4px;
+      --accent-glow: rgba(56, 189, 248, 0.35);
+      --danger: #fb7185;
+      --success: #34d399;
+      --text: #f1f5f9;
+      --subtext: #818cf8;
+      --muted: #64748b;
     }
 
-    .module-item {
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 14px 14px 85px 14px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(at 10% 20%, rgba(56, 189, 248, 0.08) 0px, transparent 40%),
+        radial-gradient(at 90% 80%, rgba(99, 102, 241, 0.08) 0px, transparent 40%);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Верхняя карточка профиля */
+    .profile-card {
       background: var(--card-bg);
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 10px;
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 16px;
     }
-    .module-info b { display: block; font-size: 15px; margin-bottom: 2px; }
-    .module-info span { font-size: 12px; color: var(--subtext); }
 
-    /* Тумблер (Switch) */
+    .profile-info h2 {
+      margin: 0 0 4px 0;
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .profile-info p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      color: var(--accent);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    /* Навигация / Вкладки */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn 0.25s ease-out; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 15px;
+      margin-bottom: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .metric-box {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .metric-val {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .metric-lbl {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* Свитчеры */
+    .switch-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .switch-row:last-child { border-bottom: none; }
+
     .switch {
       position: relative;
       display: inline-block;
@@ -74,10 +161,9 @@
     .switch input { opacity: 0; width: 0; height: 0; }
     .slider {
       position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #475569;
-      transition: .3s;
+      inset: 0;
+      background-color: #334155;
+      transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
       border-radius: 24px;
     }
     .slider:before {
@@ -88,11 +174,25 @@
       left: 3px;
       bottom: 3px;
       background-color: white;
-      transition: .3s;
+      transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
       border-radius: 50%;
     }
     input:checked + .slider { background-color: var(--accent); }
     input:checked + .slider:before { transform: translateX(20px); }
+
+    /* Поля ввода и кнопки */
+    .input-field {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid #334155;
+      padding: 12px;
+      border-radius: 9px;
+      color: white;
+      font-size: 14px;
+      outline: none;
+      margin-top: 8px;
+    }
+    .input-field:focus { border-color: var(--accent); }
 
     .btn {
       width: 100%;
@@ -102,74 +202,221 @@
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      margin-top: 8px;
-      transition: opacity 0.2s;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.2s, transform 0.1s;
     }
-    .btn-primary { background-color: var(--accent); color: #0f172a; }
-    .btn-danger { background-color: rgba(244, 63, 94, 0.15); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
-    .btn:active { opacity: 0.8; }
+    .btn:active { transform: scale(0.98); opacity: 0.9; }
+    .btn-accent { background: var(--accent); color: #090d16; }
+    .btn-danger { background: rgba(251, 113, 133, 0.15); color: var(--danger); border: 1px solid rgba(251, 113, 133, 0.3); }
+
+    .code-chip {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 8px;
+      font-family: monospace;
+      font-size: 12px;
+      margin-top: 6px;
+      color: #38bdf8;
+    }
+
+    /* Навбар */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 64px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 25%;
+      transition: color 0.2s;
+    }
+    .nav-btn.active { color: var(--accent); }
+    .nav-icon { font-size: 20px; }
   </style>
 </head>
 <body>
 
-  <div class="header-card">
-    <div class="badge">FGRAM CORE v1.0</div>
-    <h2 id="user-name">Панель управления</h2>
-    <p>ID: <span id="user-id">---</span></p>
-  </div>
-
-  <div class="section-title">Активные модули контроля</div>
-
-  <div class="module-item">
-    <div class="module-info">
-      <b>Anti-Edit Spy</b>
-      <span>Фиксация изменений сообщений</span>
+  <!-- ПРОФИЛЬ -->
+  <div class="profile-card">
+    <div class="profile-info">
+      <h2 id="user-display">Operator</h2>
+      <p>ID: <span id="user-id">---</span></p>
     </div>
-    <label class="switch">
-      <input type="checkbox" id="spy-toggle" checked onchange="vibrate()">
-      <span class="slider"></span>
-    </label>
-  </div>
-
-  <div class="module-item">
-    <div class="module-info">
-      <b>Auto-Delete Mute</b>
-      <span>Моментальное стирание спама</span>
+    <div class="status-badge">
+      <span class="status-dot"></span>
+      <span id="user-role">ADMIN</span>
     </div>
-    <label class="switch">
-      <input type="checkbox" id="mute-toggle" checked onchange="vibrate()">
-      <span class="slider"></span>
-    </label>
   </div>
 
-  <div class="section-title">Быстрые действия</div>
-  <button class="btn btn-primary" onclick="sendAction('get_stats')">📊 Запросить статистику кэша</button>
-  <button class="btn btn-danger" onclick="sendAction('clear_mutes')">🗑 Сбросить всех заглушенных юзеров</button>
+  <!-- ВКЛАДКА 1: МОНИТОРИНГ И ДАШБОРД -->
+  <div id="tab-dash" class="tab-content active">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Системные показатели</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-box">
+          <div class="metric-val" id="metric-deleted">0</div>
+          <div class="metric-lbl">Удалений в перехвате</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-val" id="metric-edited">0</div>
+          <div class="metric-lbl">Правок обнаружено</div>
+        </div>
+      </div>
+      <button class="btn btn-accent" onclick="syncAction('get_stats')">📊 Запросить данные базы</button>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Активные модули контроля</span>
+      </div>
+      <div class="switch-row">
+        <div>
+          <b>Anti-Delete Логгер</b>
+          <div style="font-size:12px; color:var(--muted)">Отправка удаленного в Избранное</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" checked onchange="hapticTick()">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="switch-row">
+        <div>
+          <b>Мгновенный авто-мут</b>
+          <div style="font-size:12px; color:var(--muted)">Стирание входящих сообщений</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" checked onchange="hapticTick()">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ВКЛАДКА 2: МУТ-ФИЛЬТРЫ -->
+  <div id="tab-filters" class="tab-content">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Ручное управление фильтром</span>
+      </div>
+      <p style="font-size:13px; color:var(--muted); margin:0;">Добавьте ID пользователя для моментального удаления его сообщений в ваших беседах.</p>
+      <input type="number" id="mute-input" class="input-field" placeholder="Введите ID собеседника...">
+      <button class="btn btn-accent" onclick="addMuteDirect()">➕ Внести в черный список</button>
+      <button class="btn btn-danger" onclick="syncAction('clear_mutes')">🗑 Очистить весь список мута</button>
+    </div>
+  </div>
+
+  <!-- ВКЛАДКА 3: БЫСТРЫЕ КОМАНДЫ И ТУЛЗЫ -->
+  <div id="tab-tools" class="tab-content">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Команды юзербота в чате</span>
+      </div>
+      <div class="code-chip">.мут — моментальный авто-мут собеседника</div>
+      <div class="code-chip">.размут — снять ограничение</div>
+      <div class="code-chip">.повтор 5 текст — отправка серии сообщений</div>
+      <div class="code-chip">.пинг — проверка отклика клиента</div>
+      <div class="code-chip">.афк [причина] — включить статус AFK</div>
+      <div class="code-chip">.унафк — выключить режим AFK</div>
+      <div class="code-chip">.ид — получение ID чата и сообщения</div>
+    </div>
+  </div>
+
+  <!-- ВКЛАДКА 4: ДОСТУП И СИСТЕМА -->
+  <div id="tab-system" class="tab-content">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Управление подписками</span>
+      </div>
+      <p style="font-size:13px; color:var(--muted); margin:0 0 10px 0;">Команды бота в чате для контроля доступа:</p>
+      <div class="code-chip">/giveprem ID 30 — премиум на 30 дней</div>
+      <div class="code-chip">/giveprem ID forever — доступ навсегда</div>
+      <div class="code-chip">/whitelist ID — внести в белый список</div>
+    </div>
+  </div>
+
+  <!-- НАВБАР -->
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="switchNav('dash', this)">
+      <span class="nav-icon">📊</span>
+      <span>Консоль</span>
+    </button>
+    <button class="nav-btn" onclick="switchNav('filters', this)">
+      <span class="nav-icon">🔇</span>
+      <span>Фильтры</span>
+    </button>
+    <button class="nav-btn" onclick="switchNav('tools', this)">
+      <span class="nav-icon">⌨️</span>
+      <span>Тулзы</span>
+    </button>
+    <button class="nav-btn" onclick="switchNav('system', this)">
+      <span class="nav-icon">👑</span>
+      <span>Система</span>
+    </button>
+  </div>
 
   <script>
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
 
-    // Заполнение профиля
+    // Автоматическая подстановка профиля Telegram
     const user = tg.initDataUnsafe?.user;
     if (user) {
-      document.getElementById('user-name').innerText = user.first_name || "Оператор";
+      document.getElementById('user-display').innerText = user.first_name;
       document.getElementById('user-id').innerText = user.id;
     }
 
-    function vibrate() {
-      if (tg.HapticFeedback) {
-        tg.HapticFeedback.selectionChanged();
-      }
+    function hapticTick() {
+      if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
     }
 
-    function sendAction(actionName) {
-      if (tg.HapticFeedback) {
-        tg.HapticFeedback.impactOccurred('medium');
-      }
-      // Отправляем команду боту и закрываем окно
+    function switchNav(tabId, el) {
+      hapticTick();
+      document.querySelectorAll('.tab-content').forEach(d => d.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + tabId).classList.add('active');
+      el.classList.add('active');
+    }
+
+    function syncAction(actionName) {
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
       tg.sendData(JSON.stringify({ action: actionName }));
+    }
+
+    function addMuteDirect() {
+      const input = document.getElementById('mute-input');
+      const val = input.value.trim();
+      if (!val) {
+        tg.showAlert("Введите корректный Telegram ID!");
+        return;
+      }
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
+      tg.sendData(JSON.stringify({ action: "add_mute", target_id: parseInt(val) }));
+      input.value = "";
     }
   </script>
 </body>
