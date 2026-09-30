@@ -11,10 +11,8 @@
       --card-bg: rgba(17, 24, 39, 0.85);
       --card-border: rgba(56, 189, 248, 0.2);
       --accent: #38bdf8;
-      --accent-glow: rgba(56, 189, 248, 0.35);
       --purple: #a855f7;
       --danger: #f43f5e;
-      --success: #10b981;
       --text: #f8fafc;
       --muted: #64748b;
     }
@@ -33,7 +31,6 @@
       min-height: 100vh;
     }
 
-    /* ШАПКА */
     .profile-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -78,7 +75,6 @@
     }
     .timer-val { font-family: monospace; font-size: 13px; font-weight: 700; color: #fff; }
 
-    /* СЕТКА ПОКАЗАТЕЛЕЙ */
     .metric-grid {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -95,7 +91,6 @@
     .metric-val { font-size: 18px; font-weight: 800; color: var(--accent); }
     .metric-lbl { font-size: 10px; color: var(--muted); margin-top: 2px; }
 
-    /* ТАБЫ */
     .tab-content { display: none; }
     .tab-content.active { display: block; animation: fadeIn 0.2s ease-out; }
 
@@ -122,7 +117,6 @@
       margin-bottom: 10px;
     }
 
-    /* ТЕРМИНАЛ ЛОГОВ */
     .terminal-box {
       background: #050811;
       border: 1px solid #1e293b;
@@ -131,7 +125,7 @@
       font-family: monospace;
       font-size: 11px;
       color: #38bdf8;
-      height: 120px;
+      height: 110px;
       overflow-y: auto;
       margin-top: 8px;
     }
@@ -167,7 +161,6 @@
     .btn-purple { background: var(--purple); color: #fff; }
     .btn-danger { background: rgba(244, 63, 94, 0.15); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
 
-    /* НАВБАР */
     .bottom-nav {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -215,48 +208,48 @@
     </div>
   </div>
 
-  <!-- ЖИВЫЕ МЕТРИКИ -->
+  <!-- МЕТРИКИ -->
   <div class="metric-grid">
     <div class="metric-card">
-      <div class="metric-val" id="m-del">0</div>
-      <div class="metric-lbl">Удалений</div>
+      <div class="metric-val">100%</div>
+      <div class="metric-lbl">Ядро MTProto</div>
     </div>
     <div class="metric-card">
-      <div class="metric-val" id="m-edit">0</div>
-      <div class="metric-lbl">Правок</div>
+      <div class="metric-val">0.04s</div>
+      <div class="metric-lbl">Скорость спама</div>
     </div>
     <div class="metric-card">
-      <div class="metric-val" id="m-ttl">0</div>
-      <div class="metric-lbl">TTL Фото</div>
+      <div class="metric-val">AUTO</div>
+      <div class="metric-lbl">TTL Catcher</div>
     </div>
   </div>
 
-  <!-- ВКЛАДКА 1: ТЕРМИНАЛ -->
+  <!-- ВКЛАДКА 1: КОНСОЛЬ -->
   <div id="tab-dash" class="tab-content active">
     <div class="card">
-      <div class="card-title">Журнал перехватов в реальном времени</div>
+      <div class="card-title">Системный журнал терминала</div>
       <div class="terminal-box" id="term-logs">
-        <div class="log-line"><span class="log-time">[SYSTEM]</span> FGram Monitor v12.0 запущен</div>
-        <div class="log-line"><span class="log-time">[STATUS]</span> Anti-Delete & Anti-Edit активны</div>
-        <div class="log-line"><span class="log-time">[STATUS]</span> TTL Media Catcher ожидает таймеры</div>
+        <div class="log-line"><span class="log-time">[SYSTEM]</span> FGram Platform Suite v15.0 активен</div>
+        <div class="log-line"><span class="log-time">[MTPROTO]</span> Сессия авторизована, команды слушают чат</div>
+        <div class="log-line"><span class="log-time">[DAEMON]</span> Моментальный мут активен на входящие сообщения</div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-title">Команды в любом диалоге</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.спам 5 текст</code> — ультра-быстрая рассылка</p>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.мут</code> — мгновенный авто-мут собеседника</p>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.анмут</code> — снять мут с собеседника</p>
+      <div class="card-title">Быстрые команды в любых диалогах</div>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.спам 5 привет</code> — ультра-быстрая рассылка</p>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.мут</code> — мгновенно удалять сообщения собеседника</p>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.анмут</code> — вернуть возможность писать</p>
       <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.афк [причина]</code> — режим автоответчика</p>
       <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.пинг</code> и <code>.ид</code> — отклик и паспорт объекта</p>
     </div>
   </div>
 
-  <!-- ВКЛАДКА 2: МУТ-ЦЕНТР -->
+  <!-- ВКЛАДКА 2: МУТ -->
   <div id="tab-mute" class="tab-content">
     <div class="card">
       <div class="card-title">🔇 Моментальный авто-мут</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Любые сообщения от указанных целей будут стираться мгновенно:</p>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Любые сообщения от указанных ID будут стираться мгновенно:</p>
       <input type="text" id="mute-val" class="input-box" placeholder="Введите числовой ID цели...">
       <button class="btn btn-accent" onclick="addMute()">🚫 Замутить объект</button>
       <button class="btn btn-danger" onclick="clearMutes()">🗑 Стереть весь черный список</button>
@@ -276,7 +269,7 @@
   <!-- ВКЛАДКА 4: OSINT-СКАНЕР -->
   <div id="tab-osint" class="tab-content">
     <div class="card">
-      <div class="card-title">🔍 OSINT Сканер аккаунтов</div>
+      <div class="card-title">🔍 OSINT Экспресс-сканер</div>
       <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Введите юзернейм или ID для быстрого анализа возраста:</p>
       <input type="text" id="osint-val" class="input-box" placeholder="@username или ID...">
       <button class="btn btn-purple" onclick="scanOsint()">🔎 Проанализировать объект</button>
@@ -379,12 +372,12 @@
 
       setTimeout(() => {
         out.innerHTML = `
-          <b>🎯 Результат экспресс-анализа:</b><br>
+          <b>🎯 Результат анализа:</b><br>
           • Объект: <code>${val}</code><br>
-          • База данных: MTProto DataCenter Connected<br>
-          • Статус: Профиль открыт для мониторинга
+          • Подключение: MTProto DC Linked<br>
+          • Мониторинг: Доступен для слежки
         `;
-      }, 700);
+      }, 600);
     }
   </script>
 </body>
