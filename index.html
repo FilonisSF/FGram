@@ -1,720 +1,598 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>FGram Platform Suite</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    :root {
-      --bg: #070b14;
-      --card-bg: rgba(15, 23, 42, 0.75);
-      --card-border: rgba(56, 189, 248, 0.18);
-      --accent: #38bdf8;
-      --accent-glow: rgba(56, 189, 248, 0.3);
-      --purple: #a855f7;
-      --danger: #f43f5e;
-      --gold: #facc15;
-      --text: #f8fafc;
-      --muted: #64748b;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FGram Suite Dashboard</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg: #070b14;
+            --card-bg: rgba(17, 24, 39, 0.85);
+            --card-border: rgba(56, 189, 248, 0.2);
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.35);
+            --purple: #a855f7;
+            --danger: #f43f5e;
+            --success: #10b981;
+            --text: #f8fafc;
+            --muted: #64748b;
+        }
 
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-    body {
-      margin: 0;
-      padding: 12px 12px 85px 12px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: var(--bg);
-      background-image: 
-        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.16) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.14) 0px, transparent 50%);
-      color: var(--text);
-      min-height: 100vh;
-    }
+        body {
+            margin: 0;
+            padding: 12px 12px 90px 12px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg);
+            background-image:
+                    radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
+                    radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.12) 0px, transparent 50%);
+            color: var(--text);
+            min-height: 100vh;
+        }
 
-    .profile-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 16px;
-      backdrop-filter: blur(25px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.45);
-      margin-bottom: 14px;
-    }
+        .profile-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 16px;
+            backdrop-filter: blur(20px);
+            margin-bottom: 12px;
+        }
 
-    .profile-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
+        .profile-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
 
-    .profile-top h2 { margin: 0; font-size: 19px; font-weight: 800; }
-    
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 800;
-    }
-    .badge-owner { background: rgba(250, 204, 21, 0.15); border: 1px solid rgba(250, 204, 21, 0.4); color: var(--gold); }
-    .badge-prem { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: var(--accent); }
-    .badge-expired { background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.4); color: var(--danger); }
+        .profile-top h2 { margin: 0; font-size: 19px; font-weight: 800; }
 
-    .timer-box {
-      background: rgba(7, 11, 20, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 12px;
-      padding: 10px 14px;
-      font-size: 12px;
-      color: var(--muted);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .timer-val { font-family: monospace; font-size: 13px; font-weight: 700; color: #fff; }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+        .badge-owner { background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.4); color: #facc15; }
+        .badge-prem { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: var(--accent); }
 
-    .tab-content { display: none; }
-    .tab-content.active { display: block; animation: fadeIn 0.2s ease-out; }
+        .timer-box {
+            background: rgba(7, 11, 20, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--muted);
+        }
+        .timer-val { font-family: monospace; font-size: 13px; font-weight: 700; color: #fff; }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+        .metric-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .metric-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+        }
+        .metric-val { font-size: 18px; font-weight: 800; color: var(--accent); }
+        .metric-lbl { font-size: 10px; color: var(--muted); margin-top: 2px; }
 
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 15px;
-      margin-bottom: 12px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-    }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.2s ease-out; }
 
-    .card-title {
-      font-size: 12px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--accent);
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-    .toggle-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 11px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    .toggle-row:last-child { border-bottom: none; }
-    .toggle-info b { display: block; font-size: 13px; margin-bottom: 2px; }
-    .toggle-info span { font-size: 11px; color: var(--muted); line-height: 1.3; display: block; }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 12px;
+            backdrop-filter: blur(14px);
+        }
 
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 44px;
-      height: 24px;
-      flex-shrink: 0;
-      margin-left: 12px;
-    }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider {
-      position: absolute;
-      inset: 0;
-      background-color: #334155;
-      transition: .25s ease;
-      border-radius: 24px;
-      cursor: pointer;
-    }
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-      background-color: #fff;
-      transition: .25s ease;
-      border-radius: 50%;
-    }
-    input:checked + .slider { background-color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
-    input:checked + .slider:before { transform: translateX(20px); }
+        .card-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-    .mute-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 10px;
-    }
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .toggle-row:last-child { border-bottom: none; }
+        .toggle-info h4 { margin: 0; font-size: 13px; font-weight: 600; }
+        .toggle-info p { margin: 2px 0 0 0; font-size: 11px; color: var(--muted); }
 
-    .mute-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(7, 11, 20, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 12px;
-      padding: 10px 14px;
-    }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #1e293b;
+            transition: .25s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .25s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(20px); }
 
-    .mute-info b { display: block; font-size: 13px; }
-    .mute-info span { font-size: 11px; color: var(--danger); }
+        .input-box {
+            width: 100%;
+            background: rgba(7, 11, 20, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 12px;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 13px;
+            outline: none;
+            margin-top: 6px;
+        }
+        .input-box:focus { border-color: var(--accent); }
 
-    .btn-sm-danger {
-      background: rgba(244, 63, 94, 0.15);
-      border: 1px solid rgba(244, 63, 94, 0.35);
-      color: var(--danger);
-      padding: 6px 14px;
-      border-radius: 10px;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-    }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: transform 0.1s;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn-accent { background: var(--accent); color: #070b14; }
+        .btn-purple { background: var(--purple); color: #fff; }
+        .btn-danger { background: rgba(244, 63, 94, 0.15); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
 
-    .input-box {
-      width: 100%;
-      background: rgba(7, 11, 20, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      padding: 12px;
-      border-radius: 12px;
-      color: #fff;
-      font-size: 14px;
-      outline: none;
-      margin-top: 6px;
-    }
-    .input-box:focus { border-color: var(--accent); }
+        .mute-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(244, 63, 94, 0.12);
+            border: 1px solid rgba(244, 63, 94, 0.25);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin: 4px;
+        }
+        .mute-chip-del { cursor: pointer; color: var(--danger); font-weight: bold; }
 
-    .btn {
-      width: 100%;
-      padding: 13px;
-      border: none;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: transform 0.1s, opacity 0.2s;
-    }
-    .btn:active { transform: scale(0.98); opacity: 0.9; }
-    .btn-accent { background: var(--accent); color: #070b14; }
-    .btn-purple { background: var(--purple); color: #fff; }
-    .btn-save { background: var(--accent); color: #070b14; display: none; }
+        .cmd-item {
+            background: #050811;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .cmd-item code { color: var(--accent); font-size: 13px; }
 
-    /* OSINT СТИЛИ */
-    .osint-card {
-      background: rgba(7, 11, 20, 0.85);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      border-radius: 14px;
-      padding: 14px;
-      margin-top: 12px;
-      display: none;
-      font-size: 13px;
-      line-height: 1.5;
-    }
+        #toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-60px);
+            background: #10b981;
+            color: #070b14;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 800;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            z-index: 1000;
+        }
+        #toast.show { transform: translateX(-50%) translateY(0); }
 
-    .osint-row {
-      display: flex;
-      justify-content: space-between;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      padding: 7px 0;
-    }
-    .osint-row:last-child { border-bottom: none; }
-    .osint-lbl { color: var(--muted); font-size: 12px; }
-    .osint-val { font-weight: 700; color: #fff; text-align: right; }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            height: 64px;
+            background: rgba(11, 17, 29, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+        }
 
-    .tag-bubble {
-      display: inline-block;
-      background: rgba(168, 85, 247, 0.2);
-      border: 1px solid rgba(168, 85, 247, 0.4);
-      color: #d8b4fe;
-      border-radius: 8px;
-      padding: 3px 8px;
-      font-size: 11px;
-      margin: 2px 2px 2px 0;
-    }
-
-    .bottom-nav {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      height: 66px;
-      background: rgba(11, 17, 29, 0.96);
-      backdrop-filter: blur(25px);
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      z-index: 100;
-    }
-
-    .nav-btn {
-      background: none;
-      border: none;
-      color: var(--muted);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      font-size: 10px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .nav-btn.active { color: var(--accent); }
-    .nav-icon { font-size: 20px; }
-  </style>
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--muted);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 20%;
+        }
+        .nav-btn.active { color: var(--accent); }
+        .nav-icon { font-size: 20px; }
+    </style>
 </head>
 <body>
 
-  <!-- ШАПКА -->
-  <div class="profile-card">
+<div id="toast">✅ Изменения применены</div>
+
+<!-- ШАПКА -->
+<div class="profile-card">
     <div class="profile-top">
-      <div>
-        <h2 id="u-name">Пользователь</h2>
-        <div style="font-size:12px; color:var(--muted); margin-top:2px;">ID: <span id="u-id">...</span></div>
-      </div>
-      <div id="u-badge" class="status-badge badge-prem">⭐ PREMIUM</div>
+        <div>
+            <h2 id="u-name">Пользователь</h2>
+            <div style="font-size:12px; color:var(--muted); margin-top:2px;">ID: <span id="u-id">...</span></div>
+        </div>
+        <div id="u-badge" class="status-badge badge-prem">⭐ PREMIUM</div>
     </div>
     <div class="timer-box">
-      <span>Лицензия:</span>
-      <span class="timer-val" id="countdown">Загрузка...</span>
+        <span>Статус лицензии:</span>
+        <span class="timer-val" id="countdown">Активна</span>
     </div>
-  </div>
+</div>
 
-  <!-- ВКЛАДКА 1: МОДУЛИ -->
-  <div id="tab-modules" class="tab-content active">
+<!-- МЕТРИКИ -->
+<div class="metric-grid">
+    <div class="metric-card">
+        <div class="metric-val" id="m-del">0</div>
+        <div class="metric-lbl">Удалений</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-val" id="m-edit">0</div>
+        <div class="metric-lbl">Правок</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-val" id="m-mutes">0</div>
+        <div class="metric-lbl">В муте</div>
+    </div>
+</div>
+
+<!-- ВКЛАДКА 1: НАСТРОЙКИ (БЕЗ ЗАКРЫТИЯ ПРИЛОЖЕНИЯ) -->
+<div id="tab-settings" class="tab-content active">
     <div class="card">
-      <div class="card-title">⚙️ Модули перехвата и защиты</div>
-      
-      <div class="toggle-row">
-        <div class="toggle-info">
-          <b>Anti-Delete Логгер</b>
-          <span>Перехват чужих удалений без логирования своих</span>
+        <div class="card-title">Модули защиты диалогов</div>
+
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h4>Anti-Delete перехват</h4>
+                <p>Фиксация удалённых собеседником сообщений</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="set-ad" checked onchange="saveSettingLocally('anti_delete', this.checked)">
+                <span class="slider"></span>
+            </label>
         </div>
-        <label class="switch">
-          <input type="checkbox" id="sw-anti-delete" onchange="recordToggle('anti_delete', this.checked)">
-          <span class="slider"></span>
-        </label>
-      </div>
 
-      <div class="toggle-row">
-        <div class="toggle-info">
-          <b>Anti-Edit Детектор</b>
-          <span>Лог правок сообщений («Было» / «Стало»)</span>
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h4>Anti-Edit перехват</h4>
+                <p>Сохранение оригиналов при редактировании</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="set-ae" checked onchange="saveSettingLocally('anti_edit', this.checked)">
+                <span class="slider"></span>
+            </label>
         </div>
-        <label class="switch">
-          <input type="checkbox" id="sw-anti-edit" onchange="recordToggle('anti_edit', this.checked)">
-          <span class="slider"></span>
-        </label>
-      </div>
 
-      <div class="toggle-row">
-        <div class="toggle-info">
-          <b>Таймер-медиа (TTL Downloader)</b>
-          <span>Скачивание одноразовых фото/видео до сгорания</span>
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h4>Спасение TTL медиа</h4>
+                <p>Загрузка фото и видео с таймером самоуничтожения</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="set-ttl" checked onchange="saveSettingLocally('save_ttl_media', this.checked)">
+                <span class="slider"></span>
+            </label>
         </div>
-        <label class="switch">
-          <input type="checkbox" id="sw-save-ttl" onchange="recordToggle('save_ttl_media', this.checked)">
-          <span class="slider"></span>
-        </label>
-      </div>
 
-      <div class="toggle-row">
-        <div class="toggle-info">
-          <b>Режим «Не беспокоить» (DND)</b>
-          <span>Стирает входящие и дублирует вам в ЛС</span>
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h4>Авто-мут нарушителей</h4>
+                <p>Мгновенное стирание спамеров из чёрного списка</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="set-am" checked onchange="saveSettingLocally('auto_mute', this.checked)">
+                <span class="slider"></span>
+            </label>
         </div>
-        <label class="switch">
-          <input type="checkbox" id="sw-dnd" onchange="recordToggle('dnd', this.checked)">
-          <span class="slider"></span>
-        </label>
-      </div>
 
-      <div class="toggle-row">
-        <div class="toggle-info">
-          <b>Моментальный авто-мут</b>
-          <span>Стирание сообщений нарушителей</span>
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h4>Режим "Не беспокоить" (DND)</h4>
+                <p>Авто-удаление входящих личных сообщений</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="set-dnd" onchange="saveSettingLocally('dnd', this.checked)">
+                <span class="slider"></span>
+            </label>
         </div>
-        <label class="switch">
-          <input type="checkbox" id="sw-auto-mute" onchange="recordToggle('auto_mute', this.checked)">
-          <span class="slider"></span>
-        </label>
-      </div>
 
-      <div class="toggle-row">
-        <div class="toggle-info">
-          <b>Тихие уведомления</b>
-          <span>Отчёты шпиона без звука</span>
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h4>Тихие уведомления</h4>
+                <p>Отправка отчётов без звука</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="set-sil" onchange="saveSettingLocally('silent_notifications', this.checked)">
+                <span class="slider"></span>
+            </label>
         </div>
-        <label class="switch">
-          <input type="checkbox" id="sw-silent" onchange="recordToggle('silent_notifications', this.checked)">
-          <span class="slider"></span>
-        </label>
-      </div>
-
-      <button id="save-modules-btn" class="btn btn-save" onclick="applySettingsBatch()">💾 Применить настройки</button>
-    </div>
-  </div>
-
-  <!-- ВКЛАДКА 2: МУТ-ЛИСТ -->
-  <div id="tab-mute" class="tab-content">
-    <div class="card">
-      <div class="card-title">🔇 Добавить пользователя в мут</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Сообщения цели будут моментально стираться:</p>
-      <input type="text" id="mute-input" class="input-box" placeholder="@username или числовой ID...">
-      <button class="btn btn-accent" onclick="addMuteDirect()">🚫 Заблокировать сообщения</button>
     </div>
 
     <div class="card">
-      <div class="card-title">📋 Заглушенные пользователи</div>
-      <div id="mute-list-container" class="mute-list"></div>
+        <div class="card-title">Синхронизация</div>
+        <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Все переключатели выше сохраняются моментально без выхода. Если вам нужно передать всю конфигурацию в чат бота, нажмите кнопку ниже:</p>
+        <button class="btn btn-purple" onclick="exportToBot()">💾 Экспортировать в чат бота (с закрытием)</button>
     </div>
-  </div>
+</div>
 
-  <!-- ВКЛАДКА 3: ПОЛНОЦЕННЫЙ OSINT ПРОБИВ ЦЕЛИ (ВМЕСТО КАЛЬКУЛЯТОРА) -->
-  <div id="tab-osint" class="tab-content">
+<!-- ВКЛАДКА 2: МУТ-ЦЕНТР -->
+<div id="tab-mute" class="tab-content">
     <div class="card">
-      <div class="card-title">🔍 Глубокий OSINT-пробив аккаунта</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Введите @username, ID или номер цели:</p>
-      <input type="text" id="osint-query-in" class="input-box" placeholder="@username, ID или номер...">
-      <button class="btn btn-accent" onclick="runOsintSearch()">⚡ Начать OSINT-разведку</button>
-      
-      <div id="osint-result-box" class="osint-card">
-        <div style="font-size:11px; font-weight:800; color:var(--accent); text-transform:uppercase; margin-bottom:10px;">🎯 Досье цели сформировано:</div>
-        
-        <div class="osint-row">
-          <span class="osint-lbl">Telegram ID:</span>
-          <span class="osint-val" id="res-id">-</span>
-        </div>
-        <div class="osint-row">
-          <span class="osint-lbl">Дата регистрации:</span>
-          <span class="osint-val" id="res-reg">-</span>
-        </div>
-        <div class="osint-row">
-          <span class="osint-lbl">Возраст аккаунта:</span>
-          <span class="osint-val" id="res-age">-</span>
-        </div>
-        <div class="osint-row">
-          <span class="osint-lbl">Номер телефона:</span>
-          <span class="osint-val" id="res-phone">-</span>
-        </div>
-        <div class="osint-row">
-          <span class="osint-lbl">Оператор / Регион:</span>
-          <span class="osint-val" id="res-op">-</span>
-        </div>
-        <div class="osint-row">
-          <span class="osint-lbl">Привязка ВКонтакте:</span>
-          <span class="osint-val" id="res-vk">-</span>
-        </div>
-        <div class="osint-row">
-          <span class="osint-lbl">Привязка TikTok:</span>
-          <span class="osint-val" id="res-tt">-</span>
-        </div>
-
-        <div style="margin-top:10px;">
-          <span class="osint-lbl" style="display:block; margin-bottom:4px;">Теги в записных книгах (GetContact):</span>
-          <div id="res-tags"></div>
-        </div>
-
-        <button class="btn btn-purple" style="margin-top:12px;" onclick="requestFullDossierInChat()">📥 Выгрузить полное досье в чат бота</button>
-      </div>
+        <div class="card-title">Управление чёрным списком</div>
+        <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Добавьте ID или @username. Все сообщения цели будут стираться на лету:</p>
+        <input type="text" id="mute-val" class="input-box" placeholder="@username или числовой ID...">
+        <button class="btn btn-accent" onclick="addMuteDirect()">🚫 Замутить объект</button>
     </div>
-  </div>
 
-  <!-- ВКЛАДКА 4: ВЫДАЧА (ТОЛЬКО ВЛАДЕЛЕЦ) -->
-  <div id="tab-admin" class="tab-content">
     <div class="card">
-      <div class="card-title">👑 Выдача подписки пользователю</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Укажите ID или @username:</p>
-      <input type="text" id="grant-user" class="input-box" placeholder="ID или @username...">
-
-      <p style="font-size:12px; color:var(--muted); margin:10px 0 6px 0;">Срок (понимает: 7 дней, 1 год, 30 сек, навсегда):</p>
-      <input type="text" id="grant-dur" class="input-box" placeholder="Например: 14 дней или forever...">
-
-      <button class="btn btn-accent" onclick="grantLicense()">⚡ Активировать доступ</button>
+        <div class="card-title">Активные цели в мут-листе</div>
+        <div id="mute-list-container" style="min-height: 40px;">
+            <span style="font-size:12px; color:var(--muted);">Список пуст</span>
+        </div>
     </div>
-  </div>
+</div>
 
-  <!-- ВКЛАДКА 5: РЕФЕРАЛЫ -->
-  <div id="tab-refs" class="tab-content">
+<!-- ВКЛАДКА 3: OSINT & ДОСЬЕ -->
+<div id="tab-osint" class="tab-content">
     <div class="card">
-      <div class="card-title">👥 Партнёрская сеть</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 12px 0;">
-        Нажмите кнопку ниже, чтобы открыть окно отправки персонального приглашения сразу нескольким контактам.
-      </p>
-      <button class="btn btn-accent" onclick="shareRef()">📤 Выбрать получателей...</button>
-      <button class="btn btn-purple" style="margin-top:8px;" onclick="copyRef()">📋 Скопировать ссылку</button>
-    </div>
-  </div>
+        <div class="card-title">🔍 Сканер объектов</div>
+        <input type="text" id="osint-val" class="input-box" placeholder="@username или ID цели...">
+        <div style="display:flex; gap:8px;">
+            <button class="btn btn-accent" onclick="runProbe('probe')">🌐 OSINT Пробив</button>
+            <button class="btn btn-purple" onclick="runProbe('dossier')">📁 Досье FGram</button>
+        </div>
 
-  <!-- НАВБАР -->
-  <div class="bottom-nav">
-    <button class="nav-btn active" id="btn-tab-modules" onclick="switchNav('modules', this)">
-      <span class="nav-icon">⚙️</span>
-      <span>Модули</span>
+        <div id="osint-res" style="display:none; margin-top:12px; padding:12px; background:#050811; border-radius:10px; font-size:12px;">
+            <div id="osint-out"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ВКЛАДКА 4: УТИЛИТЫ И КОМАНДЫ -->
+<div id="tab-utils" class="tab-content">
+    <div class="card">
+        <div class="card-title">Быстрые команды (Копирование)</div>
+        <div class="cmd-item" onclick="copyCmd('.пробив @username')">
+            <div><b>.пробив</b> <span>— сетевой паспорт</span></div>
+            <code>Копировать</code>
+        </div>
+        <div class="cmd-item" onclick="copyCmd('.досье')">
+            <div><b>.досье</b> <span>— история перехватов цели</span></div>
+            <code>Копировать</code>
+        </div>
+        <div class="cmd-item" onclick="copyCmd('.спам 5 Текст')">
+            <div><b>.спам 5 Текст</b> <span>— серия сообщений</span></div>
+            <code>Копировать</code>
+        </div>
+        <div class="cmd-item" onclick="copyCmd('.клир 10')">
+            <div><b>.клир 10</b> <span>— удаление своих сообщений</span></div>
+            <code>Копировать</code>
+        </div>
+        <div class="cmd-item" onclick="copyCmd('.пинг')">
+            <div><b>.пинг</b> <span>— замер скорости MTProto</span></div>
+            <code>Копировать</code>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Калькулятор звёзд Telegram</div>
+        <input type="number" id="calc-days" class="input-box" placeholder="Количество дней..." value="30" oninput="calcStars()">
+        <div style="margin-top:10px; font-size:13px;" id="calc-res">Стоимость: <b>149 ⭐</b></div>
+    </div>
+</div>
+
+<!-- НАВБАР -->
+<div class="bottom-nav">
+    <button class="nav-btn active" onclick="switchNav('settings', this)">
+        <span class="nav-icon">⚙️</span>
+        <span>Защита</span>
     </button>
-    <button class="nav-btn" id="btn-tab-mute" onclick="switchNav('mute', this)">
-      <span class="nav-icon">🔇</span>
-      <span>Мут</span>
+    <button class="nav-btn" onclick="switchNav('mute', this)">
+        <span class="nav-icon">🔇</span>
+        <span>Мут</span>
     </button>
-    <button class="nav-btn" id="btn-tab-osint" onclick="switchNav('osint', this)">
-      <span class="nav-icon">🔍</span>
-      <span>OSINT</span>
+    <button class="nav-btn" onclick="switchNav('osint', this)">
+        <span class="nav-icon">🔍</span>
+        <span>OSINT</span>
     </button>
-    <button class="nav-btn" id="btn-tab-admin" style="display:none;" onclick="switchNav('admin', this)">
-      <span class="nav-icon">👑</span>
-      <span>Выдача</span>
+    <button class="nav-btn" onclick="switchNav('utils', this)">
+        <span class="nav-icon">🛠</span>
+        <span>Утилиты</span>
     </button>
-    <button class="nav-btn" id="btn-tab-refs" onclick="switchNav('refs', this)">
-      <span class="nav-icon">👥</span>
-      <span>Партнёры</span>
-    </button>
-  </div>
+</div>
 
-  <script>
+<script>
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
 
-    if (tg.MainButton) tg.MainButton.hide();
-
-    const ADMIN_ID = 7783116627;
     const urlParams = new URLSearchParams(window.location.search);
-    const tgUser = tg.initDataUnsafe?.user;
+    const uid = urlParams.get('uid') || tg.initDataUnsafe?.user?.id || 7783116627;
+    const role = urlParams.get('role') || 'premium';
+    const user = tg.initDataUnsafe?.user || { id: uid, first_name: "Оператор" };
 
-    const currentUserId = urlParams.get('uid') || (tgUser ? tgUser.id : ADMIN_ID);
-    const currentUserName = tgUser ? tgUser.first_name : "Пользователь";
-    const userRole = urlParams.get('role') || (parseInt(currentUserId) === ADMIN_ID ? "owner" : "premium");
-    const expTimestamp = parseFloat(urlParams.get('exp') || "0");
+    document.getElementById('u-name').innerText = user.first_name || "Оператор";
+    document.getElementById('u-id').innerText = user.id;
 
-    document.getElementById('u-name').innerText = currentUserName;
-    document.getElementById('u-id').innerText = currentUserId;
-
-    // СТРОГОЕ РАЗДЕЛЕНИЕ РОЛЕЙ
-    const badgeEl = document.getElementById('u-badge');
-    const countdownEl = document.getElementById('countdown');
-    const adminNavBtn = document.getElementById('btn-tab-admin');
-
-    if (userRole === "owner") {
-      badgeEl.className = "status-badge badge-owner";
-      badgeEl.innerText = "👑 OWNER";
-      countdownEl.innerText = "БЕССРОЧНЫЙ ДОСТУП";
-      adminNavBtn.style.display = "flex";
-      document.querySelectorAll('.nav-btn').forEach(b => b.style.width = "20%");
-    } else if (userRole === "premium") {
-      badgeEl.className = "status-badge badge-prem";
-      badgeEl.innerText = "⭐ PREMIUM";
-      adminNavBtn.style.display = "none";
-      document.querySelectorAll('.nav-btn').forEach(b => b.style.width = "25%");
-
-      if (expTimestamp > 0) {
-        const rem = Math.max(0, Math.floor(expTimestamp - (Date.now() / 1000)));
-        const d = Math.floor(rem / 86400);
-        const h = Math.floor((rem % 86400) / 3600);
-        countdownEl.innerText = d > 0 ? `${d} дн. ${h} ч.` : `${h} ч.`;
-      } else {
-        countdownEl.innerText = "АКТИВЕН";
-      }
-    } else {
-      badgeEl.className = "status-badge badge-expired";
-      badgeEl.innerText = "⛔ ИСТЁК ДОСТУП";
-      countdownEl.innerText = "ТРЕБУЕТСЯ ПРОДЛЕНИЕ";
-      adminNavBtn.style.display = "none";
-      document.querySelectorAll('.nav-btn').forEach(b => b.style.width = "25%");
+    if (role === 'owner') {
+        document.getElementById('u-badge').className = "status-badge badge-owner";
+        document.getElementById('u-badge').innerText = "👑 OWNER";
+        document.getElementById('countdown').innerText = "FOREVER (БЕЗЛИМИТ)";
     }
 
-    // ИНИЦИАЛИЗАЦИЯ НАСТРОЕК
-    const settingsKey = 'fgram_sett_' + currentUserId;
-    const cachedSettings = localStorage.getItem(settingsKey);
-
-    let pendingSettings = cachedSettings ? JSON.parse(cachedSettings) : {
-      anti_delete: urlParams.get('ad') !== '0',
-      anti_edit: urlParams.get('ae') !== '0',
-      save_ttl_media: urlParams.get('ttl') !== '0',
-      dnd: urlParams.get('dnd') === '1',
-      auto_mute: urlParams.get('am') !== '0',
-      silent_notifications: urlParams.get('sil') === '1'
+    // Состояние тумблеров
+    let appSettings = {
+        anti_delete: urlParams.get('ad') !== '0',
+        anti_edit: urlParams.get('ae') !== '0',
+        save_ttl_media: urlParams.get('ttl') !== '0',
+        dnd: urlParams.get('dnd') === '1',
+        auto_mute: urlParams.get('am') !== '0',
+        silent_notifications: urlParams.get('sil') === '1'
     };
 
-    document.getElementById('sw-anti-delete').checked = pendingSettings.anti_delete;
-    document.getElementById('sw-anti-edit').checked = pendingSettings.anti_edit;
-    document.getElementById('sw-save-ttl').checked = pendingSettings.save_ttl_media;
-    document.getElementById('sw-dnd').checked = pendingSettings.dnd;
-    document.getElementById('sw-auto-mute').checked = pendingSettings.auto_mute;
-    document.getElementById('sw-silent').checked = pendingSettings.silent_notifications;
+    document.getElementById('set-ad').checked = appSettings.anti_delete;
+    document.getElementById('set-ae').checked = appSettings.anti_edit;
+    document.getElementById('set-ttl').checked = appSettings.save_ttl_media;
+    document.getElementById('set-dnd').checked = appSettings.dnd;
+    document.getElementById('set-am').checked = appSettings.auto_mute;
+    document.getElementById('set-sil').checked = appSettings.silent_notifications;
 
-    // ПЕРСОНАЛЬНЫЙ МУТ-ЛИСТ (ЛОКАЛЬНОЕ ХРАНИЛИЩЕ)
-    const mutesKey = 'fgram_mutelist_' + currentUserId;
-    const cachedMutes = localStorage.getItem(mutesKey);
-    const mutesRaw = decodeURIComponent(urlParams.get('mutes') || '');
-    let mutedList = cachedMutes ? JSON.parse(cachedMutes) : (mutesRaw ? mutesRaw.split(',').filter(x => x.length > 0) : []);
+    // Список замученных
+    let rawMutes = urlParams.get('mutes') ? decodeURIComponent(urlParams.get('mutes')).split(',') : [];
+    let muteList = rawMutes.filter(x => x.trim().length > 0);
 
-    function recordToggle(mod, state) {
-      if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
-      pendingSettings[mod] = state;
-      document.getElementById('save-modules-btn').style.display = 'block';
+    function renderMutes() {
+        const container = document.getElementById('mute-list-container');
+        document.getElementById('m-mutes').innerText = muteList.length;
+        if (!muteList.length) {
+            container.innerHTML = `<span style="font-size:12px; color:var(--muted);">Список пуст</span>`;
+            return;
+        }
+        container.innerHTML = muteList.map(t => `
+            <div class="mute-chip">
+                <span><code>${t}</code></span>
+                <span class="mute-chip-del" onclick="removeMuteDirect('${t}')">✕</span>
+            </div>
+        `).join('');
     }
+    renderMutes();
 
-    function sendActionToBot(actionData) {
-      try {
-        tg.sendData(JSON.stringify(actionData));
-      } catch (e) {
-        const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(actionData))));
-        const botUser = tg.initDataUnsafe?.bot?.username || "fgram_dox_bot";
-        tg.openTelegramLink(`https://t.me/${botUser}?start=act_${b64}`);
-      }
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.classList.add('show');
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+        setTimeout(() => t.classList.remove('show'), 2200);
     }
-
-    function applySettingsBatch() {
-      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      localStorage.setItem(settingsKey, JSON.stringify(pendingSettings));
-      sendActionToBot({
-        action: "save_all_settings",
-        settings: pendingSettings
-      });
-      document.getElementById('save-modules-btn').style.display = 'none';
-      tg.showAlert("✅ Настройки успешно сохранены!");
-    }
-
-    function renderMuted() {
-      const container = document.getElementById('mute-list-container');
-      if (mutedList.length === 0) {
-        container.innerHTML = '<div style="font-size:12px; color:var(--muted); text-align:center; padding:10px;">Мут-лист пуст</div>';
-        return;
-      }
-      container.innerHTML = mutedList.map(id => `
-        <div class="mute-row" id="mute-row-${id}">
-          <div class="mute-info">
-            <b>${id}</b>
-            <span>Сообщения блокируются</span>
-          </div>
-          <button class="btn-sm-danger" onclick="unmuteItem('${id}')">Снять мут</button>
-        </div>
-      `).join('');
-    }
-    renderMuted();
 
     function switchNav(id, btn) {
-      if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-      document.getElementById('tab-' + id).classList.add('active');
-      btn.classList.add('active');
+        if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab-' + id).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    // Сохранение без закрытия окна
+    function saveSettingLocally(key, val) {
+        appSettings[key] = val;
+        localStorage.setItem('fgram_settings', JSON.stringify(appSettings));
+        if (tg.CloudStorage) tg.CloudStorage.setItem('fgram_settings', JSON.stringify(appSettings));
+        showToast("✓ Параметр сохранён");
     }
 
     function addMuteDirect() {
-      const val = document.getElementById('mute-input').value.trim();
-      if (!val) return tg.showAlert("Введите числовой ID или @username!");
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
-      mutedList.push(val);
-      localStorage.setItem(mutesKey, JSON.stringify(mutedList));
-      renderMuted();
-      sendActionToBot({ action: "add_mute", target: val });
-      document.getElementById('mute-input').value = "";
+        const val = document.getElementById('mute-val').value.trim().replace('@', '');
+        if (!val) return tg.showAlert("Укажите @username или ID!");
+        if (!muteList.includes(val)) {
+            muteList.push(val);
+            renderMutes();
+            localStorage.setItem('fgram_mutes', JSON.stringify(muteList));
+            showToast(`🔇 Объект ${val} добавлен в мут`);
+        }
+        document.getElementById('mute-val').value = "";
     }
 
-    function unmuteItem(targetId) {
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-      mutedList = mutedList.filter(id => id !== targetId);
-      localStorage.setItem(mutesKey, JSON.stringify(mutedList));
-      renderMuted();
-      sendActionToBot({ action: "unmute_user", target: targetId });
+    function removeMuteDirect(val) {
+        muteList = muteList.filter(x => x !== val);
+        renderMutes();
+        localStorage.setItem('fgram_mutes', JSON.stringify(muteList));
+        showToast(`🔊 Объект ${val} размучен`);
     }
 
-    function grantLicense() {
-      const target = document.getElementById('grant-user').value.trim();
-      const dur = document.getElementById('grant-dur').value.trim();
-      if (!target || !dur) return tg.showAlert("Заполните оба поля!");
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
-      sendActionToBot({ action: "grant_subscription", target: target, duration: dur });
-      document.getElementById('grant-user').value = "";
-      document.getElementById('grant-dur').value = "";
+    function exportToBot() {
+        tg.sendData(JSON.stringify({
+            action: "save_all_settings",
+            settings: appSettings
+        }));
     }
 
-    function shareRef() {
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
-      const botUser = tg.initDataUnsafe?.bot?.username || "fgram_dox_bot";
-      const link = `https://t.me/${botUser}?start=ref_${currentUserId}`;
-      const promoText = "FGram Platform Suite — приватный комплекс мониторинга и безопасности диалогов:\n\n" +
-                        "• Фиксация удалённых и изменённых сообщений\n" +
-                        "• Скачивание фото/видео с таймером просмотра\n" +
-                        "• Моментальный авто-мут спамеров\n\n" +
-                        "Активировать доступ:";
-      tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(promoText)}`);
+    function copyCmd(cmd) {
+        navigator.clipboard.writeText(cmd);
+        showToast("Скопировано: " + cmd);
     }
 
-    function copyRef() {
-      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      const botUser = tg.initDataUnsafe?.bot?.username || "fgram_dox_bot";
-      const link = `https://t.me/${botUser}?start=ref_${currentUserId}`;
-      navigator.clipboard.writeText(link);
-      tg.showAlert("Ссылка скопирована:\n" + link);
+    function calcStars() {
+        const d = parseInt(document.getElementById('calc-days').value) || 1;
+        let p = 15;
+        if (d === 1) p = 15;
+        else if (d < 7) p = d * 12;
+        else if (d < 30) p = Math.floor(d * 7.5);
+        else if (d < 365) p = Math.floor(d * 4.9);
+        else p = Math.floor(d * 2.45);
+        document.getElementById('calc-res').innerHTML = `Стоимость: <b>${p} ⭐</b>`;
     }
 
-    // ПОЛНОЦЕННЫЙ OSINT ПРОБИВ В WEBAPP
-    let currentOsintTarget = "";
+    function runProbe(mode) {
+        const val = document.getElementById('osint-val').value.trim();
+        if (!val) return tg.showAlert("Укажите @username или ID!");
+        const resBox = document.getElementById('osint-res');
+        const out = document.getElementById('osint-out');
+        resBox.style.display = 'block';
+        out.innerHTML = `⏳ <i>Запрос ${mode === 'probe' ? 'сетевого MTProto паспорта' : 'истории досье'} для ${val}...</i>`;
 
-    function runOsintSearch() {
-      const q = document.getElementById('osint-query-in').value.trim();
-      if (!q) return tg.showAlert("Укажите @username или ID!");
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-      currentOsintTarget = q;
-
-      let cleanQ = q.replace("@", "");
-      let numId = parseInt(cleanQ);
-
-      // Точная оценка даты по реальной шкале ID Telegram
-      let estReg = "~2026 г.";
-      let estAge = "Менее года";
-
-      if (numId) {
-        if (numId < 150000000) { estReg = "2014–2015 гг."; estAge = "10+ лет"; }
-        else if (numId < 400000000) { estReg = "2016–2017 гг."; estAge = "8–9 лет"; }
-        else if (numId < 750000000) { estReg = "2018–2019 гг."; estAge = "6–7 лет"; }
-        else if (numId < 1100000000) { estReg = "2020 г."; estAge = "5–6 лет"; }
-        else if (numId < 1750000000) { estReg = "Март–Апрель 2021 г."; estAge = "5 лет"; }
-        else if (numId < 2200000000) { estReg = "Конец 2021 г."; estAge = "4–5 лет"; }
-        else if (numId < 5200000000) { estReg = "2022–2023 гг."; estAge = "3–4 года"; }
-        else if (numId < 6800000000) { estReg = "2024 г."; estAge = "2 года"; }
-        else { estReg = "2025–2026 гг."; estAge = "Менее года"; }
-      }
-
-      // Генерация открытого номера
-      let code = (numId ? (numId % 7) : 0);
-      let p_codes = ["916", "925", "985", "903", "921", "952", "999"];
-      let mid = (numId ? ((numId >> 4) % 899 + 100) : 481);
-      let end1 = (numId ? ((numId >> 8) % 89 + 10) : 92);
-      let end2 = (numId ? ((numId >> 11) % 89 + 10) : 40);
-      let fullPhone = `+7 (${p_codes[code]}) ${mid}-${end1}-${end2}`;
-
-      document.getElementById('res-id').innerText = numId ? numId : "Запрос в MTProto...";
-      document.getElementById('res-reg').innerText = estReg;
-      document.getElementById('res-age').innerText = estAge;
-      document.getElementById('res-phone').innerText = fullPhone;
-      document.getElementById('res-op').innerText = "МегаФон (Москва и МО)";
-      document.getElementById('res-vk').innerHTML = `<a href="https://vk.com/${cleanQ}" target="_blank" style="color:var(--accent);">vk.com/${cleanQ}</a>`;
-      document.getElementById('res-tt').innerHTML = `<a href="https://tiktok.com/@${cleanQ}" target="_blank" style="color:var(--accent);">tiktok.com/@${cleanQ}</a>`;
-      
-      const tagSample = ["Друг", "Работа", "Телеграм", "Кент", "Дизайнер", "Москва", "Авито"];
-      document.getElementById('res-tags').innerHTML = tagSample.map(t => `<span class="tag-bubble">#${t}</span>`).join(' ');
-
-      document.getElementById('osint-result-box').style.display = "block";
+        tg.sendData(JSON.stringify({
+            action: "osint_probe",
+            target: val,
+            mode: mode
+        }));
     }
-
-    function requestFullDossierInChat() {
-      if (!currentOsintTarget) return;
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
-      sendActionToBot({ action: "osint_probe", target: currentOsintTarget });
-      tg.close();
-    }
-  </script>
+</script>
 </body>
 </html>
