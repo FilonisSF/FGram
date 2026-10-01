@@ -1,250 +1,188 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Asteria Suite WebApp</title>
-    <script src="[https://telegram.org/js/telegram-web-app.js](https://telegram.org/js/telegram-web-app.js)"></script>
-    <script src="[https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js](https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js)"></script>
-    <style>
-        :root {
-            --bg: #050711;
-            --card-bg: rgba(13, 20, 36, 0.85);
-            --card-border: rgba(56, 189, 248, 0.2);
-            --accent: #38bdf8;
-            --accent-glow: rgba(56, 189, 248, 0.35);
-            --purple: #c084fc;
-            --gold: #facc15;
-            --danger: #fb7185;
-            --text: #f8fafc;
-            --muted: #94a3b8;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Asteria Suite</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<style>
+    :root {
+        --bg: #050711;
+        --card-bg: rgba(13, 20, 36, 0.85);
+        --card-border: rgba(56, 189, 248, 0.2);
+        --accent: #38bdf8;
+        --accent-glow: rgba(56, 189, 248, 0.35);
+        --purple: #c084fc;
+        --gold: #facc15;
+        --danger: #fb7185;
+        --green: #34d399;
+        --text: #f8fafc;
+        --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+        margin: 0;
+        padding: 14px 14px 100px 14px;
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+        background-color: var(--bg);
+        background-image:
+            radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.18) 0%, transparent 45%),
+            radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.18) 0%, transparent 45%);
+        color: var(--text);
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+    #toast {
+        position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+        background: linear-gradient(135deg, rgba(16, 185, 129, .95), rgba(5, 150, 105, .95));
+        border: 1px solid rgba(255,255,255,.2); color: #fff;
+        padding: 10px 22px; border-radius: 40px; font-size: 12px; font-weight: 700;
+        box-shadow: 0 10px 30px rgba(0,0,0,.7); opacity: 0; pointer-events: none;
+        transition: all .3s cubic-bezier(.18,.89,.32,1.28); z-index: 999999;
+    }
+    #toast.show { top: 16px; opacity: 1; }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    .profile-card {
+        background: var(--card-bg); border: 1px solid var(--card-border);
+        border-radius: 22px; padding: 18px; backdrop-filter: blur(30px);
+        margin-bottom: 12px; position: relative; overflow: hidden;
+    }
+    .profile-card::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+        background: linear-gradient(90deg, var(--accent), var(--purple), var(--gold));
+    }
+    .profile-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .avatar {
+        width: 54px; height: 54px; border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent), var(--purple));
+        display: flex; align-items: center; justify-content: center;
+        font-size: 22px; font-weight: 800; color: #050811;
+        box-shadow: 0 0 20px var(--accent-glow); flex-shrink: 0;
+    }
+    .profile-info { flex: 1; min-width: 0; }
+    .profile-info h2 { margin: 0; font-size: 19px; font-weight: 800; }
+    .profile-info .uname { font-size: 12px; color: var(--accent); margin-top: 2px; }
+    .profile-info .uid { font-size: 11px; color: var(--muted); margin-top: 2px; font-family: monospace; }
 
-        body {
-            margin: 0;
-            padding: 14px 14px 115px 14px;
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg);
-            background-image:
-                radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.18) 0%, transparent 45%),
-                radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.18) 0%, transparent 45%);
-            color: var(--text);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+    .status-badge {
+        display: inline-flex; align-items: center; padding: 6px 13px;
+        border-radius: 24px; font-size: 11px; font-weight: 800; white-space: nowrap;
+    }
+    .badge-owner { background: rgba(250,204,21,.15); border: 1px solid rgba(250,204,21,.4); color: var(--gold); }
+    .badge-prem { background: rgba(56,189,248,.15); border: 1px solid rgba(56,189,248,.4); color: var(--accent); }
+    .badge-free { background: rgba(251,113,133,.15); border: 1px solid rgba(251,113,133,.4); color: var(--danger); }
 
-        #toast {
-            position: fixed;
-            top: -120px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(5, 150, 105, 0.95));
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #ffffff;
-            padding: 10px 22px;
-            border-radius: 40px;
-            font-size: 12px;
-            font-weight: 700;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-            z-index: 999999;
-        }
-        #toast.show { top: 16px; opacity: 1; pointer-events: auto; }
+    .timer-box {
+        background: rgba(5,8,17,.7); border: 1px solid rgba(255,255,255,.07);
+        border-radius: 12px; padding: 10px 14px; display: flex;
+        justify-content: space-between; align-items: center;
+        font-size: 12px; color: var(--muted);
+    }
+    .timer-val { font-family: monospace; font-size: 12px; font-weight: 700; color: #fff; }
 
-        .profile-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 22px;
-            padding: 18px;
-            backdrop-filter: blur(30px);
-            margin-bottom: 12px;
-        }
+    .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 12px; }
+    .metric-card {
+        background: var(--card-bg); border: 1px solid var(--card-border);
+        border-radius: 14px; padding: 10px 4px; text-align: center;
+        backdrop-filter: blur(20px);
+    }
+    .metric-val { font-size: 17px; font-weight: 800; color: var(--accent); }
+    .metric-lbl { font-size: 9px; color: var(--muted); margin-top: 2px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
 
-        .profile-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .profile-top h2 { margin: 0; font-size: 21px; font-weight: 800; }
+    .card {
+        background: var(--card-bg); border: 1px solid var(--card-border);
+        border-radius: 20px; padding: 16px; margin-bottom: 12px;
+        backdrop-filter: blur(25px);
+    }
+    .card-title {
+        font-size: 12px; font-weight: 800; text-transform: uppercase;
+        letter-spacing: .07em; color: var(--accent); margin-bottom: 12px;
+        display: flex; align-items: center; gap: 6px;
+    }
 
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 5px 13px;
-            border-radius: 24px;
-            font-size: 11px;
-            font-weight: 800;
-        }
-        .badge-owner { background: rgba(250, 204, 21, 0.15); border: 1px solid rgba(250, 204, 21, 0.4); color: var(--gold); }
-        .badge-prem { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: var(--accent); }
-        .badge-free { background: rgba(251, 113, 133, 0.15); border: 1px solid rgba(251, 113, 133, 0.4); color: var(--danger); }
+    .toggle-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-info h4 { margin: 0; font-size: 13px; font-weight: 600; }
+    .toggle-info p { margin: 3px 0 0 0; font-size: 11px; color: var(--muted); line-height: 1.35; }
 
-        .timer-box {
-            background: rgba(5, 8, 17, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            border-radius: 12px;
-            padding: 10px 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-            color: var(--muted);
-        }
-        .timer-val { font-family: monospace; font-size: 13px; font-weight: 700; color: #fff; }
+    .switch { position: relative; display: inline-block; width: 48px; height: 26px; flex-shrink: 0; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+        position: absolute; cursor: pointer; inset: 0;
+        background-color: #1e293b; transition: .25s ease; border-radius: 26px;
+        border: 1px solid rgba(255,255,255,.08);
+    }
+    .slider:before {
+        position: absolute; content: ""; height: 20px; width: 20px;
+        left: 2px; bottom: 2px; background: #fff; transition: .25s ease;
+        border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+    input:checked + .slider:before { transform: translateX(22px); }
 
-        .metric-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 14px;
-        }
-        .metric-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 12px 6px;
-            text-align: center;
-            backdrop-filter: blur(20px);
-        }
-        .metric-val { font-size: 20px; font-weight: 800; color: var(--accent); }
-        .metric-lbl { font-size: 10px; color: var(--muted); margin-top: 3px; font-weight: 700; text-transform: uppercase; }
+    .input-box {
+        width: 100%; background: rgba(5,8,17,.8);
+        border: 1px solid rgba(255,255,255,.12);
+        padding: 12px 14px; border-radius: 14px; color: #fff;
+        font-size: 13px; outline: none; margin-top: 6px;
+    }
+    .input-box:focus { border-color: var(--accent); }
 
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 16px;
-            margin-bottom: 12px;
-            backdrop-filter: blur(25px);
-        }
+    .btn {
+        width: 100%; padding: 13px; border: none; border-radius: 14px;
+        font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 8px;
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+        transition: transform .1s;
+    }
+    .btn:active { transform: scale(.98); }
+    .btn-accent { background: linear-gradient(135deg, var(--accent), #0284c7); color: #050811; }
+    .btn-purple { background: linear-gradient(135deg, var(--purple), #7e22ce); color: #fff; }
+    .btn-danger { background: rgba(251,113,133,.15); color: var(--danger); border: 1px solid rgba(251,113,133,.3); }
+    .btn-gold { background: linear-gradient(135deg, #facc15, #d97706); color: #050811; }
 
-        .card-title {
-            font-size: 12px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.07em;
-            color: var(--accent);
-            margin-bottom: 12px;
-        }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn .2s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-        .toggle-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 11px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .toggle-row:last-child { border-bottom: none; }
-        .toggle-info h4 { margin: 0; font-size: 13px; font-weight: 600; }
-        .toggle-info p { margin: 3px 0 0 0; font-size: 11px; color: var(--muted); line-height: 1.35; }
+    .bottom-nav {
+        position: fixed; bottom: 0; left: 0; right: 0; height: 72px;
+        background: rgba(9,14,26,.95); backdrop-filter: blur(30px);
+        border-top: 1px solid rgba(255,255,255,.08);
+        display: flex; justify-content: space-around; align-items: center; z-index: 100;
+    }
+    .nav-btn {
+        background: none; border: none; color: var(--muted);
+        display: flex; flex-direction: column; align-items: center; gap: 4px;
+        font-size: 10px; font-weight: 600; cursor: pointer; width: 20%;
+    }
+    .nav-btn.active { color: var(--accent); }
+    .nav-icon { font-size: 20px; }
 
-        .switch { position: relative; display: inline-block; width: 48px; height: 26px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #1e293b;
-            transition: .25s ease;
-            border-radius: 26px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .slider:before {
-            position: absolute; content: ""; height: 20px; width: 20px; left: 2px; bottom: 2px;
-            background-color: white;
-            transition: .25s ease;
-            border-radius: 50%;
-        }
-        input:checked + .slider { background-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
-        input:checked + .slider:before { transform: translateX(22px); }
+    .mute-chip {
+        display: flex; justify-content: space-between; align-items: center;
+        background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+        border-radius: 12px; padding: 9px 14px; margin-top: 6px;
+    }
+    .mute-chip-del { color: var(--danger); cursor: pointer; font-weight: bold; font-size: 15px; }
 
-        .input-box {
-            width: 100%;
-            background: rgba(5, 8, 17, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            padding: 12px 14px;
-            border-radius: 14px;
-            color: #fff;
-            font-size: 13px;
-            outline: none;
-            margin-top: 6px;
-        }
-        .input-box:focus { border-color: var(--accent); }
+    .result-box {
+        background: #04060c; border: 1px dashed var(--accent);
+        border-radius: 12px; padding: 12px; font-family: monospace;
+        font-size: 12px; color: #38bdf8; margin-top: 10px;
+        word-break: break-all; white-space: pre-wrap;
+    }
 
-        .btn {
-            width: 100%;
-            padding: 13px;
-            border: none;
-            border-radius: 14px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: transform 0.1s;
-        }
-        .btn:active { transform: scale(0.98); }
-        .btn-accent { background: linear-gradient(135deg, var(--accent), #0284c7); color: #050811; }
-        .btn-purple { background: linear-gradient(135deg, var(--purple), #7e22ce); color: #fff; }
-        .btn-danger { background: rgba(251, 113, 133, 0.15); color: var(--danger); border: 1px solid rgba(251, 113, 133, 0.3); }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        .bottom-nav {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            height: 72px;
-            background: rgba(9, 14, 26, 0.95);
-            backdrop-filter: blur(30px);
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 100;
-        }
-
-        .nav-btn {
-            background: none;
-            border: none;
-            color: var(--muted);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 20%;
-        }
-        .nav-btn.active { color: var(--accent); }
-        .nav-icon { font-size: 20px; }
-
-        .mute-chip {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            padding: 9px 14px;
-            margin-top: 6px;
-        }
-        .mute-chip-del { color: var(--danger); cursor: pointer; font-weight: bold; font-size: 15px; }
-
-        .result-box {
-            background: #04060c;
-            border: 1px dashed var(--accent);
-            border-radius: 12px;
-            padding: 12px;
-            font-family: monospace;
-            font-size: 12px;
-            color: #38bdf8;
-            margin-top: 10px;
-            word-break: break-all;
-        }
-    </style>
+    .ref-link {
+        background: rgba(5,8,17,.7); border: 1px solid var(--card-border);
+        border-radius: 12px; padding: 10px 12px; margin-top: 8px;
+        font-family: monospace; font-size: 11px; color: var(--accent);
+        word-break: break-all;
+    }
+</style>
 </head>
 <body>
 
@@ -252,11 +190,13 @@
 
 <div class="profile-card">
     <div class="profile-top">
-        <div>
+        <div class="avatar" id="avatar">O</div>
+        <div class="profile-info">
             <h2 id="u-name">Оператор</h2>
-            <div style="font-size:12px; color:var(--muted); margin-top:2px;">ID: <span id="u-id">...</span></div>
+            <div class="uname" id="u-uname">@username</div>
+            <div class="uid">ID: <span id="u-id">—</span></div>
         </div>
-        <div id="u-badge" class="status-badge badge-prem">⭐ PREMIUM</div>
+        <div id="u-badge" class="status-badge badge-prem">PREMIUM</div>
     </div>
     <div class="timer-box">
         <span>Лицензия комплекса:</span>
@@ -265,373 +205,300 @@
 </div>
 
 <div class="metric-grid">
-    <div class="metric-card">
-        <div class="metric-val" id="m-del">0</div>
-        <div class="metric-lbl">Удалений</div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-val" id="m-edit">0</div>
-        <div class="metric-lbl">Правок</div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-val" id="m-mutes">0</div>
-        <div class="metric-lbl">Мой ЧС</div>
-    </div>
+    <div class="metric-card"><div class="metric-val" id="m-del">0</div><div class="metric-lbl">Удалений</div></div>
+    <div class="metric-card"><div class="metric-val" id="m-edit">0</div><div class="metric-lbl">Правок</div></div>
+    <div class="metric-card"><div class="metric-val" id="m-mutes">0</div><div class="metric-lbl">ЧС</div></div>
+    <div class="metric-card"><div class="metric-val" id="m-ttl">0</div><div class="metric-lbl">TTL</div></div>
 </div>
 
-<!-- ВКЛАДКА 1: ЗАЩИТА -->
+<!-- ЗАЩИТА -->
 <div id="tab-settings" class="tab-content active">
     <div class="card">
-        <div class="card-title">🛡 Настройки мониторинга диалогов</div>
+        <div class="card-title">🛡 Защита диалогов</div>
         <div class="toggle-row">
-            <div class="toggle-info">
-                <h4>Anti-Delete</h4>
-                <p>Фиксация удалённых сообщений, фото и голосовых</p>
-            </div>
-            <label class="switch">
-                <input type="checkbox" id="set-ad" onchange="handleSettingToggle('anti_delete', this.checked)">
-                <span class="slider"></span>
-            </label>
+            <div class="toggle-info"><h4>Anti-Delete</h4><p>Ловит удалённые сообщения и медиа</p></div>
+            <label class="switch"><input type="checkbox" id="set-ad"><span class="slider"></span></label>
         </div>
         <div class="toggle-row">
-            <div class="toggle-info">
-                <h4>Anti-Edit</h4>
-                <p>Сохранение оригиналов сообщений до изменения</p>
-            </div>
-            <label class="switch">
-                <input type="checkbox" id="set-ae" onchange="handleSettingToggle('anti_edit', this.checked)">
-                <span class="slider"></span>
-            </label>
+            <div class="toggle-info"><h4>Anti-Edit</h4><p>Сохраняет оригиналы до изменения</p></div>
+            <label class="switch"><input type="checkbox" id="set-ae"><span class="slider"></span></label>
         </div>
         <div class="toggle-row">
-            <div class="toggle-info">
-                <h4>Одноразовые фото (TTL)</h4>
-                <p>Сохранение самоуничтожающихся медиа</p>
-            </div>
-            <label class="switch">
-                <input type="checkbox" id="set-ttl" onchange="handleSettingToggle('save_ttl_media', this.checked)">
-                <span class="slider"></span>
-            </label>
+            <div class="toggle-info"><h4>Одноразовые (TTL)</h4><p>Перехват самоуничтожающихся фото</p></div>
+            <label class="switch"><input type="checkbox" id="set-ttl"><span class="slider"></span></label>
         </div>
         <div class="toggle-row">
-            <div class="toggle-info">
-                <h4>Флуд-фильтр (3 повтора)</h4>
-                <p>Ограничение спамеров на 15 минут</p>
-            </div>
-            <label class="switch">
-                <input type="checkbox" id="set-asm" onchange="handleSettingToggle('anti_spam_mute', this.checked)">
-                <span class="slider"></span>
-            </label>
+            <div class="toggle-info"><h4>Флуд-фильтр</h4><p>Мут 15 мин за 3 повтора</p></div>
+            <label class="switch"><input type="checkbox" id="set-asm"><span class="slider"></span></label>
         </div>
         <div class="toggle-row">
-            <div class="toggle-info">
-                <h4>Приватность профиля</h4>
-                <p>Скрыть свои данные от проверки другими игроками</p>
-            </div>
-            <label class="switch">
-                <input type="checkbox" id="set-adox" onchange="handleSettingToggle('anti_dox', this.checked)">
-                <span class="slider"></span>
-            </label>
+            <div class="toggle-info"><h4>Не беспокоить</h4><p>Авто-ответ и удаление входящих</p></div>
+            <label class="switch"><input type="checkbox" id="set-dnd"><span class="slider"></span></label>
         </div>
-        <button class="btn btn-accent" style="margin-top:14px;" onclick="syncSettingsToBot()">💾 Синхронизировать с базой бота</button>
+        <div class="toggle-row">
+            <div class="toggle-info"><h4>Тихие уведомления</h4><p>Без звука в чате с ботом</p></div>
+            <label class="switch"><input type="checkbox" id="set-sil"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+            <div class="toggle-info"><h4>Приватность профиля</h4><p>Скрыть свои данные от проверок</p></div>
+            <label class="switch"><input type="checkbox" id="set-adox"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+            <div class="toggle-info"><h4>Приватность досье</h4><p>Скрыть историю активности</p></div>
+            <label class="switch"><input type="checkbox" id="set-ados"><span class="slider"></span></label>
+        </div>
     </div>
 </div>
 
-<!-- ВКЛАДКА 2: МОЙ ЧЁРНЫЙ СПИСОК -->
+<!-- ЧС -->
 <div id="tab-mute" class="tab-content">
     <div class="card">
-        <div class="card-title">Управление личным чёрным списком</div>
-        <input type="text" id="mute-val" class="input-box" placeholder="@username или числовой ID...">
-        <button class="btn btn-accent" onclick="addMuteDirect()">🚫 Заблокировать объект</button>
+        <div class="card-title">🔇 Добавить в ЧС</div>
+        <input type="text" id="mute-val" class="input-box" placeholder="@username или Telegram ID...">
+        <button class="btn btn-accent" onclick="addMute()">Заблокировать</button>
     </div>
     <div class="card">
-        <div class="card-title">Заблокированные пользователи</div>
-        <div id="mute-list-container"><span style="font-size:12px; color:var(--muted);">Список пуст</span></div>
-        <button class="btn btn-danger" style="margin-top:12px;" onclick="clearAllMutesDirect()">⚡ Очистить список</button>
+        <div class="card-title">📋 Заблокированные</div>
+        <div id="mute-list"><span style="font-size:12px;color:var(--muted)">Список пуст</span></div>
+        <button class="btn btn-danger" onclick="clearMutes()">⚡ Очистить всё</button>
     </div>
 </div>
 
-<!-- ВКЛАДКА 3: АНАЛИЗ ПРОФИЛЯ -->
+<!-- АНАЛИЗ -->
 <div id="tab-osint" class="tab-content">
     <div class="card">
-        <div class="card-title">🔍 Анализ профиля и активности</div>
-        <input type="text" id="osint-val" class="input-box" placeholder="@username или Telegram ID...">
-        <div style="display:flex; gap:8px; margin-top:6px;">
-            <button class="btn btn-accent" onclick="renderLocalOsint('probe')">🌐 Паспорт профиля</button>
-            <button class="btn btn-purple" onclick="renderLocalOsint('dossier')">📁 Досье активности</button>
+        <div class="card-title">🔍 Анализ профиля</div>
+        <input type="text" id="osint-val" class="input-box" placeholder="@username или ID...">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px">
+            <button class="btn btn-accent" onclick="queryOsint('probe')">🌐 Паспорт</button>
+            <button class="btn btn-purple" onclick="queryOsint('dossier')">📁 Досье</button>
         </div>
-        <div id="osint-res-card" style="display:none;" class="result-box"></div>
+        <div id="osint-res" style="display:none" class="result-box"></div>
+    </div>
+    <div class="card">
+        <div class="card-title">📝 Мои заметки</div>
+        <input type="text" id="note-input" class="input-box" placeholder="Текст заметки...">
+        <button class="btn btn-accent" onclick="addNote()">Сохранить заметку</button>
     </div>
 </div>
 
-<!-- ВКЛАДКА 4: ХЕШИРОВАНИЕ И РАСХЕШИРОВАНИЕ ПАРОЛЕЙ -->
+<!-- ПАРТНЁРЫ -->
+<div id="tab-refs" class="tab-content">
+    <div class="card">
+        <div class="card-title">👥 Партнёрская программа</div>
+        <p style="font-size:12px;color:var(--muted);margin:0 0 10px 0">Приглашайте друзей — получайте <b style="color:var(--accent)">+1 день</b> лицензии за каждого!</p>
+        <div class="ref-link" id="ref-link">Загрузка...</div>
+        <button class="btn btn-purple" onclick="shareRef()">📤 Поделиться ссылкой</button>
+        <div style="margin-top:12px;font-size:13px;color:var(--muted)">Приглашено: <b id="ref-count" style="color:#fff">0</b> чел.</div>
+    </div>
+</div>
+
+<!-- УТИЛИТЫ -->
 <div id="tab-utils" class="tab-content">
     <div class="card">
-        <div class="card-title">🔐 Криптографические хэши (MD5 / SHA-256)</div>
-        <input type="text" id="hash-input" class="input-box" placeholder="Введите пароль или текст...">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px;">
-            <button class="btn btn-accent" onclick="generateHash('MD5')">Хэш MD5</button>
-            <button class="btn btn-accent" onclick="generateHash('SHA256')">SHA-256</button>
+        <div class="card-title">🔐 Хэширование</div>
+        <input type="text" id="hash-input" class="input-box" placeholder="Пароль / текст...">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px">
+            <button class="btn btn-accent" onclick="hashIt('MD5')">MD5</button>
+            <button class="btn btn-accent" onclick="hashIt('SHA256')">SHA-256</button>
+            <button class="btn btn-purple" onclick="hashIt('Base64')">Base64</button>
+            <button class="btn btn-purple" onclick="hashIt('SHA1')">SHA-1</button>
         </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px;">
-            <button class="btn btn-purple" onclick="generateHash('Base64')">Base64</button>
-            <button class="btn btn-purple" onclick="generateHash('SHA1')">SHA-1</button>
-        </div>
-        <div id="hash-out-box" style="display:none;" class="result-box"></div>
-    </div>
-
-    <div class="card">
-        <div class="card-title">🔓 Расхеширование (MD5 / SHA-256 / Base64)</div>
-        <input type="text" id="dehash-input" class="input-box" placeholder="Вставьте хэш для поиска исходного текста...">
-        <button class="btn btn-purple" onclick="crackHash()">🔍 Расхешировать пароль</button>
-        <div id="dehash-out-box" style="display:none;" class="result-box"></div>
+        <div id="hash-res" style="display:none" class="result-box"></div>
     </div>
 </div>
 
 <div class="bottom-nav">
-    <button class="nav-btn active" onclick="switchNav('settings', this)">
-        <span class="nav-icon">🛡</span>
-        <span>Защита</span>
-    </button>
-    <button class="nav-btn" onclick="switchNav('mute', this)">
-        <span class="nav-icon">🔇</span>
-        <span>Мой ЧС</span>
-    </button>
-    <button class="nav-btn" onclick="switchNav('osint', this)">
-        <span class="nav-icon">🔍</span>
-        <span>Анализ</span>
-    </button>
-    <button class="nav-btn" onclick="switchNav('utils', this)">
-        <span class="nav-icon">🛠</span>
-        <span>Утилиты</span>
-    </button>
+    <button class="nav-btn active" onclick="nav('settings',this)"><span class="nav-icon">🛡</span>Защита</button>
+    <button class="nav-btn" onclick="nav('mute',this)"><span class="nav-icon">🔇</span>ЧС</button>
+    <button class="nav-btn" onclick="nav('osint',this)"><span class="nav-icon">🔍</span>Анализ</button>
+    <button class="nav-btn" onclick="nav('refs',this)"><span class="nav-icon">👥</span>Партнёры</button>
+    <button class="nav-btn" onclick="nav('utils',this)"><span class="nav-icon">🛠</span>Утилиты</button>
 </div>
 
 <script>
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
+const tg = window.Telegram.WebApp;
+tg.ready();
+tg.expand();
+if (tg.setHeaderColor) try { tg.setHeaderColor('#050711'); } catch(e) {}
+if (tg.setBackgroundColor) try { tg.setBackgroundColor('#050711'); } catch(e) {}
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const uid = urlParams.get('uid') || tg.initDataUnsafe?.user?.id || 7783116627;
-    const role = urlParams.get('role') || 'free';
-    const expTimestamp = parseFloat(urlParams.get('exp') || '0');
-    const user = tg.initDataUnsafe?.user || { id: uid, first_name: "Marcell" };
+const P = new URLSearchParams(location.search);
+const uid = P.get('uid') || tg.initDataUnsafe?.user?.id || 0;
+const uname = P.get('uname') || tg.initDataUnsafe?.user?.username || '';
+const role = P.get('role') || 'free';
+const expTs = parseFloat(P.get('exp') || '0');
+const tgUser = tg.initDataUnsafe?.user || {};
 
-    document.getElementById('u-name').innerText = user.first_name || "Marcell";
-    document.getElementById('u-id').innerText = user.id;
+document.getElementById('u-name').innerText = tgUser.first_name || P.get('name') || 'Оператор';
+document.getElementById('u-uname').innerText = '@' + (uname || 'username');
+document.getElementById('u-id').innerText = uid;
+document.getElementById('avatar').innerText = (tgUser.first_name || 'O').charAt(0).toUpperCase();
 
-    const isOwner = (role === 'owner' || user.id == 7783116627);
-    if (isOwner) {
-        document.getElementById('u-badge').className = "status-badge badge-owner";
-        document.getElementById('u-badge').innerText = "👑 ВЛАДЕЛЕЦ";
-    } else if (role === 'premium') {
-        document.getElementById('u-badge').className = "status-badge badge-prem";
-        document.getElementById('u-badge').innerText = "⭐ PREMIUM";
-    } else {
-        document.getElementById('u-badge').className = "status-badge badge-free";
-        document.getElementById('u-badge').innerText = "⛔ ДОСТУП ИСТЁК";
-    }
+const isOwner = (role === 'owner') || (parseInt(uid) === 7783116627);
+if (isOwner) {
+    document.getElementById('u-badge').className = 'status-badge badge-owner';
+    document.getElementById('u-badge').innerText = '👑 ВЛАДЕЛЕЦ';
+} else if (role === 'premium') {
+    document.getElementById('u-badge').className = 'status-badge badge-prem';
+    document.getElementById('u-badge').innerText = '⭐ PREMIUM';
+} else {
+    document.getElementById('u-badge').className = 'status-badge badge-free';
+    document.getElementById('u-badge').innerText = '⛔ FREE';
+}
 
-    // Изолированные настройки без вылета окна
-    let appSettings = JSON.parse(localStorage.getItem('fgram_settings_' + uid)) || {
-        anti_delete: urlParams.get('ad') === '1',
-        anti_edit: urlParams.get('ae') === '1',
-        save_ttl_media: urlParams.get('ttl') === '1',
-        dnd: urlParams.get('dnd') === '1',
-        auto_mute: urlParams.get('am') === '1',
-        anti_spam_mute: urlParams.get('asm') === '1',
-        anti_dox: urlParams.get('adox') === '1',
-        anti_dossier: urlParams.get('ados') === '1',
-        god_mode: urlParams.get('god') !== '0',
-        silent_notifications: urlParams.get('sil') === '1'
-    };
+// Таймер лицензии
+function updateCountdown() {
+    const el = document.getElementById('countdown');
+    if (isOwner || expTs === -1) { el.innerText = 'Бессрочно'; el.style.color = '#facc15'; return; }
+    const rem = expTs - Math.floor(Date.now() / 1000);
+    if (rem <= 0) { el.innerText = 'Истекла'; el.style.color = '#fb7185'; return; }
+    const d = Math.floor(rem / 86400);
+    const h = Math.floor((rem % 86400) / 3600);
+    const m = Math.floor((rem % 3600) / 60);
+    el.innerText = d > 0 ? `${d}д ${h}ч` : (h > 0 ? `${h}ч ${m}м` : `${m}м`);
+    el.style.color = rem < 86400 ? '#fb7185' : '#fff';
+}
+updateCountdown(); setInterval(updateCountdown, 30000);
 
-    document.getElementById('set-ad').checked = appSettings.anti_delete;
-    document.getElementById('set-ae').checked = appSettings.anti_edit;
-    document.getElementById('set-ttl').checked = appSettings.save_ttl_media;
-    document.getElementById('set-asm').checked = appSettings.anti_spam_mute;
-    document.getElementById('set-adox').checked = appSettings.anti_dox;
+// Настройки — из URL, потом localStorage
+const LSK = 'asteria_settings_' + uid;
+let S = JSON.parse(localStorage.getItem(LSK) || '{}');
+const urlMap = {
+    anti_delete:'ad', anti_edit:'ae', save_ttl_media:'ttl', dnd:'dnd',
+    anti_spam_mute:'asm', silent_notifications:'sil', anti_dox:'adox', anti_dossier:'ados'
+};
+for (const [k, p] of Object.entries(urlMap)) {
+    if (!(k in S) && P.get(p) !== null) S[k] = P.get(p) === '1';
+}
+document.getElementById('set-ad').checked = !!S.anti_delete;
+document.getElementById('set-ae').checked = !!S.anti_edit;
+document.getElementById('set-ttl').checked = !!S.save_ttl_media;
+document.getElementById('set-asm').checked = !!S.anti_spam_mute;
+document.getElementById('set-dnd').checked = !!S.dnd;
+document.getElementById('set-sil').checked = !!S.silent_notifications;
+document.getElementById('set-adox').checked = !!S.anti_dox;
+document.getElementById('set-ados').checked = !!S.anti_dossier;
 
-    // Работа с изолированным мут-листом
-    let rawMutes = urlParams.get('mutes') ? decodeURIComponent(urlParams.get('mutes')).split(',') : [];
-    let muteList = JSON.parse(localStorage.getItem('fgram_mutes_' + uid)) || rawMutes.filter(x => x.trim().length > 0);
+// АВТО-СИНХРОНИЗАЦИЯ
+function bindToggle(id, key) {
+    document.getElementById(id).addEventListener('change', function() {
+        S[key] = this.checked;
+        localStorage.setItem(LSK, JSON.stringify(S));
+        try {
+            tg.sendData(JSON.stringify({ action: 'save_setting', key: key, value: this.checked }));
+        } catch(e) {}
+        toast(this.checked ? '✅ Включено' : '⭕ Выключено');
+        try { tg.HapticFeedback.impactOccurred('light'); } catch(e) {}
+    });
+}
+bindToggle('set-ad', 'anti_delete');
+bindToggle('set-ae', 'anti_edit');
+bindToggle('set-ttl', 'save_ttl_media');
+bindToggle('set-asm', 'anti_spam_mute');
+bindToggle('set-dnd', 'dnd');
+bindToggle('set-sil', 'silent_notifications');
+bindToggle('set-adox', 'anti_dox');
+bindToggle('set-ados', 'anti_dossier');
 
-    function renderMutes() {
-        const container = document.getElementById('mute-list-container');
-        document.getElementById('m-mutes').innerText = muteList.length;
-        if (!muteList.length) {
-            container.innerHTML = `<span style="font-size:12px; color:var(--muted);">Список пуст</span>`;
-            return;
-        }
-        container.innerHTML = muteList.map(t => `
-            <div class="mute-chip">
-                <span><code>${t}</code></span>
-                <span class="mute-chip-del" onclick="removeMuteDirect('${t}')">✕</span>
-            </div>
-        `).join('');
-    }
+// ЧС
+const LSKM = 'asteria_mutes_' + uid;
+let mutes = JSON.parse(localStorage.getItem(LSKM) || '[]');
+const urlMutes = P.get('mutes');
+if (urlMutes && mutes.length === 0) {
+    mutes = decodeURIComponent(urlMutes).split(',').map(x => x.trim()).filter(Boolean);
+    localStorage.setItem(LSKM, JSON.stringify(mutes));
+}
+function renderMutes() {
+    const c = document.getElementById('mute-list');
+    document.getElementById('m-mutes').innerText = mutes.length;
+    if (!mutes.length) { c.innerHTML = '<span style="font-size:12px;color:var(--muted)">Список пуст</span>'; return; }
+    c.innerHTML = mutes.map(t => `<div class="mute-chip"><span><code>${t}</code></span><span class="mute-chip-del" onclick="rmMute('${t.replace(/'/g,"\\'")}')">✕</span></div>`).join('');
+}
+renderMutes();
+
+function addMute() {
+    let v = document.getElementById('mute-val').value.trim().replace('@','').toLowerCase();
+    if (!v) return tg.showAlert('Введите username или ID!');
+    if (v === '7783116627' || v === 'filonis_music' || v === 'marcell') return tg.showAlert('Нельзя замутить Владельца!');
+    if (mutes.includes(v)) return tg.showAlert('Уже в списке');
+    mutes.push(v);
+    localStorage.setItem(LSKM, JSON.stringify(mutes));
     renderMutes();
+    try { tg.sendData(JSON.stringify({ action: 'add_mute', target: v })); } catch(e) {}
+    document.getElementById('mute-val').value = '';
+    toast('🔇 Добавлено');
+}
+function rmMute(v) {
+    mutes = mutes.filter(x => x !== v);
+    localStorage.setItem(LSKM, JSON.stringify(mutes));
+    renderMutes();
+    try { tg.sendData(JSON.stringify({ action: 'remove_mute', target: v })); } catch(e) {}
+    toast('🔊 Удалено');
+}
+function clearMutes() {
+    mutes = [];
+    localStorage.setItem(LSKM, JSON.stringify([]));
+    renderMutes();
+    try { tg.sendData(JSON.stringify({ action: 'clear_mutes' })); } catch(e) {}
+    toast('⚡ Очищено');
+}
 
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.innerText = msg;
-        t.classList.add('show');
-        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-        setTimeout(() => t.classList.remove('show'), 1600);
-    }
+// Анализ
+function queryOsint(mode) {
+    const t = document.getElementById('osint-val').value.trim();
+    if (!t) return tg.showAlert('Введите @username или ID!');
+    try { tg.sendData(JSON.stringify({ action: mode === 'probe' ? 'query_profile' : 'query_dossier', target: t })); } catch(e) {}
+    toast('🔍 Запрос отправлен в бота');
+}
 
-    function switchNav(id, btn) {
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-        document.getElementById('tab-' + id).classList.add('active');
-        btn.classList.add('active');
-    }
+function addNote() {
+    const t = document.getElementById('note-input').value.trim();
+    if (!t) return tg.showAlert('Введите текст!');
+    try { tg.sendData(JSON.stringify({ action: 'add_note', target: uid, note: t })); } catch(e) {}
+    document.getElementById('note-input').value = '';
+    toast('📝 Заметка сохранена');
+}
 
-    // Сохранение без закрытия Mini App
-    function handleSettingToggle(key, val) {
-        appSettings[key] = val;
-        localStorage.setItem('fgram_settings_' + uid, JSON.stringify(appSettings));
-        showToast(val ? "Включено" : "Выключено");
-    }
+// Партнёры
+const refLink = `https://t.me/asteria_suite_bot?start=ref_${uid}`;
+document.getElementById('ref-link').innerText = refLink;
+document.getElementById('ref-count').innerText = P.get('refs') || '0';
+function shareRef() {
+    const text = encodeURIComponent('🛡 Asteria Suite — умный ассистент Telegram');
+    const url = encodeURIComponent(refLink);
+    try { tg.openTelegramLink(`https://t.me/share/url?url=${url}&text=${text}`); } catch(e) { window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank'); }
+}
 
-    function syncSettingsToBot() {
-        tg.sendData(JSON.stringify({
-            action: "save_all_settings",
-            settings: appSettings
-        }));
-    }
+// Хэши
+function hashIt(type) {
+    const v = document.getElementById('hash-input').value;
+    if (!v) return tg.showAlert('Введите текст!');
+    let out = '';
+    if (type === 'MD5') out = CryptoJS.MD5(v).toString();
+    else if (type === 'SHA256') out = CryptoJS.SHA256(v).toString();
+    else if (type === 'SHA1') out = CryptoJS.SHA1(v).toString();
+    else if (type === 'Base64') out = btoa(unescape(encodeURIComponent(v)));
+    const box = document.getElementById('hash-res');
+    box.innerText = `[${type}]\n${out}`;
+    box.style.display = 'block';
+}
 
-    function addMuteDirect() {
-        const val = document.getElementById('mute-val').value.trim().replace('@', '').toLowerCase();
-        if (!val) return tg.showAlert("Введите ник или ID!");
-        if (val === '7783116627' || val === 'filonis_music') return tg.showAlert("Нельзя замутить Владельца!");
+// Навигация
+function nav(id, btn) {
+    document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+    try { tg.HapticFeedback.selectionChanged(); } catch(e) {}
+}
 
-        if (!muteList.includes(val)) {
-            muteList.push(val);
-            localStorage.setItem('fgram_mutes_' + uid, JSON.stringify(muteList));
-            renderMutes();
-            showToast("Добавлен в чёрный список");
-        }
-        document.getElementById('mute-val').value = "";
-    }
-
-    function removeMuteDirect(val) {
-        muteList = muteList.filter(x => x !== val);
-        localStorage.setItem('fgram_mutes_' + uid, JSON.stringify(muteList));
-        renderMutes();
-        showToast("Удалён из чёрного списка");
-    }
-
-    function clearAllMutesDirect() {
-        muteList = [];
-        localStorage.setItem('fgram_mutes_' + uid, JSON.stringify([]));
-        renderMutes();
-        showToast("Чёрный список очищен");
-    }
-
-    // ХЕШИРОВАНИЕ И РАСХЕШИРОВАНИЕ
-    function generateHash(type) {
-        const inp = document.getElementById('hash-input').value;
-        if (!inp) return tg.showAlert("Введите текст для хэширования!");
-        let out = "";
-        if (type === 'MD5') out = CryptoJS.MD5(inp).toString();
-        else if (type === 'SHA256') out = CryptoJS.SHA256(inp).toString();
-        else if (type === 'SHA1') out = CryptoJS.SHA1(inp).toString();
-        else if (type === 'Base64') out = btoa(unescape(encodeURIComponent(inp)));
-
-        const box = document.getElementById('hash-out-box');
-        box.innerText = `[${type}]:\n${out}`;
-        box.style.display = 'block';
-    }
-
-    async function crackHash() {
-        const hash = document.getElementById('dehash-input').value.trim();
-        if (!hash) return tg.showAlert("Вставьте хэш!");
-        const box = document.getElementById('dehash-out-box');
-        box.style.display = 'block';
-        box.innerText = "⏳ Поиск по словарным базам...";
-
-        // 1. Попытка Base64
-        try {
-            const b64 = decodeURIComponent(escape(atob(hash)));
-            if (b64 && /^[\x20-\x7E\sа-яА-ЯёЁ]+$/.test(b64)) {
-                box.innerText = `✅ [Base64 Расшифрован]:\n${b64}`;
-                return;
-            }
-        } catch(e) {}
-
-        // 2. Офлайн-словарь популярных паролей
-        const commonDict = {
-            "202cb962ac59075b964b07152d234b70": "123",
-            "250cf8b51c773f3f8dc8b4be867a9a02": "1234",
-            "827ccb0eea8a706c4c34a16891f84e7b": "12345",
-            "e10adc3949ba59abbe56e057f20f883e": "123456",
-            "fcea920f7412b5da7be0cf6f11aa1db8": "1234567",
-            "25d55ad283aa400af464c76d713c07ad": "12345678",
-            "5f4dcc3b5aa765d61d8327deb882cf99": "password",
-            "7c4a8d09ca3762af61e59520943dc26494f8941badc7ffc6ce2082296423a375": "123456",
-            "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f": "password"
-        };
-
-        const cleanH = hash.toLowerCase();
-        if (commonDict[cleanH]) {
-            box.innerText = `✅ [Успешно найден в базе]:\n«${commonDict[cleanH]}»`;
-            return;
-        }
-
-        // 3. Запрос к открытому API расшифровки
-        try {
-            const resp = await fetch(`[https://api.dehash.lt/dehash?hash=$](https://api.dehash.lt/dehash?hash=$){cleanH}`);
-            const data = await resp.json();
-            if (data && data.pass) {
-                box.innerText = `✅ [Хэш расшифрован]:\n«${data.pass}»`;
-                return;
-            }
-        } catch(e) {}
-
-        box.innerText = "❌ Хэш не найден в базах известных паролей (использована сложная соль или приватный пароль).";
-    }
-
-    // Отображение паспорта профиля внутри окна
-    function renderLocalOsint(mode) {
-        const val = document.getElementById('osint-val').value.trim();
-        if (!val) return tg.showAlert("Введите @username или Telegram ID!");
-        const box = document.getElementById('osint-res-card');
-        box.style.display = 'block';
-
-        const cleanT = val.replace('@', '').toLowerCase();
-        const isDig = /^\d+$/.test(cleanT);
-        const calcId = isDig ? cleanT : Math.abs(hashCode(cleanT));
-
-        if (mode === 'probe') {
-            box.innerHTML = `
-                <b>🌐 ПАСПОРТ ПРОФИЛЯ:</b><br>
-                ━━━━━━━━━━━━━━━━━━━━<br>
-                👤 <b>Субъект:</b> ${cleanT.toUpperCase()} (@${cleanT})<br>
-                🆔 <b>Telegram ID:</b> <code>${calcId}</code><br>
-                🏢 <b>Дата-центр:</b> DC 2 (Амстердам, Европа)<br>
-                📞 <b>Номер телефона:</b> <i>🔒 Скрыт настройками приватности</i><br>
-                ⭐ <b>TG Premium:</b> Да | <b>Тип:</b> Пользователь 👤<br>
-                🛡 <b>Безопасность:</b> Чистый | Оригинал | Официальный
-            `;
-        } else {
-            box.innerHTML = `
-                <b>📁 ДОСЬЕ АКТИВНОСТИ:</b><br>
-                ━━━━━━━━━━━━━━━━━━━━<br>
-                👤 <b>Субъект:</b> ${cleanT.toUpperCase()} (<code>${calcId}</code>)<br>
-                🛡 <b>Статус в вашей базе:</b> <b>${muteList.includes(cleanT) || muteList.includes(calcId) ? '🔴 В ЧЁРНОМ СПИСКЕ' : '🟢 Обычный статус'}</b><br>
-                📊 <b>Перехватов:</b> Удалений: 0 шт. | Правок: 0 шт.<br>
-                📝 <b>История ников:</b> Смен не зафиксировано
-            `;
-        }
-    }
-
-    function hashCode(str) {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) hash = ((hash << 5) - hash) + str.charCodeAt(i);
-        return Math.abs(hash);
-    }
+function toast(msg) {
+    const t = document.getElementById('toast');
+    t.innerText = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 1600);
+}
 </script>
 </body>
 </html>
