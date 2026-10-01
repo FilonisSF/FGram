@@ -383,7 +383,7 @@
     <div class="card">
       <div class="card-title">👥 Партнёрская сеть</div>
       <p style="font-size:12px; color:var(--muted); margin:0 0 12px 0;">
-        Нажмите кнопку ниже, чтобы открыть окно отправки приглашения сразу нескольким контактам:
+        Нажмите кнопку ниже, чтобы открыть диалог отправки персонального приглашения сразу нескольким контактам.
       </p>
       <button class="btn btn-accent" onclick="shareRef()">📤 Выбрать получателей...</button>
       <button class="btn btn-purple" style="margin-top:8px;" onclick="copyRef()">📋 Скопировать ссылку</button>
@@ -466,8 +466,11 @@
       document.querySelectorAll('.nav-btn').forEach(b => b.style.width = "25%");
     }
 
-    // ИНИЦИАЛИЗАЦИЯ НАСТРОЕК
-    let pendingSettings = {
+    // ИНИЦИАЛИЗАЦИЯ НАСТРОЕК С ЛОКАЛЬНЫМ ХРАНИЛИЩЕМ
+    const settingsKey = 'fgram_settings_' + currentUserId;
+    const cachedSettings = localStorage.getItem(settingsKey);
+
+    let pendingSettings = cachedSettings ? JSON.parse(cachedSettings) : {
       anti_delete: urlParams.get('ad') !== '0',
       anti_edit: urlParams.get('ae') !== '0',
       save_ttl_media: urlParams.get('ttl') !== '0',
@@ -483,9 +486,11 @@
     document.getElementById('sw-auto-mute').checked = pendingSettings.auto_mute;
     document.getElementById('sw-silent').checked = pendingSettings.silent_notifications;
 
-    // ПЕРСОНАЛЬНЫЙ МУТ-ЛИСТ
+    // ПЕРСОНАЛЬНЫЙ МУТ-ЛИСТ (ЛОКАЛЬНОЕ ХРАНИЛИЩЕ)
+    const mutesKey = 'fgram_mutes_' + currentUserId;
+    const cachedMutes = localStorage.getItem(mutesKey);
     const mutesRaw = decodeURIComponent(urlParams.get('mutes') || '');
-    let mutedList = mutesRaw ? mutesRaw.split(',').filter(x => x.length > 0) : [];
+    let mutedList = cachedMutes ? JSON.parse(cachedMutes) : (mutesRaw ? mutesRaw.split(',').filter(x => x.length > 0) : []);
 
     function recordToggle(mod, state) {
       if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
@@ -505,6 +510,7 @@
 
     function applySettingsBatch() {
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      localStorage.setItem(settingsKey, JSON.stringify(pendingSettings));
       sendActionToBot({
         action: "save_all_settings",
         settings: pendingSettings
@@ -544,6 +550,7 @@
       if (!val) return tg.showAlert("Введите числовой ID или @username!");
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
       mutedList.push(val);
+      localStorage.setItem(mutesKey, JSON.stringify(mutedList));
       renderMuted();
       sendActionToBot({ action: "add_mute", target: val });
       document.getElementById('mute-input').value = "";
@@ -552,6 +559,7 @@
     function unmuteItem(targetId) {
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
       mutedList = mutedList.filter(id => id !== targetId);
+      localStorage.setItem(mutesKey, JSON.stringify(mutedList));
       renderMuted();
       sendActionToBot({ action: "unmute_user", target: targetId });
     }
@@ -568,26 +576,14 @@
 
     function shareRef() {
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
-      const prepId = urlParams.get('prep');
-
-      if (prepId && tg.shareMessage) {
-        tg.shareMessage(prepId, (success) => {
-          if (!success) fallbackMultiShare();
-        });
-      } else {
-        fallbackMultiShare();
-      }
-    }
-
-    function fallbackMultiShare() {
-      if (tg.switchInlineQuery) {
-        tg.switchInlineQuery("invite");
-      } else {
-        const botUser = tg.initDataUnsafe?.bot?.username || "fgram_dox_bot";
-        const link = `https://t.me/${botUser}?start=ref_${currentUserId}`;
-        const promoText = "FGram Suite — приватный комплекс безопасности диалогов.\nАктивировать доступ:";
-        tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(promoText)}`);
-      }
+      const botUser = tg.initDataUnsafe?.bot?.username || "fgram_dox_bot";
+      const link = `https://t.me/${botUser}?start=ref_${currentUserId}`;
+      const promoText = "FGram Suite — приватный комплекс мониторинга и безопасности диалогов:\n\n" +
+                        "• Фиксация удалённых и изменённых сообщений\n" +
+                        "• Скачивание фото/видео с таймером просмотра\n" +
+                        "• Моментальный авто-мут спамеров\n\n" +
+                        "Активировать доступ:";
+      tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(promoText)}`);
     }
 
     function copyRef() {
@@ -598,7 +594,6 @@
       tg.showAlert("Ссылка скопирована:\n" + link);
     }
 
-    // НОВЫЕ УТИЛИТЫ
     function genPassword() {
       const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
       let pass = "";
@@ -619,7 +614,7 @@
       else if (val < 900000000) est = "~2018–2019 гг.";
       else if (val < 1600000000) est = "~2020–2021 гг.";
       else if (val < 5500000000) est = "~2022–2023 гг.";
-      else if (val < 7200000000) est = "~2024–2025 гг.";
+      else if (val < 7300000000) est = "~2024–2025 гг.";
 
       const resBox = document.getElementById('id-calc-res');
       resBox.style.display = "block";
