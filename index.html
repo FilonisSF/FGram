@@ -11,8 +11,10 @@
       --card-bg: rgba(17, 24, 39, 0.85);
       --card-border: rgba(56, 189, 248, 0.2);
       --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.35);
       --purple: #a855f7;
       --danger: #f43f5e;
+      --success: #10b981;
       --text: #f8fafc;
       --muted: #64748b;
     }
@@ -75,22 +77,6 @@
     }
     .timer-val { font-family: monospace; font-size: 13px; font-weight: 700; color: #fff; }
 
-    .metric-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-    .metric-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 10px;
-      text-align: center;
-    }
-    .metric-val { font-size: 18px; font-weight: 800; color: var(--accent); }
-    .metric-lbl { font-size: 10px; color: var(--muted); margin-top: 2px; }
-
     .tab-content { display: none; }
     .tab-content.active { display: block; animation: fadeIn 0.2s ease-out; }
 
@@ -117,20 +103,48 @@
       margin-bottom: 10px;
     }
 
-    .terminal-box {
-      background: #050811;
-      border: 1px solid #1e293b;
-      border-radius: 10px;
-      padding: 10px;
-      font-family: monospace;
-      font-size: 11px;
-      color: #38bdf8;
-      height: 110px;
-      overflow-y: auto;
-      margin-top: 8px;
+    /* СВИТЧЕРЫ С ОПИСАНИЕМ */
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 11px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
-    .log-line { margin-bottom: 4px; }
-    .log-time { color: #64748b; }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-info b { display: block; font-size: 13px; margin-bottom: 2px; }
+    .toggle-info span { font-size: 11px; color: var(--muted); line-height: 1.3; display: block; }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+      margin-left: 12px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      inset: 0;
+      background-color: #334155;
+      transition: .25s ease;
+      border-radius: 24px;
+      cursor: pointer;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #fff;
+      transition: .25s ease;
+      border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--accent); }
+    input:checked + .slider:before { transform: translateX(20px); }
 
     .input-box {
       width: 100%;
@@ -160,6 +174,25 @@
     .btn-accent { background: var(--accent); color: #070b14; }
     .btn-purple { background: var(--purple); color: #fff; }
     .btn-danger { background: rgba(244, 63, 94, 0.15); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
+
+    /* КАРТОЧКИ ТАРИФОВ ЗВЕЗД */
+    .stars-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .star-card {
+      background: rgba(7, 11, 20, 0.85);
+      border: 1px solid rgba(250, 204, 21, 0.25);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .star-card:hover { border-color: #facc15; }
+    .star-title { font-size: 13px; font-weight: 700; color: #f8fafc; }
+    .star-price { font-size: 15px; font-weight: 800; color: #facc15; margin-top: 4px; }
 
     .bottom-nav {
       position: fixed;
@@ -203,80 +236,130 @@
       <div id="u-badge" class="status-badge badge-owner">👑 OWNER</div>
     </div>
     <div class="timer-box">
-      <span>Лицензия:</span>
+      <span>Срок лицензии:</span>
       <span class="timer-val" id="countdown">FOREVER (БЕЗЛИМИТ)</span>
     </div>
   </div>
 
-  <!-- МЕТРИКИ -->
-  <div class="metric-grid">
-    <div class="metric-card">
-      <div class="metric-val">100%</div>
-      <div class="metric-lbl">Ядро MTProto</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-val">0.04s</div>
-      <div class="metric-lbl">Скорость спама</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-val">AUTO</div>
-      <div class="metric-lbl">TTL Catcher</div>
-    </div>
-  </div>
-
-  <!-- ВКЛАДКА 1: КОНСОЛЬ -->
-  <div id="tab-dash" class="tab-content active">
+  <!-- ВКЛАДКА 1: МОДУЛИ С ОПИСАНИЕМ -->
+  <div id="tab-modules" class="tab-content active">
     <div class="card">
-      <div class="card-title">Системный журнал терминала</div>
-      <div class="terminal-box" id="term-logs">
-        <div class="log-line"><span class="log-time">[SYSTEM]</span> FGram Platform Suite v15.0 активен</div>
-        <div class="log-line"><span class="log-time">[MTPROTO]</span> Сессия авторизована, команды слушают чат</div>
-        <div class="log-line"><span class="log-time">[DAEMON]</span> Моментальный мут активен на входящие сообщения</div>
+      <div class="card-title">Переключатели перехвата и защиты</div>
+      
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <b>Anti-Delete Логгер</b>
+          <span>Перехват чужих удалений без логирования своих</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" checked onchange="toggleMod('anti_delete', this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <b>Anti-Edit Детектор</b>
+          <span>Фиксация чужих правок сообщений («Было» / «Стало»)</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" checked onchange="toggleMod('anti_edit', this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <b>Таймер-медиа (TTL Downloader)</b>
+          <span>Скачивание одноразовых фото/видео до их исчезновения</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" checked onchange="toggleMod('save_ttl_media', this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <b>Режим «Не беспокоить» (DND)</b>
+          <span>Моментально стирает входящие и дублирует вам в ЛС</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" onchange="toggleMod('dnd', this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <b>Моментальный авто-мут</b>
+          <span>Автоматическое стирание входящих от нарушителей</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" checked onchange="toggleMod('auto_mute', this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <b>Тихие уведомления</b>
+          <span>Присылать отчеты шпиона в Избранное без звука</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" onchange="toggleMod('silent_notifications', this.checked)">
+          <span class="slider"></span>
+        </label>
       </div>
     </div>
+  </div>
 
+  <!-- ВКЛАДКА 2: ВЫДАЧА ПОДПИСОК (ДЛЯ АДМИНА) -->
+  <div id="tab-admin" class="tab-content">
     <div class="card">
-      <div class="card-title">Быстрые команды в любых диалогах</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.спам 5 привет</code> — ультра-быстрая рассылка</p>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.мут</code> — мгновенно удалять сообщения собеседника</p>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.анмут</code> — вернуть возможность писать</p>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.афк [причина]</code> — режим автоответчика</p>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">• <code>.пинг</code> и <code>.ид</code> — отклик и паспорт объекта</p>
+      <div class="card-title">👑 Выдача лицензии пользователю</div>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Укажите Telegram ID или @username:</p>
+      <input type="text" id="grant-user" class="input-box" placeholder="@username или ID...">
+
+      <p style="font-size:12px; color:var(--muted); margin:10px 0 6px 0;">Срок действия (например: 7d, 30d, 12h, forever):</p>
+      <input type="text" id="grant-dur" class="input-box" placeholder="7d, 30d, 1h или forever...">
+
+      <button class="btn btn-accent" onclick="grantSub()">⚡ Активировать лицензию</button>
     </div>
   </div>
 
-  <!-- ВКЛАДКА 2: МУТ -->
+  <!-- ВКЛАДКА 3: МАГАЗИН ЗВЕЗД (TELEGRAM STARS) -->
+  <div id="tab-shop" class="tab-content">
+    <div class="card">
+      <div class="card-title">⭐ Продление подписки за Звёзды</div>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Нажмите на тариф для выставления официального счета:</p>
+      
+      <div class="stars-grid">
+        <div class="star-card" onclick="triggerStarsInvoice('7d')">
+          <div class="star-title">⚡ 7 Дней</div>
+          <div class="star-price">50 ⭐️</div>
+        </div>
+        <div class="star-card" onclick="triggerStarsInvoice('30d')">
+          <div class="star-title">⭐ 30 Дней</div>
+          <div class="star-price">149 ⭐️</div>
+        </div>
+      </div>
+
+      <div class="star-card" style="margin-top:10px;" onclick="triggerStarsInvoice('forever')">
+        <div class="star-title">💎 Лицензия Навсегда (Forever)</div>
+        <div class="star-price">499 ⭐️</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ВКЛАДКА 4: МУТ-ЛИСТ -->
   <div id="tab-mute" class="tab-content">
     <div class="card">
       <div class="card-title">🔇 Моментальный авто-мут</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Любые сообщения от указанных ID будут стираться мгновенно:</p>
-      <input type="text" id="mute-val" class="input-box" placeholder="Введите числовой ID цели...">
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">ID нарушителя для стирания сообщений:</p>
+      <input type="text" id="mute-val" class="input-box" placeholder="Числовой ID...">
       <button class="btn btn-accent" onclick="addMute()">🚫 Замутить объект</button>
-      <button class="btn btn-danger" onclick="clearMutes()">🗑 Стереть весь черный список</button>
-    </div>
-  </div>
-
-  <!-- ВКЛАДКА 3: ТАРГЕТ-РАДАР -->
-  <div id="tab-target" class="tab-content">
-    <div class="card">
-      <div class="card-title">🎯 Таргет-радар (Группы / Каналы)</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Приоритетное логирование удалений и правок в чатах:</p>
-      <input type="text" id="target-val" class="input-box" placeholder="@channel или ID чата...">
-      <button class="btn btn-accent" onclick="addTarget()">➕ Поставить на особый контроль</button>
-    </div>
-  </div>
-
-  <!-- ВКЛАДКА 4: OSINT-СКАНЕР -->
-  <div id="tab-osint" class="tab-content">
-    <div class="card">
-      <div class="card-title">🔍 OSINT Экспресс-сканер</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Введите юзернейм или ID для быстрого анализа возраста:</p>
-      <input type="text" id="osint-val" class="input-box" placeholder="@username или ID...">
-      <button class="btn btn-purple" onclick="scanOsint()">🔎 Проанализировать объект</button>
-      
-      <div id="osint-res" style="display:none; margin-top:12px; padding:10px; background:#050811; border-radius:8px; font-size:12px;">
-        <div id="osint-out"></div>
-      </div>
+      <button class="btn btn-danger" onclick="clearMutes()">🗑 Очистить весь список</button>
     </div>
   </div>
 
@@ -284,28 +367,28 @@
   <div id="tab-refs" class="tab-content">
     <div class="card">
       <div class="card-title">👥 Бонусные дни (+1 день)</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 10px 0;">За каждого приглашенного друга начисляется +1 день лицензии!</p>
-      <button class="btn btn-purple" onclick="copyRef()">🔗 Скопировать реферальную ссылку</button>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 10px 0;">За каждого друга начисляется +1 день доступа!</p>
+      <button class="btn btn-purple" onclick="copyRef()">🔗 Скопировать ссылку</button>
     </div>
   </div>
 
   <!-- НАВБАР -->
   <div class="bottom-nav">
-    <button class="nav-btn active" onclick="switchNav('dash', this)">
-      <span class="nav-icon">📊</span>
-      <span>Консоль</span>
+    <button class="nav-btn active" onclick="switchNav('modules', this)">
+      <span class="nav-icon">⚙️</span>
+      <span>Модули</span>
+    </button>
+    <button class="nav-btn" onclick="switchNav('admin', this)">
+      <span class="nav-icon">👑</span>
+      <span>Выдача</span>
+    </button>
+    <button class="nav-btn" onclick="switchNav('shop', this)">
+      <span class="nav-icon">⭐</span>
+      <span>Звёзды</span>
     </button>
     <button class="nav-btn" onclick="switchNav('mute', this)">
       <span class="nav-icon">🔇</span>
       <span>Мут</span>
-    </button>
-    <button class="nav-btn" onclick="switchNav('target', this)">
-      <span class="nav-icon">🎯</span>
-      <span>Таргет</span>
-    </button>
-    <button class="nav-btn" onclick="switchNav('osint', this)">
-      <span class="nav-icon">🔍</span>
-      <span>OSINT</span>
     </button>
     <button class="nav-btn" onclick="switchNav('refs', this)">
       <span class="nav-icon">👥</span>
@@ -332,6 +415,26 @@
       btn.classList.add('active');
     }
 
+    function toggleMod(mod, state) {
+      if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
+      tg.sendData(JSON.stringify({ action: "toggle_setting", module: mod, state: state }));
+    }
+
+    function grantSub() {
+      const target = document.getElementById('grant-user').value.trim();
+      const dur = document.getElementById('grant-dur').value.trim();
+      if (!target || !dur) return tg.showAlert("Заполните оба поля!");
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
+      tg.sendData(JSON.stringify({ action: "grant_subscription", target: target, duration: dur }));
+      document.getElementById('grant-user').value = "";
+      document.getElementById('grant-dur').value = "";
+    }
+
+    function triggerStarsInvoice(plan) {
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+      tg.close();
+    }
+
     function addMute() {
       const val = document.getElementById('mute-val').value.trim();
       if (!val) return tg.showAlert("Введите числовой ID!");
@@ -345,39 +448,12 @@
       tg.sendData(JSON.stringify({ action: "clear_mutes" }));
     }
 
-    function addTarget() {
-      const val = document.getElementById('target-val').value.trim();
-      if (!val) return tg.showAlert("Введите @channel или ID чата!");
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
-      tg.sendData(JSON.stringify({ action: "add_target", target: val }));
-      document.getElementById('target-val').value = "";
-    }
-
     function copyRef() {
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
       const bot = tg.initDataUnsafe?.bot?.username || "fgram_dox_bot";
       const link = `https://t.me/${bot}?start=ref_${user.id}`;
       navigator.clipboard.writeText(link);
       tg.showAlert("Реферальная ссылка скопирована:\n" + link);
-    }
-
-    function scanOsint() {
-      const val = document.getElementById('osint-val').value.trim();
-      if (!val) return tg.showAlert("Укажите @username или ID!");
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-
-      const out = document.getElementById('osint-out');
-      document.getElementById('osint-res').style.display = 'block';
-      out.innerHTML = `⏳ <i>Анализ объекта ${val}...</i>`;
-
-      setTimeout(() => {
-        out.innerHTML = `
-          <b>🎯 Результат анализа:</b><br>
-          • Объект: <code>${val}</code><br>
-          • Подключение: MTProto DC Linked<br>
-          • Мониторинг: Доступен для слежки
-        `;
-      }, 600);
     }
   </script>
 </body>
