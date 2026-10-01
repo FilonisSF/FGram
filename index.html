@@ -541,7 +541,6 @@ document.getElementById('u-name').innerText = fullName;
 document.getElementById('u-tag').innerText = username ? `@${username}` : "отсутствует";
 document.getElementById('u-id').innerText = uid;
 
-// Умная загрузка и кэширование аватарки
 const avEl = document.getElementById('u-avatar');
 let photoUrl = tgUser?.photo_url;
 if (photoUrl) {
@@ -747,7 +746,7 @@ function calcHash(type) {
     b.style.display = 'block';
 }
 
-// Расхэширование без разрушения регистра Base64
+// Расхэширование без разрушения регистра Base64[cite: 5]
 function dehash() {
     const raw = document.getElementById('dehash-input').value.trim();
     if (!raw) return tg.showAlert("Вставьте хэш или строку Base64!");
@@ -800,7 +799,7 @@ const refLink = `https://t.me/asteria_suite_bot?start=ref_${uid}`;
 document.getElementById('ref-link').innerText = refLink;
 document.getElementById('ref-count').innerText = P.get('refs') || '0';
 function shareRef() {
-    const text = encodeURIComponent('🛡 Asteria Suite — умный ассистент диалогов');
+    const text = encodeURIComponent('🛡 Asteria Suite — интеллектуальный комплекс управления диалогами');
     const url = encodeURIComponent(refLink);
     try { tg.openTelegramLink(`https://t.me/share/url?url=${url}&text=${text}`); }
     catch(e) { window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank'); }
