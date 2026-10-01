@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FGram Suite Dashboard v26.0</title>
+    <title>FGram Suite Dashboard v27.0</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
             --bg: #050811;
-            --card-bg: rgba(13, 20, 36, 0.82);
+            --card-bg: rgba(13, 20, 36, 0.85);
             --card-border: rgba(56, 189, 248, 0.18);
             --accent: #38bdf8;
             --purple: #a855f7;
@@ -23,7 +23,7 @@
 
         body {
             margin: 0;
-            padding: 14px 14px 115px 14px;
+            padding: 14px 14px 125px 14px;
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg);
             background-image:
@@ -286,7 +286,7 @@
 </head>
 <body>
 
-<div id="toast">✅ Настройка применена</div>
+<div id="toast">✅ Изменение сохранено</div>
 
 <div class="profile-card">
     <div class="profile-top">
@@ -317,7 +317,7 @@
     </div>
 </div>
 
-<!-- ВКЛАДКА 1: ЗАЩИТА (МОМЕНТАЛЬНОЕ СОХРАНЕНИЕ ПРИ КЛИКЕ) -->
+<!-- ВКЛАДКА 1: ЗАЩИТА (ИСПРАВЛЕН БАГ 4: БЕЗ ЗАКРЫТИЯ ПРИЛОЖЕНИЯ) -->
 <div id="tab-settings" class="tab-content active">
     <div class="card" id="card-protect">
         <div id="lock-protect" class="lock-overlay" style="display:none;">
@@ -337,7 +337,7 @@
                 <p>Фиксация удалённого текста, фото, голосовых и видео-кружков</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-ad" onchange="autoApplyToggle('anti_delete', this.checked)">
+                <input type="checkbox" id="set-ad" onchange="handleSettingToggle('anti_delete', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -348,7 +348,7 @@
                 <p>Сохранение оригинального варианта сообщения до правки</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-ae" onchange="autoApplyToggle('anti_edit', this.checked)">
+                <input type="checkbox" id="set-ae" onchange="handleSettingToggle('anti_edit', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -359,7 +359,7 @@
                 <p>Скачивание самоуничтожающихся фото и видео с таймером</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-ttl" onchange="autoApplyToggle('save_ttl_media', this.checked)">
+                <input type="checkbox" id="set-ttl" onchange="handleSettingToggle('save_ttl_media', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -370,7 +370,7 @@
                 <p>Доставка всех уведомлений и алертов без звука</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-sil" onchange="autoApplyToggle('silent_notifications', this.checked)">
+                <input type="checkbox" id="set-sil" onchange="handleSettingToggle('silent_notifications', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -383,7 +383,7 @@
                 <p>Блокирует спамера на 15 минут с уведомлением об остатке времени</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-asm" onchange="autoApplyToggle('anti_spam_mute', this.checked)">
+                <input type="checkbox" id="set-asm" onchange="handleSettingToggle('anti_spam_mute', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -394,7 +394,7 @@
                 <p>Стирать любые сообщения от целей из вкладки «Мут»</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-am" onchange="autoApplyToggle('auto_mute', this.checked)">
+                <input type="checkbox" id="set-am" onchange="handleSettingToggle('auto_mute', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -405,7 +405,7 @@
                 <p>Автоматическая очистка всех новых личных входящих сообщений</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-dnd" onchange="autoApplyToggle('dnd', this.checked)">
+                <input type="checkbox" id="set-dnd" onchange="handleSettingToggle('dnd', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -418,7 +418,7 @@
                 <p>Защищает ваш Telegram-паспорт от запросов других игроков</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-adox" onchange="autoApplyToggle('anti_dox', this.checked)">
+                <input type="checkbox" id="set-adox" onchange="handleSettingToggle('anti_dox', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -429,7 +429,7 @@
                 <p>Блокирует показ истории имён и телефонов в базах комплекса</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-ados" onchange="autoApplyToggle('anti_dossier', this.checked)">
+                <input type="checkbox" id="set-ados" onchange="handleSettingToggle('anti_dossier', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -468,11 +468,11 @@
     </div>
 </div>
 
-<!-- ВКЛАДКА 4: УТИЛИТЫ (ГЕНЕРАТОР ПАРОЛЕЙ И КЛЮЧЕЙ) -->
+<!-- ВКЛАДКА 4: УТИЛИТЫ -->
 <div id="tab-utils" class="tab-content">
     <div class="card">
         <div class="card-title">🔐 Генератор паролей и ключей</div>
-        <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Создание взломостойких паролей и Seed-фраз для криптокошельков:</p>
+        <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Создание надёжных паролей и Seed-фраз для криптокошельков:</p>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
             <button class="btn btn-accent" onclick="generateCustomPassword(16)">Пароль 16 зн.</button>
@@ -488,7 +488,7 @@
     </div>
 </div>
 
-<!-- ВКЛАДКА 5: СКРЫТАЯ ПАНЕЛЬ ВЛАДЕЛЬЦА -->
+<!-- ВКЛАДКА 5: СКРЫТАЯ ПАНЕЛЬ ВЛАДЕЛЬЦА (ИСПРАВЛЕН БАГ 1) -->
 <div id="tab-owner" class="tab-content">
     <div class="card">
         <div class="card-title">👑 Скрытые функции Владельца</div>
@@ -498,7 +498,7 @@
                 <p>Запрет на мут, сбор досье и пробив создателя</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-god" onchange="autoApplyToggle('god_mode', this.checked)">
+                <input type="checkbox" id="set-god" onchange="handleSettingToggle('god_mode', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -630,7 +630,7 @@
         t.innerText = msg;
         t.classList.add('show');
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-        setTimeout(() => t.classList.remove('show'), 2000);
+        setTimeout(() => t.classList.remove('show'), 1800);
     }
 
     function switchNav(id, btn) {
@@ -641,7 +641,8 @@
         btn.classList.add('active');
     }
 
-    function autoApplyToggle(key, val) {
+    // ИСПРАВЛЕН БАГ 4: Приложение больше не закрывается при переключении
+    function handleSettingToggle(key, val) {
         if (role === 'free') {
             document.getElementById(key).checked = !val;
             return tg.showAlert("⛔ Требуется активная лицензия!");
@@ -650,12 +651,14 @@
         localStorage.setItem('fgram_settings', JSON.stringify(appSettings));
         showToast(val ? "✅ Включено" : "❌ Выключено");
 
-        try {
+        // Отображение кнопки сохранения настроек внизу экрана
+        tg.MainButton.setText("💾 СОХРАНИТЬ НАСТРОЙКИ").show();
+        tg.MainButton.onClick(() => {
             tg.sendData(JSON.stringify({
                 action: "save_all_settings",
                 settings: appSettings
             }));
-        } catch(e) {}
+        });
     }
 
     function addMuteDirect() {
