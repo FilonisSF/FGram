@@ -8,12 +8,11 @@
     <style>
         :root {
             --bg: #050711;
-            --card-bg: rgba(13, 20, 36, 0.75);
+            --card-bg: rgba(13, 20, 36, 0.78);
             --card-border: rgba(56, 189, 248, 0.2);
             --accent: #38bdf8;
             --accent-glow: rgba(56, 189, 248, 0.35);
             --purple: #c084fc;
-            --purple-bg: rgba(192, 132, 252, 0.15);
             --gold: #facc15;
             --danger: #fb7185;
             --text: #f8fafc;
@@ -24,7 +23,7 @@
 
         body {
             margin: 0;
-            padding: 14px 14px 110px 14px;
+            padding: 14px 14px 115px 14px;
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg);
             background-image:
@@ -68,17 +67,9 @@
             position: relative;
             overflow: hidden;
         }
-        .profile-card::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 200%; height: 1px;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            animation: sweep 4s infinite linear;
-        }
-        @keyframes sweep { 0% { transform: translateX(0); } 100% { transform: translateX(100%); } }
 
         .profile-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .profile-top h2 { margin: 0; font-size: 21px; font-weight: 800; letter-spacing: -0.02em; }
+        .profile-top h2 { margin: 0; font-size: 21px; font-weight: 800; }
 
         .status-badge {
             display: inline-flex;
@@ -88,7 +79,6 @@
             border-radius: 24px;
             font-size: 11px;
             font-weight: 800;
-            letter-spacing: 0.04em;
         }
         .badge-owner { background: rgba(250, 204, 21, 0.15); border: 1px solid rgba(250, 204, 21, 0.4); color: var(--gold); }
         .badge-prem { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: var(--accent); }
@@ -120,10 +110,9 @@
             padding: 12px 6px;
             text-align: center;
             backdrop-filter: blur(20px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
         .metric-val { font-size: 20px; font-weight: 800; color: var(--accent); }
-        .metric-lbl { font-size: 10px; color: var(--muted); margin-top: 3px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+        .metric-lbl { font-size: 10px; color: var(--muted); margin-top: 3px; font-weight: 700; text-transform: uppercase; }
 
         .card {
             background: var(--card-bg);
@@ -132,7 +121,6 @@
             padding: 16px;
             margin-bottom: 12px;
             backdrop-filter: blur(25px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
         }
 
         .card-title {
@@ -167,7 +155,7 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
         .toggle-row:last-child { border-bottom: none; }
-        .toggle-info h4 { margin: 0; font-size: 13px; font-weight: 600; display:flex; align-items:center; gap:6px; }
+        .toggle-info h4 { margin: 0; font-size: 13px; font-weight: 600; }
         .toggle-info p { margin: 3px 0 0 0; font-size: 11px; color: var(--muted); line-height: 1.35; }
 
         .tag-pill {
@@ -193,12 +181,8 @@
             background-color: white;
             transition: .25s cubic-bezier(0.4, 0, 0.2, 1);
             border-radius: 50%;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
         }
-        input:checked + .slider {
-            background-color: var(--accent);
-            box-shadow: 0 0 15px var(--accent-glow);
-        }
+        input:checked + .slider { background-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
         input:checked + .slider:before { transform: translateX(22px); }
 
         .input-box {
@@ -211,7 +195,6 @@
             font-size: 13px;
             outline: none;
             margin-top: 6px;
-            transition: border-color 0.2s;
         }
         .input-box:focus { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
 
@@ -224,27 +207,25 @@
             font-weight: 700;
             cursor: pointer;
             margin-top: 8px;
-            transition: all 0.15s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
         }
         .btn:active { transform: scale(0.98); opacity: 0.9; }
-        .btn-accent { background: linear-gradient(135deg, var(--accent), #0284c7); color: #050811; font-weight: 800; box-shadow: 0 4px 15px var(--accent-glow); }
+        .btn-accent { background: linear-gradient(135deg, var(--accent), #0284c7); color: #050811; font-weight: 800; }
         .btn-purple { background: linear-gradient(135deg, var(--purple), #7e22ce); color: #fff; }
-        .btn-gold { background: linear-gradient(135deg, #facc15, #ca8a04); color: #050811; font-weight: 800; }
+        .btn-gold { background: linear-gradient(135deg, var(--gold), #ca8a04); color: #050811; font-weight: 800; }
         .btn-danger { background: rgba(251, 113, 133, 0.15); color: var(--danger); border: 1px solid rgba(251, 113, 133, 0.3); }
 
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.25s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-content.active { display: block; }
 
         .bottom-nav {
             position: fixed;
             bottom: 0; left: 0; right: 0;
             height: 72px;
-            background: rgba(9, 14, 26, 0.92);
+            background: rgba(9, 14, 26, 0.94);
             backdrop-filter: blur(30px);
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
@@ -265,7 +246,6 @@
             font-weight: 600;
             cursor: pointer;
             width: 20%;
-            transition: color 0.15s;
         }
         .nav-btn.active { color: var(--accent); }
         .nav-icon { font-size: 20px; }
@@ -278,9 +258,7 @@
             font-family: monospace;
             font-size: 13px;
             color: #38bdf8;
-            word-break: break-all;
             margin-top: 10px;
-            user-select: all;
             text-align: center;
         }
 
@@ -326,7 +304,7 @@
     </div>
     <div class="metric-card">
         <div class="metric-val" id="m-mutes">0</div>
-        <div class="metric-lbl">В блоке</div>
+        <div class="metric-lbl">Мой ЧС</div>
     </div>
 </div>
 
@@ -335,7 +313,7 @@
     <div class="card" id="card-protect">
         <div class="card-title">🛡 Защита диалогов и аудит</div>
 
-        <div class="category-header">📡 Мониторинг диалогов</div>
+        <div class="category-header">📡 Мониторинг диалогов 24/7</div>
 
         <div class="toggle-row">
             <div class="toggle-info">
@@ -396,7 +374,7 @@
 
         <div class="toggle-row">
             <div class="toggle-info">
-                <h4>Чёрный список <span class="tag-pill">БЛОКИРОВКА</span></h4>
+                <h4>Мой чёрный список <span class="tag-pill">БЛОКИРОВКА</span></h4>
                 <p>Стирать любые сообщения от целей из вкладки блокировок</p>
             </div>
             <label class="switch">
@@ -431,7 +409,7 @@
 
         <div class="toggle-row">
             <div class="toggle-info">
-                <h4>Приватность истории <span class="tag-pill" style="color:var(--purple); background:var(--purple-bg);">ИСТОРИЯ</span></h4>
+                <h4>Приватность истории <span class="tag-pill" style="color:var(--purple); background:rgba(192,132,252,0.15);">ИСТОРИЯ</span></h4>
                 <p>Скрывает историю смены имён и телефонов</p>
             </div>
             <label class="switch">
@@ -439,21 +417,20 @@
                 <span class="slider"></span>
             </label>
         </div>
-
-        <button id="save-settings-btn" class="btn btn-accent" style="display:none; margin-top:14px;" onclick="commitSettingsToBot()">💾 Сохранить настройки в базе</button>
     </div>
 </div>
 
-<!-- ВКЛАДКА 2: ЧЁРНЫЙ СПИСОК -->
+<!-- ВКЛАДКА 2: МОЙ ЧЁРНЫЙ СПИСОК -->
 <div id="tab-mute" class="tab-content">
     <div class="card">
-        <div class="card-title">Чёрный список</div>
+        <div class="card-title">Мой личный чёрный список</div>
         <input type="text" id="mute-val" class="input-box" placeholder="@username или числовой ID...">
-        <button class="btn btn-accent" onclick="addMuteDirect()">🚫 Добавить в список</button>
+        <button class="btn btn-accent" onclick="addMuteDirect()">🚫 Заблокировать объект</button>
     </div>
     <div class="card">
-        <div class="card-title">Заблокированные объекты</div>
+        <div class="card-title">Заблокированные в моих диалогах</div>
         <div id="mute-list-container"><span style="font-size:12px; color:var(--muted);">Список пуст</span></div>
+        <button class="btn btn-danger" style="margin-top:10px;" onclick="clearAllMutesDirect()">⚡ Очистить мой чёрный список</button>
     </div>
 </div>
 
@@ -463,8 +440,8 @@
         <div class="card-title">🔍 Анализ профилей</div>
         <input type="text" id="osint-val" class="input-box" placeholder="@username или Telegram ID...">
         <div style="display:flex; gap:8px; margin-top:6px;">
-            <button class="btn btn-accent" onclick="renderOsintInApp('probe')">🌐 Паспорт профиля</button>
-            <button class="btn btn-purple" onclick="renderOsintInApp('dossier')">📁 История активности</button>
+            <button class="btn btn-accent" onclick="sendOsintQuery('query_profile')">🌐 Паспорт профиля</button>
+            <button class="btn btn-purple" onclick="sendOsintQuery('query_dossier')">📁 История активности</button>
         </div>
         <div id="osint-res-card" style="display:none; background:#03060f; border:1px solid rgba(56,189,248,0.25); border-radius:14px; padding:14px; margin-top:12px; font-size:12px;">
             <div id="osint-content"></div>
@@ -472,7 +449,7 @@
     </div>
 </div>
 
-<!-- ВКЛАДКА 4: УТИЛИТЫ И ИНСТРУМЕНТЫ -->
+<!-- ВКЛАДКА 4: ИНСТРУМЕНТЫ -->
 <div id="tab-utils" class="tab-content">
     <div class="card">
         <div class="card-title">🔐 Генератор безопасных ключей</div>
@@ -480,23 +457,15 @@
             <button class="btn btn-accent" onclick="generateCustomPassword(16)">Пароль 16 зн.</button>
             <button class="btn btn-accent" onclick="generateCustomPassword(24)">Пароль 24 зн.</button>
         </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px;">
-            <button class="btn btn-purple" onclick="generateCustomPassword(32)">Пароль 32 зн.</button>
-            <button class="btn btn-purple" onclick="generateSeedPhrase()">Seed 12 слов</button>
-        </div>
         <div class="pwd-display" id="pwd-box" style="display:none;"></div>
         <button id="copy-pwd-btn" class="btn btn-accent" style="display:none;" onclick="copyPassword()">📋 Скопировать в буфер</button>
     </div>
 
-    <!-- НОВАЯ УТИЛИТА: КОДИРОВЩИК / ДЕКОДЕР BASE64 -->
     <div class="card">
-        <div class="card-title">🔏 Шифратор сообщений (Base64)</div>
-        <input type="text" id="crypt-val" class="input-box" placeholder="Введите текст для шифрования...">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px;">
-            <button class="btn btn-accent" onclick="encodeBase64()">Зашифровать</button>
-            <button class="btn btn-purple" onclick="decodeBase64()">Расшифровать</button>
-        </div>
-        <div class="pwd-display" id="crypt-box" style="display:none;"></div>
+        <div class="card-title">🧮 Быстрый расчёт в приложении</div>
+        <input type="text" id="calc-in-app" class="input-box" placeholder="Например: 1500 * (1 + 0.13)...">
+        <button class="btn btn-accent" onclick="evalInAppCalc()">Вычислить</button>
+        <div class="pwd-display" id="calc-res-box" style="display:none;"></div>
     </div>
 </div>
 
@@ -514,11 +483,10 @@
                 <span class="slider"></span>
             </label>
         </div>
-        <button class="btn btn-danger" style="margin-top:12px;" onclick="clearAllMutesDirect()">⚡ Снять все блокировки</button>
     </div>
 
     <div class="card">
-        <div class="card-title">👑 Выдача лицензии пользователю (.саб)</div>
+        <div class="card-title">👑 Выдача лицензии пользователю (/sub)</div>
         <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Укажите @username или числовой Telegram ID:</p>
         <input type="text" id="owner-target" class="input-box" placeholder="@username или ID цели...">
 
@@ -541,7 +509,7 @@
     </button>
     <button class="nav-btn" onclick="switchNav('mute', this)">
         <span class="nav-icon">🔇</span>
-        <span>Список</span>
+        <span>Мой ЧС</span>
     </button>
     <button class="nav-btn" onclick="switchNav('osint', this)">
         <span class="nav-icon">🔍</span>
@@ -628,13 +596,8 @@
         document.getElementById('set-god').checked = appSettings.god_mode;
     }
 
-    let savedMutes = null;
-    try { savedMutes = JSON.parse(localStorage.getItem('fgram_mutes')); } catch(e){}
     let rawMutes = urlParams.get('mutes') ? decodeURIComponent(urlParams.get('mutes')).split(',') : [];
-    let muteList = (savedMutes || rawMutes).filter(x => {
-        const c = x.trim().toLowerCase().replace('@', '');
-        return c.length > 0 && c !== '7783116627' && c !== 'filonis_music' && c !== 'marcell';
-    });
+    let muteList = rawMutes.filter(x => x.trim().length > 0);
 
     function renderMutes() {
         const container = document.getElementById('mute-list-container');
@@ -677,20 +640,12 @@
         localStorage.setItem('fgram_settings', JSON.stringify(appSettings));
         showToast(val ? "✅ Включено" : "❌ Выключено");
 
-        // Мгновенная синхронизация с ботом и базой
         try {
             tg.sendData(JSON.stringify({
                 action: "save_all_settings",
                 settings: appSettings
             }));
         } catch(e) {}
-    }
-
-    function commitSettingsToBot() {
-        tg.sendData(JSON.stringify({
-            action: "save_all_settings",
-            settings: appSettings
-        }));
     }
 
     function setOwnerDur(val) {
@@ -718,11 +673,10 @@
         if (!muteList.includes(val)) {
             muteList.push(val);
             renderMutes();
-            localStorage.setItem('fgram_mutes', JSON.stringify(muteList));
             try {
                 tg.sendData(JSON.stringify({ action: "add_mute", target: val }));
             } catch(e) {}
-            showToast(`🔇 Объект ${val} добавлен в список`);
+            showToast(`🔇 Объект ${val} добавлен в чёрный список`);
         }
         document.getElementById('mute-val').value = "";
     }
@@ -730,7 +684,6 @@
     function removeMuteDirect(val) {
         muteList = muteList.filter(x => x !== val);
         renderMutes();
-        localStorage.setItem('fgram_mutes', JSON.stringify(muteList));
         try {
             tg.sendData(JSON.stringify({ action: "remove_mute", target: val }));
         } catch(e) {}
@@ -740,11 +693,10 @@
     function clearAllMutesDirect() {
         muteList = [];
         renderMutes();
-        localStorage.removeItem('fgram_mutes');
         try {
             tg.sendData(JSON.stringify({ action: "clear_mutes" }));
         } catch(e) {}
-        showToast("⚡ Все ограничения сняты");
+        showToast("⚡ Чёрный список очищен");
     }
 
     let currentKey = "";
@@ -753,24 +705,10 @@
         let res = "";
         for (let i = 0; i < len; i++) res += chars.charAt(Math.floor(Math.random() * chars.length));
         currentKey = res;
-        showKeyBox(res);
-    }
-
-    function generateSeedPhrase() {
-        const words = ["abandon", "ability", "able", "about", "above", "absent", "absorb", "abstract", "absurd", "abuse", "access", "accident", "account", "accuse", "achieve", "acid", "acoustic", "acquire", "across", "act", "action", "actor", "actress", "actual", "adapt", "add", "addict", "address", "adjust", "admit", "adult", "advance", "advice", "aerobic", "afford", "afraid", "again", "age", "agent", "agree", "ahead", "aim", "air", "airport", "aisle", "alarm", "album", "alcohol", "alert", "alien", "all", "alley", "allow", "almost", "alone", "alpha", "already", "also", "alter", "always", "amateur", "amazing", "among", "amount", "amused", "analyst", "anchor", "ancient", "anger", "angle", "angry", "animal", "ankle", "announce", "annual", "another", "answer", "antenna", "antique", "anxiety", "any", "apart", "apology", "appear", "apple", "approve", "april", "arch", "arctic", "area", "arena", "argue", "arm", "armed", "armor", "army", "around", "arrange", "arrest", "arrive", "arrow", "art", "artefact", "artist", "artwork", "ask", "aspect", "assault", "asset", "assist", "assume", "asthma", "athlete", "atom", "attack", "attend", "attitude", "attract", "auction", "audit", "august", "aunt", "author", "auto", "autumn", "average", "avocado", "avoid", "awake", "aware", "away", "awesome", "awful", "awkward", "axis"];
-        let phrase = [];
-        for (let i = 0; i < 12; i++) phrase.push(words[Math.floor(Math.random() * words.length)]);
-        currentKey = phrase.join(" ");
-        showKeyBox(currentKey);
-    }
-
-    function showKeyBox(val) {
         const box = document.getElementById('pwd-box');
-        const btn = document.getElementById('copy-pwd-btn');
-        box.innerText = val;
+        box.innerText = res;
         box.style.display = 'block';
-        btn.style.display = 'block';
-        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+        document.getElementById('copy-pwd-btn').style.display = 'block';
     }
 
     function copyPassword() {
@@ -779,60 +717,30 @@
         showToast("📋 Скопировано в буфер");
     }
 
-    function encodeBase64() {
-        const v = document.getElementById('crypt-val').value;
-        if (!v) return;
-        const res = btoa(unescape(encodeURIComponent(v)));
-        const box = document.getElementById('crypt-box');
-        box.innerText = res;
-        box.style.display = 'block';
-    }
-
-    function decodeBase64() {
-        const v = document.getElementById('crypt-val').value;
-        if (!v) return;
+    function evalInAppCalc() {
+        const expr = document.getElementById('calc-in-app').value;
+        if (!expr) return;
         try {
-            const res = decodeURIComponent(escape(atob(v)));
-            const box = document.getElementById('crypt-box');
-            box.innerText = res;
+            const clean = expr.replace(/[^-()\d/*+.]/g, '');
+            const res = eval(clean);
+            const box = document.getElementById('calc-res-box');
+            box.innerText = `${expr} = ${res}`;
             box.style.display = 'block';
         } catch(e) {
-            tg.showAlert("Некорректная строка Base64!");
+            tg.showAlert("Некорректное математическое выражение!");
         }
     }
 
-    function renderOsintInApp(mode) {
+    // ОТПРАВКА ЗАПРОСА В БОТА ДЛЯ ПОЛУЧЕНИЯ РЕАЛЬНОГО ПАСПОРТА И ДОСЬЕ
+    function sendOsintQuery(actionType) {
         const val = document.getElementById('osint-val').value.trim();
-        if (!val) return tg.showAlert("Введите @username или ID!");
-        const cleanT = val.replace('@', '').toLowerCase();
-        const content = document.getElementById('osint-content');
-        document.getElementById('osint-res-card').style.display = 'block';
-
-        if (cleanT === '7783116627' || cleanT === 'filonis_music' || cleanT === 'marcell') {
-            if (appSettings.god_mode && !isOwner) {
-                content.innerHTML = `
-                    <div style="color:var(--gold); font-weight:800; margin-bottom:6px;">👑 ЗАЩИТА ПРОФИЛЯ</div>
-                    <div>🛡 Профиль принадлежит <b>Создателю комплекса Asteria</b>.<br>Анализ профиля заблокирован.</div>
-                `;
-                return;
-            }
-        }
-
-        const isDig = /^\d+$/.test(cleanT);
-        const fakeId = isDig ? cleanT : Math.abs(hashCode(cleanT));
-        content.innerHTML = `
-            <div style="color:var(--accent); font-weight:800; margin-bottom:6px;">🌐 ПАСПОРТ ОБЪЕКТА</div>
-            <div>👤 <b>Субъект:</b> ${cleanT.toUpperCase()} (@${cleanT})<br>
-            🆔 <b>Telegram ID:</b> <code>${fakeId}</code><br>
-            🏢 <b>Дата-центр:</b> DC 2 (Амстердам, Европа)<br>
-            📞 <b>Номер телефона:</b> <i>🔒 Скрыт настройками приватности</i></div>
-        `;
-    }
-
-    function hashCode(str) {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) hash = ((hash << 5) - hash) + str.charCodeAt(i);
-        return Math.abs(hash);
+        if (!val) return tg.showAlert("Введите @username или Telegram ID!");
+        tg.sendData(JSON.stringify({
+            action: actionType,
+            target: val
+        }));
+        showToast("🔍 Запрос отправлен в чат с ботом...");
+        setTimeout(() => tg.close(), 1000);
     }
 </script>
 </body>
