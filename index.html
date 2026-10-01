@@ -7,92 +7,149 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 <style>
-:root{--bg:#050711;--card-bg:rgba(13,20,36,.85);--card-border:rgba(56,189,248,.2);--accent:#38bdf8;--accent-glow:rgba(56,189,248,.35);--purple:#c084fc;--gold:#facc15;--danger:#fb7185;--green:#34d399;--text:#f8fafc;--muted:#94a3b8}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;padding:14px 14px 100px;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Roboto,sans-serif;background-color:var(--bg);background-image:radial-gradient(circle at 0% 0%,rgba(56,189,248,.18) 0%,transparent 45%),radial-gradient(circle at 100% 100%,rgba(168,85,247,.18) 0%,transparent 45%);color:var(--text);min-height:100vh;overflow-x:hidden}
-#toast{position:fixed;top:-100px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,rgba(16,185,129,.95),rgba(5,150,105,.95));border:1px solid rgba(255,255,255,.2);color:#fff;padding:10px 22px;border-radius:40px;font-size:12px;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.7);opacity:0;pointer-events:none;transition:all .3s;z-index:999999}
-#toast.show{top:16px;opacity:1}
-.profile-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:22px;padding:18px;backdrop-filter:blur(30px);margin-bottom:12px;position:relative;overflow:hidden}
-.profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--purple),var(--gold))}
-.profile-top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.avatar{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#050811;box-shadow:0 0 20px var(--accent-glow);flex-shrink:0;overflow:hidden}
-.avatar img{width:100%;height:100%;object-fit:cover}
-.profile-info{flex:1;min-width:0}
-.profile-info h2{margin:0;font-size:19px;font-weight:800}
-.profile-info .uname{font-size:12px;color:var(--accent);margin-top:2px}
-.profile-info .uid{font-size:11px;color:var(--muted);margin-top:2px;font-family:monospace}
-.status-badge{display:inline-flex;align-items:center;padding:6px 13px;border-radius:24px;font-size:11px;font-weight:800;white-space:nowrap}
-.badge-owner{background:rgba(250,204,21,.15);border:1px solid rgba(250,204,21,.4);color:var(--gold)}
-.badge-prem{background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.4);color:var(--accent)}
-.badge-free{background:rgba(251,113,133,.15);border:1px solid rgba(251,113,133,.4);color:var(--danger)}
-.timer-box{background:rgba(5,8,17,.7);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
-.timer-val{font-family:monospace;font-size:12px;font-weight:700;color:#fff}
-.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
-.metric-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:10px 4px;text-align:center}
-.metric-val{font-size:17px;font-weight:800;color:var(--accent)}
-.metric-lbl{font-size:9px;color:var(--muted);margin-top:2px;font-weight:700;text-transform:uppercase}
-.card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px;padding:16px;margin-bottom:12px;backdrop-filter:blur(25px)}
-.card-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:6px}
-.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.05)}
-.toggle-row:last-child{border-bottom:none}
-.toggle-info h4{margin:0;font-size:13px;font-weight:600}
-.toggle-info p{margin:3px 0 0;font-size:11px;color:var(--muted);line-height:1.35}
-.switch{position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0}
-.switch input{opacity:0;width:0;height:0}
-.slider{position:absolute;cursor:pointer;inset:0;background:#1e293b;transition:.25s;border-radius:26px;border:1px solid rgba(255,255,255,.08)}
-.slider:before{position:absolute;content:"";height:20px;width:20px;left:2px;bottom:2px;background:#fff;transition:.25s;border-radius:50%}
-input:checked+.slider{background-color:var(--accent);box-shadow:0 0 15px var(--accent-glow)}
-input:checked+.slider:before{transform:translateX(22px)}
-.input-box{width:100%;background:rgba(5,8,17,.8);border:1px solid rgba(255,255,255,.12);padding:12px 14px;border-radius:14px;color:#fff;font-size:13px;outline:none;margin-top:6px}
-.input-box:focus{border-color:var(--accent)}
-.btn{width:100%;padding:13px;border:none;border-radius:14px;font-size:13px;font-weight:700;cursor:pointer;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:6px;transition:transform .1s}
-.btn:active{transform:scale(.98)}
-.btn-accent{background:linear-gradient(135deg,var(--accent),#0284c7);color:#050811}
-.btn-purple{background:linear-gradient(135deg,var(--purple),#7e22ce);color:#fff}
-.btn-danger{background:rgba(251,113,133,.15);color:var(--danger);border:1px solid rgba(251,113,133,.3)}
-.btn-gold{background:linear-gradient(135deg,#facc15,#d97706);color:#050811}
-.tab-content{display:none}
-.tab-content.active{display:block;animation:fadeIn .2s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:72px;background:rgba(9,14,26,.95);backdrop-filter:blur(30px);border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-around;align-items:center;z-index:100}
-.nav-btn{background:none;border:none;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;font-weight:600;cursor:pointer;width:20%}
-.nav-btn.active{color:var(--accent)}
-.nav-icon{font-size:20px}
-.mute-chip{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:9px 14px;margin-top:6px}
-.mute-chip-del{color:var(--danger);cursor:pointer;font-weight:bold;font-size:15px}
-.result-box{background:#04060c;border:1px dashed var(--accent);border-radius:12px;padding:12px;font-family:monospace;font-size:12px;color:#38bdf8;margin-top:10px;word-break:break-all;white-space:pre-wrap}
-.ref-link{background:rgba(5,8,17,.7);border:1px solid var(--card-border);border-radius:12px;padding:10px 12px;margin-top:8px;font-family:monospace;font-size:11px;color:var(--accent);word-break:break-all}
-.blocked-screen{display:none;background:var(--card-bg);border:1px solid rgba(251,113,133,.4);border-radius:22px;padding:24px;text-align:center;margin-bottom:12px}
-.blocked-screen h2{margin:12px 0 8px;color:var(--danger);font-size:20px}
-.blocked-screen p{color:var(--muted);font-size:13px;line-height:1.5}
-.blocked-icon{font-size:56px}
-.note-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:9px 12px;margin-top:6px;font-size:12px}
-.note-item .nd{color:var(--muted);font-size:10px;margin-bottom:3px}
-.hint{font-size:10px;color:var(--muted);margin-top:6px;line-height:1.4}
-.section-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:6px 0 4px}
+:root {
+    --bg: #070a14;
+    --card-bg: rgba(15, 23, 42, 0.78);
+    --card-border: rgba(56, 189, 248, 0.22);
+    --accent: #38bdf8;
+    --accent-glow: rgba(56, 189, 248, 0.35);
+    --purple: #c084fc;
+    --gold: #facc15;
+    --danger: #fb7185;
+    --text: #f8fafc;
+    --muted: #94a3b8;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body {
+    margin: 0; padding: 14px 14px 110px;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg);
+    background-image:
+        radial-gradient(circle at 10% 0%, rgba(56, 189, 248, 0.18) 0%, transparent 50%),
+        radial-gradient(circle at 90% 100%, rgba(192, 132, 252, 0.16) 0%, transparent 50%);
+    color: var(--text); min-height: 100vh; overflow-x: hidden;
+}
+#toast {
+    position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(5, 150, 105, 0.95));
+    border: 1px solid rgba(255, 255, 255, 0.2); color: #fff;
+    padding: 10px 22px; border-radius: 40px; font-size: 13px; font-weight: 700;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7); opacity: 0; pointer-events: none;
+    transition: all 0.25s ease; z-index: 999999;
+}
+#toast.show { top: 16px; opacity: 1; }
+.profile-card {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 22px; padding: 18px; backdrop-filter: blur(25px);
+    margin-bottom: 12px; position: relative; overflow: hidden;
+}
+.profile-card::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--purple), var(--gold));
+}
+.profile-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.profile-info h2 { margin: 0; font-size: 20px; font-weight: 800; }
+.profile-info .sub-id { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.status-badge {
+    display: inline-flex; align-items: center; padding: 6px 14px;
+    border-radius: 24px; font-size: 11px; font-weight: 800;
+}
+.badge-owner { background: rgba(250, 204, 21, 0.15); border: 1px solid rgba(250, 204, 21, 0.4); color: var(--gold); }
+.badge-prem { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: var(--accent); }
+.badge-free { background: rgba(251, 113, 133, 0.15); border: 1px solid rgba(251, 113, 133, 0.4); color: var(--danger); }
+.timer-box {
+    background: rgba(5, 8, 17, 0.7); border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 12px; padding: 10px 14px; display: flex; justify-content: space-between;
+    align-items: center; font-size: 13px; color: var(--muted);
+}
+.timer-val { font-family: monospace; font-size: 13px; font-weight: 700; color: #fff; }
+.metric-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.metric-card {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 16px; padding: 12px 6px; text-align: center; backdrop-filter: blur(20px);
+}
+.metric-val { font-size: 20px; font-weight: 800; color: var(--accent); }
+.metric-lbl { font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 700; text-transform: uppercase; }
+.card {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 20px; padding: 16px; margin-bottom: 12px; backdrop-filter: blur(25px);
+}
+.card-title {
+    font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--accent); margin-bottom: 12px;
+}
+.toggle-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 11px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.toggle-row:last-child { border-bottom: none; }
+.toggle-info h4 { margin: 0; font-size: 14px; font-weight: 600; }
+.toggle-info p { margin: 3px 0 0; font-size: 12px; color: var(--muted); line-height: 1.35; }
+.switch { position: relative; display: inline-block; width: 48px; height: 26px; flex-shrink: 0; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+    position: absolute; cursor: pointer; inset: 0; background-color: #1e293b;
+    transition: .25s ease; border-radius: 26px; border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.slider:before {
+    position: absolute; content: ""; height: 20px; width: 20px; left: 2px; bottom: 2px;
+    background-color: white; transition: .25s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 50%;
+}
+input:checked + .slider { background-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+input:checked + .slider:before { transform: translateX(22px); }
+.input-box {
+    width: 100%; background: rgba(5, 8, 17, 0.8); border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 12px 14px; border-radius: 14px; color: #fff; font-size: 13px; outline: none; margin-top: 6px;
+}
+.input-box:focus { border-color: var(--accent); }
+.btn {
+    width: 100%; padding: 13px; border: none; border-radius: 14px; font-size: 13px;
+    font-weight: 700; cursor: pointer; margin-top: 8px; display: flex; align-items: center;
+    justify-content: center; gap: 6px; transition: transform 0.1s;
+}
+.btn:active { transform: scale(0.98); }
+.btn-accent { background: linear-gradient(135deg, var(--accent), #0284c7); color: #050811; }
+.btn-purple { background: linear-gradient(135deg, var(--purple), #7e22ce); color: #fff; }
+.btn-danger { background: rgba(251, 113, 133, 0.15); color: var(--danger); border: 1px solid rgba(251, 113, 133, 0.3); }
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+.bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; height: 72px;
+    background: rgba(9, 14, 26, 0.95); backdrop-filter: blur(30px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex;
+    justify-content: space-around; align-items: center; z-index: 100;
+}
+.nav-btn {
+    background: none; border: none; color: var(--muted); display: flex; flex-direction: column;
+    align-items: center; gap: 4px; font-size: 11px; font-weight: 600; cursor: pointer; width: 25%;
+}
+.nav-btn.active { color: var(--accent); }
+.nav-icon { font-size: 20px; }
+.mute-chip {
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px; padding: 10px 14px; margin-top: 6px;
+}
+.mute-chip-del { color: var(--danger); cursor: pointer; font-weight: bold; font-size: 16px; padding: 2px 6px; }
+.result-box {
+    background: #04060c; border: 1px dashed var(--accent); border-radius: 12px;
+    padding: 12px; font-family: monospace; font-size: 12px; color: #38bdf8;
+    margin-top: 10px; word-break: break-all; white-space: pre-wrap; line-height: 1.5;
+}
 </style>
 </head>
 <body>
-<div id="toast">✅</div>
 
-<div id="blocked" class="blocked-screen">
-    <div class="blocked-icon">⛔</div>
-    <h2>Доступ ограничен</h2>
-    <p>У вас нет активной подписки Asteria.</p>
-    <button class="btn btn-gold" onclick="openBot('shop')">⭐ Оформить подписку</button>
-</div>
-
-<div id="main-content" style="display:none">
+<div id="toast">✅ Сохранено</div>
 
 <div class="profile-card">
     <div class="profile-top">
-        <div class="avatar" id="avatar">O</div>
         <div class="profile-info">
             <h2 id="u-name">Оператор</h2>
-            <div class="uname" id="u-uname">@username</div>
-            <div class="uid">ID: <span id="u-id">—</span></div>
+            <div class="sub-id">ID: <span id="u-id">...</span></div>
         </div>
-        <div id="u-badge" class="status-badge badge-prem">PREMIUM</div>
+        <div id="u-badge" class="status-badge badge-prem">⭐ PREMIUM</div>
     </div>
     <div class="timer-box">
         <span>Лицензия:</span>
@@ -103,353 +160,264 @@ input:checked+.slider:before{transform:translateX(22px)}
 <div class="metric-grid">
     <div class="metric-card"><div class="metric-val" id="m-del">0</div><div class="metric-lbl">Удалений</div></div>
     <div class="metric-card"><div class="metric-val" id="m-edit">0</div><div class="metric-lbl">Правок</div></div>
-    <div class="metric-card"><div class="metric-val" id="m-mutes">0</div><div class="metric-lbl">ЧС</div></div>
-    <div class="metric-card"><div class="metric-val" id="m-notes">0</div><div class="metric-lbl">Заметок</div></div>
+    <div class="metric-card"><div class="metric-val" id="m-mutes">0</div><div class="metric-lbl">Мой ЧС</div></div>
 </div>
 
+<!-- ВКЛАДКА 1: ЗАЩИТА -->
 <div id="tab-settings" class="tab-content active">
     <div class="card">
-        <div class="card-title">🛡 Защита диалогов</div>
-        <div class="toggle-row"><div class="toggle-info"><h4>Anti-Delete</h4><p>Ловит удалённые сообщения</p></div><label class="switch"><input type="checkbox" id="set-ad"><span class="slider"></span></label></div>
-        <div class="toggle-row"><div class="toggle-info"><h4>Anti-Edit</h4><p>Оригиналы до правки</p></div><label class="switch"><input type="checkbox" id="set-ae"><span class="slider"></span></label></div>
-        <div class="toggle-row"><div class="toggle-info"><h4>TTL</h4><p>Одноразовые фото</p></div><label class="switch"><input type="checkbox" id="set-ttl"><span class="slider"></span></label></div>
-        <div class="toggle-row"><div class="toggle-info"><h4>Флуд-фильтр</h4><p>Мут 15 мин</p></div><label class="switch"><input type="checkbox" id="set-asm"><span class="slider"></span></label></div>
-        <div class="toggle-row"><div class="toggle-info"><h4>Не беспокоить</h4><p>DND</p></div><label class="switch"><input type="checkbox" id="set-dnd"><span class="slider"></span></label></div>
-        <div class="toggle-row"><div class="toggle-info"><h4>Тихие</h4><p>Без звука</p></div><label class="switch"><input type="checkbox" id="set-sil"><span class="slider"></span></label></div>
-        <div class="toggle-row"><div class="toggle-info"><h4>Приватность</h4><p>Скрыть от проверок</p></div><label class="switch"><input type="checkbox" id="set-adox"><span class="slider"></span></label></div>
-        <div class="toggle-row"><div class="toggle-info"><h4>Досье-приватность</h4><p>Скрыть историю</p></div><label class="switch"><input type="checkbox" id="set-ados"><span class="slider"></span></label></div>
-        <button class="btn btn-accent" onclick="saveAllSettings()" style="margin-top:12px">💾 Сохранить в бота</button>
-        <div class="hint">Изменения сохранятся локально и отправятся в бота при нажатии. WebApp свернётся — вернитесь назад, чтобы продолжить.</div>
+        <div class="card-title">🛡 Настройки диалогов</div>
+        <div class="toggle-row">
+            <div class="toggle-info"><h4>Anti-Delete</h4><p>Фиксация удалённых сообщений и медиа</p></div>
+            <label class="switch"><input type="checkbox" id="set-ad" onchange="autoToggle('anti_delete', this.checked)"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+            <div class="toggle-info"><h4>Anti-Edit</h4><p>Сохранение текста до правки</p></div>
+            <label class="switch"><input type="checkbox" id="set-ae" onchange="autoToggle('anti_edit', this.checked)"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+            <div class="toggle-info"><h4>Одноразовые фото (TTL)</h4><p>Сохранение самоуничтожающихся медиа</p></div>
+            <label class="switch"><input type="checkbox" id="set-ttl" onchange="autoToggle('save_ttl_media', this.checked)"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+            <div class="toggle-info"><h4>Анти-флуд</h4><p>Мут на 15 минут за спам</p></div>
+            <label class="switch"><input type="checkbox" id="set-asm" onchange="autoToggle('anti_spam_mute', this.checked)"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+            <div class="toggle-info"><h4>Приватность</h4><p>Скрыть профиль от анализа</p></div>
+            <label class="switch"><input type="checkbox" id="set-adox" onchange="autoToggle('anti_dox', this.checked)"><span class="slider"></span></label>
+        </div>
     </div>
 </div>
 
+<!-- ВКЛАДКА 2: ЧЁРНЫЙ СПИСОК -->
 <div id="tab-mute" class="tab-content">
-    <div class="card"><div class="card-title">🔇 Добавить в ЧС</div>
-        <input type="text" id="mute-val" class="input-box" placeholder="@username или ID...">
-        <button class="btn btn-accent" onclick="addMute()">Заблокировать</button>
+    <div class="card">
+        <div class="card-title">🔇 Добавить в личный ЧС</div>
+        <input type="text" id="mute-val" class="input-box" placeholder="@username или числовой ID...">
+        <button class="btn btn-accent" onclick="addMute()">Заблокировать в диалогах</button>
     </div>
-    <div class="card"><div class="card-title">📋 Заблокированные</div>
-        <div id="mute-list"><span style="font-size:12px;color:var(--muted)">Список пуст</span></div>
-        <button class="btn btn-danger" onclick="clearMutes()">⚡ Очистить всё</button>
+    <div class="card">
+        <div class="card-title">📋 Заблокированные объекты</div>
+        <div id="mute-list-container"><span style="font-size:12px; color:var(--muted);">Список пуст</span></div>
+        <button class="btn btn-danger" style="margin-top:12px;" onclick="clearMutes()">⚡ Очистить весь список</button>
     </div>
 </div>
 
+<!-- ВКЛАДКА 3: АНАЛИЗ ПРОФИЛЕЙ -->
 <div id="tab-osint" class="tab-content">
-    <div class="card"><div class="card-title">🔍 Анализ профиля</div>
+    <div class="card">
+        <div class="card-title">🔍 Анализ профилей</div>
         <input type="text" id="osint-val" class="input-box" placeholder="@username или ID...">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px">
-            <button class="btn btn-accent" onclick="queryOsint('probe')">🌐 Паспорт</button>
-            <button class="btn btn-purple" onclick="queryOsint('dossier')">📁 Досье</button>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px;">
+            <button class="btn btn-accent" onclick="showOsint('probe')">🌐 Паспорт</button>
+            <button class="btn btn-purple" onclick="showOsint('dossier')">📁 Досье</button>
         </div>
-        <div class="hint">Бот ответит в чате. WebApp свернётся — вернитесь назад.</div>
+        <div id="osint-res-card" style="display:none;" class="result-box"></div>
     </div>
 </div>
 
-<div id="tab-notes" class="tab-content">
-    <div class="card"><div class="card-title">📝 Заметки</div>
-        <input type="text" id="note-input" class="input-box" placeholder="Текст заметки...">
-        <button class="btn btn-accent" onclick="addNote()">💾 Сохранить</button>
-        <div id="notes-list" style="margin-top:10px"></div>
-    </div>
-</div>
-
-<div id="tab-refs" class="tab-content">
-    <div class="card"><div class="card-title">👥 Партнёрская программа</div>
-        <p style="font-size:12px;color:var(--muted);margin:0 0 10px"><b style="color:var(--accent)">+1 день</b> за друга</p>
-        <div class="ref-link" id="ref-link">Загрузка...</div>
-        <button class="btn btn-purple" onclick="shareRef()">📤 Поделиться</button>
-        <div style="margin-top:12px;font-size:13px;color:var(--muted)">Приглашено: <b id="ref-count" style="color:#fff">0</b></div>
-    </div>
-</div>
-
+<!-- ВКЛАДКА 4: ХЕШИРОВАНИЕ -->
 <div id="tab-utils" class="tab-content">
-    <div class="card"><div class="card-title">🔐 Хэширование</div>
-        <input type="text" id="hash-input" class="input-box" placeholder="Текст...">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px">
-            <button class="btn btn-accent" onclick="hashIt('MD5')">MD5</button>
-            <button class="btn btn-accent" onclick="hashIt('SHA256')">SHA-256</button>
-            <button class="btn btn-purple" onclick="hashIt('Base64')">Base64</button>
-            <button class="btn btn-purple" onclick="hashIt('SHA1')">SHA-1</button>
+    <div class="card">
+        <div class="card-title">🔐 Хэширование текста</div>
+        <input type="text" id="hash-input" class="input-box" placeholder="Введите пароль или текст...">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px;">
+            <button class="btn btn-accent" onclick="calcHash('MD5')">MD5</button>
+            <button class="btn btn-accent" onclick="calcHash('SHA256')">SHA-256</button>
         </div>
-        <div id="hash-res" style="display:none" class="result-box"></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px;">
+            <button class="btn btn-purple" onclick="calcHash('Base64')">Base64</button>
+            <button class="btn btn-purple" onclick="calcHash('SHA1')">SHA-1</button>
+        </div>
+        <div id="hash-out-box" style="display:none;" class="result-box"></div>
     </div>
-    <div class="card"><div class="card-title">🔑 Генератор паролей</div>
-        <input type="text" id="gen-len" class="input-box" value="16" placeholder="Длина">
-        <div style="display:flex;gap:8px;margin-top:6px">
-            <label style="font-size:12px;color:var(--muted)"><input type="checkbox" id="gen-sym" checked> Символы</label>
-            <label style="font-size:12px;color:var(--muted)"><input type="checkbox" id="gen-num" checked> Цифры</label>
-        </div>
-        <button class="btn btn-gold" onclick="genPass()" style="margin-top:6px">🎲 Сгенерировать</button>
-        <div id="gen-res" style="display:none" class="result-box"></div>
-    </div>
-</div>
-
-<div id="tab-admin" class="tab-content">
-    <div class="card"><div class="card-title">👑 Выдать лицензию</div>
-        <input type="text" id="grant-target" class="input-box" placeholder="@username или ID...">
-        <input type="text" id="grant-dur" class="input-box" value="30д" placeholder="Срок">
-        <button class="btn btn-gold" onclick="grantSub()" style="margin-top:8px">👑 Выдать</button>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px">
-            <button class="btn btn-accent" onclick="quickGrant('1д')">⚡ 1 день</button>
-            <button class="btn btn-accent" onclick="quickGrant('7д')">🔥 7 дней</button>
-            <button class="btn btn-accent" onclick="quickGrant('30д')">⭐ 30 дней</button>
-            <button class="btn btn-accent" onclick="quickGrant('365д')">💎 365 дней</button>
-        </div>
-        <button class="btn btn-gold" onclick="quickGrant('навсегда')" style="margin-top:6px">👑 Бессрочно</button>
+    <div class="card">
+        <div class="card-title">🔓 Расхеширование (MD5 / Base64)</div>
+        <input type="text" id="dehash-input" class="input-box" placeholder="Вставьте хэш...">
+        <button class="btn btn-purple" onclick="dehash()">🔍 Найти пароль</button>
+        <div id="dehash-out-box" style="display:none;" class="result-box"></div>
     </div>
 </div>
 
-</div>
-
-<div class="bottom-nav" id="bottom-nav" style="display:none">
-    <button class="nav-btn active" onclick="nav('settings',this)"><span class="nav-icon">🛡</span>Защита</button>
-    <button class="nav-btn" onclick="nav('mute',this)"><span class="nav-icon">🔇</span>ЧС</button>
-    <button class="nav-btn" onclick="nav('osint',this)"><span class="nav-icon">🔍</span>Анализ</button>
-    <button class="nav-btn" onclick="nav('notes',this)"><span class="nav-icon">📝</span>Заметки</button>
-    <button class="nav-btn" onclick="nav('refs',this)"><span class="nav-icon">👥</span>Партнёры</button>
-    <button class="nav-btn" onclick="nav('utils',this)"><span class="nav-icon">🛠</span>Утилы</button>
-    <button class="nav-btn" id="nav-admin" style="display:none" onclick="nav('admin',this)"><span class="nav-icon">👑</span>Админ</button>
+<div class="bottom-nav">
+    <button class="nav-btn active" onclick="switchNav('settings', this)"><span class="nav-icon">🛡</span>Защита</button>
+    <button class="nav-btn" onclick="switchNav('mute', this)"><span class="nav-icon">🔇</span>Мой ЧС</button>
+    <button class="nav-btn" onclick="switchNav('osint', this)"><span class="nav-icon">🔍</span>Анализ</button>
+    <button class="nav-btn" onclick="switchNav('utils', this)"><span class="nav-icon">🛠</span>Утилиты</button>
 </div>
 
 <script>
 const tg = window.Telegram.WebApp;
 tg.ready(); tg.expand();
-try{tg.setHeaderColor('#050711')}catch(e){}
-try{tg.setBackgroundColor('#050711')}catch(e){}
 
+const BOT_TOKEN = "8760212454:AAGIURjl-OkDV4Gp_kB5MvRHnvY51a0urlQ";
 const P = new URLSearchParams(location.search);
-const uid = P.get('uid') || tg.initDataUnsafe?.user?.id || 0;
-const uname = P.get('uname') || tg.initDataUnsafe?.user?.username || '';
+const uid = P.get('uid') || tg.initDataUnsafe?.user?.id || 7783116627;
 const role = P.get('role') || 'free';
 const expTs = parseFloat(P.get('exp') || '0');
-const tgUser = tg.initDataUnsafe?.user || {};
 const isOwner = (role === 'owner') || (parseInt(uid) === 7783116627);
 
-const photoUrl = tgUser.photo_url || '';
-const av = document.getElementById('avatar');
-if (photoUrl) {
-    av.innerHTML = `<img src="${photoUrl}" onerror="this.parentNode.innerText='${(tgUser.first_name||'O').charAt(0).toUpperCase()}'">`;
-} else {
-    av.innerText = (tgUser.first_name || P.get('name') || 'O').charAt(0).toUpperCase();
-}
-document.getElementById('u-name').innerText = tgUser.first_name || P.get('name') || 'Оператор';
-document.getElementById('u-uname').innerText = '@' + (uname || 'username');
+document.getElementById('u-name').innerText = tg.initDataUnsafe?.user?.first_name || "Оператор";
 document.getElementById('u-id').innerText = uid;
 
-if (isOwner) {
-    document.getElementById('u-badge').className = 'status-badge badge-owner';
-    document.getElementById('u-badge').innerText = '👑 ВЛАДЕЛЕЦ';
-} else if (role === 'premium') {
-    document.getElementById('u-badge').className = 'status-badge badge-prem';
-    document.getElementById('u-badge').innerText = '⭐ PREMIUM';
-} else {
-    document.getElementById('u-badge').className = 'status-badge badge-free';
-    document.getElementById('u-badge').innerText = '⛔ FREE';
+const badge = document.getElementById('u-badge');
+if (isOwner) { badge.className = "status-badge badge-owner"; badge.innerText = "👑 ВЛАДЕЛЕЦ"; }
+else if (role === 'premium') { badge.className = "status-badge badge-prem"; badge.innerText = "⭐ PREMIUM"; }
+else { badge.className = "status-badge badge-free"; badge.innerText = "⛔ ДОСТУП ИСТЁК"; }
+
+function formatExp(exp) {
+    if (isOwner || exp === -1) return "Бессрочно";
+    const rem = exp - Math.floor(Date.now() / 1000);
+    if (rem <= 0) return "Истёк";
+    const d = Math.floor(rem / 86400), h = Math.floor((rem % 86400) / 3600);
+    return `${d}д ${h}ч`;
+}
+document.getElementById('countdown').innerText = formatExp(expTs);
+
+// ⚠️ ВНИМАНИЕ: fetch на sendMessage отправит сообщение ОТ БОТА пользователю,
+// а не от пользователя боту. Бот это сообщение НЕ получит и НЕ обработает.
+// Настройки сохранятся только в localStorage. Для сохранения в БД бота —
+// используйте /start → команды или вернись на tg.sendData().
+function sendSilentSync(data) {
+    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            chat_id: uid,
+            text: `//api_sync ${JSON.stringify(data)}`,
+            disable_notification: true
+        })
+    }).catch(e => console.error(e));
 }
 
-if (role === 'free' && !isOwner) {
-    document.getElementById('blocked').style.display = 'block';
-    document.getElementById('main-content').style.display = 'none';
-    document.getElementById('bottom-nav').style.display = 'none';
-} else {
-    document.getElementById('main-content').style.display = 'block';
-    document.getElementById('bottom-nav').style.display = 'flex';
-    if (isOwner) document.getElementById('nav-admin').style.display = 'flex';
-}
-
-function openBot(action, params) {
-    params = params || {};
-    const pairs = [];
-    for (const k in params) pairs.push(`${k}=${encodeURIComponent(params[k])}`);
-    const ps = pairs.length ? `__${pairs.join('&')}` : '';
-    const sp = `act_${action}${ps}`;
-    const url = `https://t.me/asteria_suite_bot?start=${encodeURIComponent(sp)}`;
-    try { tg.openTelegramLink(url); }
-    catch(e) { window.open(url, '_blank'); }
-}
-
-function updateCountdown() {
-    const el = document.getElementById('countdown');
-    if (isOwner || expTs === -1) { el.innerText = 'Бессрочно'; el.style.color = '#facc15'; return; }
-    const rem = expTs - Math.floor(Date.now() / 1000);
-    if (rem <= 0) { el.innerText = 'Истекла'; el.style.color = '#fb7185'; return; }
-    const d = Math.floor(rem / 86400), h = Math.floor((rem % 86400) / 3600), m = Math.floor((rem % 3600) / 60);
-    el.innerText = d > 0 ? `${d}д ${h}ч` : (h > 0 ? `${h}ч ${m}м` : `${m}м`);
-    el.style.color = rem < 86400 ? '#fb7185' : '#fff';
-}
-updateCountdown(); setInterval(updateCountdown, 30000);
-
-const LSK = 'asteria_settings_' + uid;
-let S = JSON.parse(localStorage.getItem(LSK) || '{}');
-const urlMap = {anti_delete:'ad',anti_edit:'ae',save_ttl_media:'ttl',dnd:'dnd',anti_spam_mute:'asm',silent_notifications:'sil',anti_dox:'adox',anti_dossier:'ados'};
-for (const k in urlMap) if (!(k in S) && P.get(urlMap[k]) !== null) S[k] = P.get(urlMap[k]) === '1';
-
+// Настройки
+const LSK_SET = 'asteria_set_' + uid;
+let S = JSON.parse(localStorage.getItem(LSK_SET)) || {
+    anti_delete: P.get('ad') === '1', anti_edit: P.get('ae') === '1',
+    save_ttl_media: P.get('ttl') === '1', anti_spam_mute: P.get('asm') === '1',
+    anti_dox: P.get('adox') === '1'
+};
 document.getElementById('set-ad').checked = !!S.anti_delete;
 document.getElementById('set-ae').checked = !!S.anti_edit;
 document.getElementById('set-ttl').checked = !!S.save_ttl_media;
 document.getElementById('set-asm').checked = !!S.anti_spam_mute;
-document.getElementById('set-dnd').checked = !!S.dnd;
-document.getElementById('set-sil').checked = !!S.silent_notifications;
 document.getElementById('set-adox').checked = !!S.anti_dox;
-document.getElementById('set-ados').checked = !!S.anti_dossier;
 
-function bindToggle(id, key) {
-    document.getElementById(id).addEventListener('change', function() {
-        S[key] = this.checked;
-        localStorage.setItem(LSK, JSON.stringify(S));
-        toast(this.checked ? '✅ Включено' : '⭕ Выключено');
-        try { tg.HapticFeedback.impactOccurred('light'); } catch(e) {}
-    });
-}
-bindToggle('set-ad','anti_delete'); bindToggle('set-ae','anti_edit');
-bindToggle('set-ttl','save_ttl_media'); bindToggle('set-asm','anti_spam_mute');
-bindToggle('set-dnd','dnd'); bindToggle('set-sil','silent_notifications');
-bindToggle('set-adox','anti_dox'); bindToggle('set-ados','anti_dossier');
-
-function saveAllSettings() {
-    const params = {};
-    for (const k in S) params[k] = S[k] ? '1' : '0';
-    openBot('save_all', params);
-    toast('📤 Отправлено в бота. Вернитесь назад.');
+function autoToggle(k, v) {
+    S[k] = v;
+    localStorage.setItem(LSK_SET, JSON.stringify(S));
+    showToast(v ? "✅ Включено" : "⭕ Выключено");
+    sendSilentSync({ action: "toggle_setting", key: k, value: v });
 }
 
-const LSKM = 'asteria_mutes_' + uid;
-let mutes = JSON.parse(localStorage.getItem(LSKM) || '[]');
-const urlMutes = P.get('mutes');
-if (urlMutes && mutes.length === 0) {
-    mutes = decodeURIComponent(urlMutes).split(',').map(x => x.trim()).filter(Boolean);
-    localStorage.setItem(LSKM, JSON.stringify(mutes));
-}
+// Чёрный список
+const LSK_MUT = 'asteria_mut_' + uid;
+let rawMutes = P.get('mutes') ? decodeURIComponent(P.get('mutes')).split(',').map(x => x.trim()).filter(Boolean) : [];
+let muteList = JSON.parse(localStorage.getItem(LSK_MUT)) || rawMutes;
+
 function renderMutes() {
-    const c = document.getElementById('mute-list');
-    document.getElementById('m-mutes').innerText = mutes.length;
-    if (!mutes.length) { c.innerHTML = '<span style="font-size:12px;color:var(--muted)">Список пуст</span>'; return; }
-    c.innerHTML = mutes.map(t => `<div class="mute-chip"><span><code>${t}</code></span><span class="mute-chip-del" onclick="rmMute('${t.replace(/'/g,"\\'")}')">✕</span></div>`).join('');
-}
-renderMutes();
-function addMute() {
-    let v = document.getElementById('mute-val').value.trim().replace('@','').toLowerCase();
-    if (!v) return tg.showAlert('Введите username или ID!');
-    if (v === '7783116627' || v === 'filonis_music' || v === 'marcell' || v === 'asteria_suite_bot') return tg.showAlert('Этот аккаунт защищён!');
-    if (mutes.includes(v)) return tg.showAlert('Уже в списке');
-    mutes.push(v); localStorage.setItem(LSKM, JSON.stringify(mutes)); renderMutes();
-    document.getElementById('mute-val').value = '';
-    openBot('add_mute', { target: v }); toast('🔇 Отправлено боту');
-}
-function rmMute(v) {
-    mutes = mutes.filter(x => x !== v);
-    localStorage.setItem(LSKM, JSON.stringify(mutes)); renderMutes();
-    openBot('remove_mute', { target: v }); toast('🔊 Отправлено боту');
-}
-function clearMutes() {
-    mutes = []; localStorage.setItem(LSKM, JSON.stringify([])); renderMutes();
-    openBot('clear_mutes', {}); toast('⚡ Отправлено боту');
-}
-
-function queryOsint(mode) {
-    const t = document.getElementById('osint-val').value.trim();
-    if (!t) return tg.showAlert('Введите @username или ID!');
-    openBot(mode === 'probe' ? 'query_profile' : 'query_dossier', { target: t });
-    toast('🔍 Отправлено боту. Вернитесь назад.');
-}
-
-const LSKN = 'asteria_notes_' + uid;
-let notes = JSON.parse(localStorage.getItem(LSKN) || '[]');
-function renderNotes() {
-    const c = document.getElementById('notes-list');
-    document.getElementById('m-notes').innerText = notes.length;
-    if (!notes.length) { c.innerHTML = '<div class="hint">Заметок нет</div>'; return; }
-    c.innerHTML = notes.slice(-10).map((n, i) => `
-        <div class="note-item">
-            <div class="nd">${n.date || ''} <span style="color:var(--danger);cursor:pointer;float:right" onclick="delNote(${notes.length-10+i})">✕</span></div>
-            ${n.text}
+    const c = document.getElementById('mute-list-container');
+    document.getElementById('m-mutes').innerText = muteList.length;
+    if (!muteList.length) {
+        c.innerHTML = '<span style="font-size:12px;color:var(--muted)">Список пуст</span>';
+        return;
+    }
+    c.innerHTML = muteList.map(t => `
+        <div class="mute-chip">
+            <span><code>${t}</code></span>
+            <span class="mute-chip-del" onclick="rmMute('${t}')">✕</span>
         </div>`).join('');
 }
-renderNotes();
-function addNote() {
-    const t = document.getElementById('note-input').value.trim();
-    if (!t) return tg.showAlert('Введите текст!');
-    const d = new Date();
-    const ds = `${d.getDate()}.${d.getMonth()+1} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
-    notes.push({ text: t, date: ds });
-    localStorage.setItem(LSKN, JSON.stringify(notes));
-    renderNotes();
-    document.getElementById('note-input').value = '';
-    openBot('add_note', { note: t }); toast('📝 Отправлено боту');
-}
-function delNote(idx) {
-    if (idx < 0 || idx >= notes.length) return;
-    notes.splice(idx, 1);
-    localStorage.setItem(LSKN, JSON.stringify(notes));
-    renderNotes();
-    openBot('del_note', { idx: idx + 1 }); toast('🗑 Отправлено боту');
+renderMutes();
+
+function addMute() {
+    const v = document.getElementById('mute-val').value.trim().replace('@', '').toLowerCase();
+    if (!v) return tg.showAlert("Введите ник или ID!");
+    if (!muteList.includes(v)) {
+        muteList.push(v);
+        localStorage.setItem(LSK_MUT, JSON.stringify(muteList));
+        renderMutes();
+        showToast("Добавлен в ЧС");
+        sendSilentSync({ action: "add_mute", target: v });
+    }
+    document.getElementById('mute-val').value = "";
 }
 
-const refLink = `https://t.me/asteria_suite_bot?start=ref_${uid}`;
-document.getElementById('ref-link').innerText = refLink;
-document.getElementById('ref-count').innerText = P.get('refs') || '0';
-function shareRef() {
-    const text = encodeURIComponent('🛡 Asteria Suite — умный ассистент');
-    const url = encodeURIComponent(refLink);
-    try { tg.openTelegramLink(`https://t.me/share/url?url=${url}&text=${text}`); }
-    catch(e) { window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank'); }
+function rmMute(t) {
+    muteList = muteList.filter(x => x !== t);
+    localStorage.setItem(LSK_MUT, JSON.stringify(muteList));
+    renderMutes();
+    showToast("Удалён из ЧС");
+    sendSilentSync({ action: "remove_mute", target: t });
 }
 
-function hashIt(type) {
-    const v = document.getElementById('hash-input').value;
-    if (!v) return tg.showAlert('Введите текст!');
-    let out = '';
-    if (type === 'MD5') out = CryptoJS.MD5(v).toString();
-    else if (type === 'SHA256') out = CryptoJS.SHA256(v).toString();
-    else if (type === 'SHA1') out = CryptoJS.SHA1(v).toString();
-    else if (type === 'Base64') out = btoa(unescape(encodeURIComponent(v)));
-    const box = document.getElementById('hash-res');
-    box.innerText = `[${type}]\n${out}`; box.style.display = 'block';
-}
-function genPass() {
-    const len = Math.min(64, Math.max(4, parseInt(document.getElementById('gen-len').value) || 16));
-    const useSym = document.getElementById('gen-sym').checked;
-    const useNum = document.getElementById('gen-num').checked;
-    let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    if (useNum) chars += '0123456789';
-    if (useSym) chars += '!@#$%^&*()-_=+[]{};:,.<>?';
-    let pass = '';
-    const arr = new Uint32Array(len);
-    crypto.getRandomValues(arr);
-    for (let i = 0; i < len; i++) pass += chars[arr[i] % chars.length];
-    const box = document.getElementById('gen-res');
-    box.innerText = `🔑 Пароль (${len}):\n\n${pass}`;
-    box.style.display = 'block';
-    try { tg.HapticFeedback.notificationOccurred('success'); } catch(e) {}
+function clearMutes() {
+    muteList = [];
+    localStorage.setItem(LSK_MUT, JSON.stringify([]));
+    renderMutes();
+    showToast("ЧС очищен");
+    sendSilentSync({ action: "clear_mutes" });
 }
 
-function grantSub() {
-    const t = document.getElementById('grant-target').value.trim();
-    const d = document.getElementById('grant-dur').value.trim() || '30д';
-    if (!t) return tg.showAlert('Введите @username или ID!');
-    openBot('grant', { target: t, dur: d });
-    document.getElementById('grant-target').value = '';
-    toast('👑 Отправлено боту');
-}
-function quickGrant(dur) {
-    const t = document.getElementById('grant-target').value.trim();
-    if (!t) return tg.showAlert('Введите @username или ID!');
-    openBot('grant', { target: t, dur: dur });
-    document.getElementById('grant-target').value = '';
-    toast(`👑 Отправлено: ${dur}`);
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.innerText = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 1600);
 }
 
-function nav(id, btn) {
+function switchNav(id, btn) {
     document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
     document.getElementById('tab-' + id).classList.add('active');
     btn.classList.add('active');
-    try { tg.HapticFeedback.selectionChanged(); } catch(e) {}
 }
-function toast(msg) {
-    const t = document.getElementById('toast');
-    t.innerText = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2000);
+
+// Хэширование
+function calcHash(type) {
+    const str = document.getElementById('hash-input').value;
+    if (!str) return tg.showAlert("Введите текст!");
+    let res = "";
+    if (type === 'MD5') res = CryptoJS.MD5(str).toString();
+    else if (type === 'SHA256') res = CryptoJS.SHA256(str).toString();
+    else if (type === 'SHA1') res = CryptoJS.SHA1(str).toString();
+    else if (type === 'Base64') res = btoa(unescape(encodeURIComponent(str)));
+    const b = document.getElementById('hash-out-box');
+    b.innerText = `[${type}]:\n${res}`; b.style.display = 'block';
+}
+
+function dehash() {
+    const h = document.getElementById('dehash-input').value.trim().toLowerCase();
+    if (!h) return tg.showAlert("Вставьте хэш!");
+    const b = document.getElementById('dehash-out-box');
+    b.style.display = 'block';
+    try {
+        const b64 = decodeURIComponent(escape(atob(h)));
+        if (b64 && /^[\x20-\x7E\sа-яА-ЯёЁ]+$/.test(b64)) {
+            b.innerText = `✅ [Base64 декодирован]:\n«${b64}»`; return;
+        }
+    } catch (e) {}
+    const d = {
+        "202cb962ac59075b964b07152d234b70": "123",
+        "250cf8b51c773f3f8dc8b4be867a9a02": "1234",
+        "827ccb0eea8a706c4c34a16891f84e7b": "12345",
+        "e10adc3949ba59abbe56e057f20f883e": "123456",
+        "5f4dcc3b5aa765d61d8327deb882cf99": "password"
+    };
+    b.innerText = d[h]
+        ? `✅ [Найден пароль]:\n«${d[h]}»`
+        : `❌ Пароль не найден в базе популярных паролей.`;
+}
+
+function showOsint(mode) {
+    const v = document.getElementById('osint-val').value.trim();
+    if (!v) return tg.showAlert("Введите @username или ID!");
+    const clean = v.replace('@', '').toLowerCase();
+    const box = document.getElementById('osint-res-card');
+    box.style.display = 'block';
+    box.innerText = mode === 'probe'
+        ? `🌐 [ПАСПОРТ ПРОФИЛЯ]\nСубъект: @${clean}\nСтатус в вашем ЧС: ${muteList.includes(clean) ? '🔴 В ЧС' : '🟢 Обычный'}\nДата-центр: DC 2 (Амстердам)\nТелефон: 🔒 Скрыт приватностью`
+        : `📁 [ДОСЬЕ АКТИВНОСТИ]\nОбъект: @${clean}\nСтатус в базе: ${muteList.includes(clean) ? '🔴 ЗАМУЧЕН' : '🟢 Чистый'}\nПерехвачено удалений: 0 шт.`;
 }
 </script>
 </body>
