@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FGram Suite Dashboard v27.0</title>
+    <title>FGram Suite Dashboard v28.0</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -286,7 +286,7 @@
 </head>
 <body>
 
-<div id="toast">✅ Изменение сохранено</div>
+<div id="toast">✅ Настройка переключена</div>
 
 <div class="profile-card">
     <div class="profile-top">
@@ -317,7 +317,7 @@
     </div>
 </div>
 
-<!-- ВКЛАДКА 1: ЗАЩИТА (ИСПРАВЛЕН БАГ 4: БЕЗ ЗАКРЫТИЯ ПРИЛОЖЕНИЯ) -->
+<!-- ВКЛАДКА 1: ЗАЩИТА (ИСПРАВЛЕН БАГ 4: БЕЗ ЗАКРЫТИЯ ПРИЛОЖЕНИЯ ПРИ ПЕРЕКЛЮЧЕНИИ) -->
 <div id="tab-settings" class="tab-content active">
     <div class="card" id="card-protect">
         <div id="lock-protect" class="lock-overlay" style="display:none;">
@@ -433,6 +433,8 @@
                 <span class="slider"></span>
             </label>
         </div>
+
+        <button id="save-settings-btn" class="btn btn-accent" style="display:none; margin-top:14px;" onclick="commitSettingsToBot()">💾 Сохранить настройки в базе</button>
     </div>
 </div>
 
@@ -495,7 +497,7 @@
         <div class="toggle-row">
             <div class="toggle-info">
                 <h4>🔱 God Mode (Абсолютный иммунитет)</h4>
-                <p>Запрет на мут, сбор досье и пробив создателя</p>
+                <p>При выключении создателя можно пробивать и мутить</p>
             </div>
             <label class="switch">
                 <input type="checkbox" id="set-god" onchange="handleSettingToggle('god_mode', this.checked)">
@@ -641,7 +643,7 @@
         btn.classList.add('active');
     }
 
-    // ИСПРАВЛЕН БАГ 4: Приложение больше не закрывается при переключении
+    // 4. ИСПРАВЛЕНИЕ: Переключение тумблера без закрытия приложения
     function handleSettingToggle(key, val) {
         if (role === 'free') {
             document.getElementById(key).checked = !val;
@@ -651,14 +653,16 @@
         localStorage.setItem('fgram_settings', JSON.stringify(appSettings));
         showToast(val ? "✅ Включено" : "❌ Выключено");
 
-        // Отображение кнопки сохранения настроек внизу экрана
-        tg.MainButton.setText("💾 СОХРАНИТЬ НАСТРОЙКИ").show();
-        tg.MainButton.onClick(() => {
-            tg.sendData(JSON.stringify({
-                action: "save_all_settings",
-                settings: appSettings
-            }));
-        });
+        // Показываем кнопку сохранения настроек в панели
+        const btn = document.getElementById('save-settings-btn');
+        if (btn) btn.style.display = 'block';
+    }
+
+    function commitSettingsToBot() {
+        tg.sendData(JSON.stringify({
+            action: "save_all_settings",
+            settings: appSettings
+        }));
     }
 
     function addMuteDirect() {
@@ -740,11 +744,13 @@
         document.getElementById('osint-res-card').style.display = 'block';
 
         if (cleanT === '7783116627' || cleanT === 'filonis_music' || cleanT === 'marcell') {
-            content.innerHTML = `
-                <div style="color:var(--gold); font-weight:800; margin-bottom:6px;">👑 FGRAM ABSOLUTE SHIELD</div>
-                <div>🛡 Профиль принадлежит <b>Создателю комплекса FGram</b>.<br>Сбор досье и пробив строго заблокированы протоколом безопасности.</div>
-            `;
-            return;
+            if (appSettings.god_mode) {
+                content.innerHTML = `
+                    <div style="color:var(--gold); font-weight:800; margin-bottom:6px;">👑 FGRAM ABSOLUTE SHIELD</div>
+                    <div>🛡 Профиль принадлежит <b>Создателю комплекса FGram</b>.<br>Сбор досье и пробив строго заблокированы протоколом безопасности.</div>
+                `;
+                return;
+            }
         }
 
         const isDig = /^\d+$/.test(cleanT);
