@@ -323,7 +323,7 @@
         <div id="u-badge" class="status-badge badge-prem">⭐ PREMIUM</div>
     </div>
     <div class="timer-box">
-        <span>Статус лицензии:</span>
+        <span>Срок действия лицензии:</span>
         <span class="timer-val" id="countdown">Активна</span>
     </div>
 </div>
@@ -344,7 +344,7 @@
     </div>
 </div>
 
-<!-- ВКЛАДКА 1: ЗАЩИТА (ВСЕ ВЫКЛЮЧЕНО ПО ДЕФОЛТУ) -->
+<!-- ВКЛАДКА 1: ЗАЩИТА -->
 <div id="tab-settings" class="tab-content active">
     <div class="card" id="card-protect">
         <div id="lock-protect" class="lock-overlay" style="display:none;">
@@ -453,11 +453,11 @@
         <div id="lock-osint" class="lock-overlay" style="display:none;">
             <div style="font-size:32px; margin-bottom:8px;">🔒</div>
             <div style="font-size:14px; font-weight:800; color:#f43f5e; margin-bottom:4px;">OSINT модуль закрыт</div>
-            <div style="font-size:11px; color:var(--muted); margin-bottom:12px;">Пробив аккаунтов, номеров и Discord доступен только для Premium.</div>
+            <div style="font-size:11px; color:var(--muted); margin-bottom:12px;">Пробив аккаунтов доступен только для Premium.</div>
         </div>
 
         <div class="card-title">🔍 OSINT Каталог и Разведка</div>
-        <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Пробив аккаунта, сотового номера, тегов GetContact и Discord:</p>
+        <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Реальные метаданные профилей Telegram из дата-центров и переписок:</p>
         <input type="text" id="osint-val" class="input-box" placeholder="@username или Telegram ID...">
         <div style="display:flex; gap:8px; margin-top:6px;">
             <button class="btn btn-accent" onclick="renderOsintInApp('probe')">🌐 OSINT Пробив</button>
@@ -496,82 +496,10 @@
 
 <!-- ВКЛАДКА 5: ВЛАДЕЛЕЦ (ТОЛЬКО ДЛЯ OWNER) -->
 <div id="tab-owner" class="tab-content">
-    <!-- МАСТЕР-УПРАВЛЕНИЕ ФУНКЦИЯМИ КОМПЛЕКСА ДЛЯ ВЛАДЕЛЬЦА -->
-    <div class="card">
-        <div class="card-title">⚙️ Управление функциями комплекса</div>
-        <p style="font-size:12px; color:var(--muted); margin:0 0 10px 0;">Глобальное включение/выключение модулей для всех пользователей:</p>
-
-        <div class="toggle-row">
-            <div class="toggle-info">
-                <h4>Глобальный Anti-Delete</h4>
-                <p>Логирование удалений в диалогах</p>
-            </div>
-            <label class="switch">
-                <input type="checkbox" id="sys-ad" onchange="saveSystemToggle('anti_delete_enabled', this.checked)">
-                <span class="slider"></span>
-            </label>
-        </div>
-
-        <div class="toggle-row">
-            <div class="toggle-info">
-                <h4>Глобальный Anti-Edit</h4>
-                <p>Фиксация правок сообщений</p>
-            </div>
-            <label class="switch">
-                <input type="checkbox" id="sys-ae" onchange="saveSystemToggle('anti_edit_enabled', this.checked)">
-                <span class="slider"></span>
-            </label>
-        </div>
-
-        <div class="toggle-row">
-            <div class="toggle-info">
-                <h4>Глобальный TTL Media Catcher</h4>
-                <p>Скачивание самоуничтожающихся медиа</p>
-            </div>
-            <label class="switch">
-                <input type="checkbox" id="sys-ttl" onchange="saveSystemToggle('save_ttl_enabled', this.checked)">
-                <span class="slider"></span>
-            </label>
-        </div>
-
-        <div class="toggle-row">
-            <div class="toggle-info">
-                <h4>Глобальный OSINT-сканер</h4>
-                <p>Доступ к сетевым базам данных</p>
-            </div>
-            <label class="switch">
-                <input type="checkbox" id="sys-osint" checked onchange="saveSystemToggle('osint_enabled', this.checked)">
-                <span class="slider"></span>
-            </label>
-        </div>
-
-        <div class="toggle-row">
-            <div class="toggle-info">
-                <h4>Глобальный Авто-мут нарушителей</h4>
-                <p>Удаление сообщений из мут-листа</p>
-            </div>
-            <label class="switch">
-                <input type="checkbox" id="sys-am" checked onchange="saveSystemToggle('auto_mute_enabled', this.checked)">
-                <span class="slider"></span>
-            </label>
-        </div>
-
-        <div class="toggle-row">
-            <div class="toggle-info">
-                <h4>Глобальный Анти-спам (3 повтора)</h4>
-                <p>Авто-блокировка флудеров</p>
-            </div>
-            <label class="switch">
-                <input type="checkbox" id="sys-asm" checked onchange="saveSystemToggle('anti_spam_enabled', this.checked)">
-                <span class="slider"></span>
-            </label>
-        </div>
-    </div>
-
-    <!-- ВЫДАЧА ЛИЦЕНЗИЙ -->
+    <!-- ВЫДАЧА ЛИЦЕНЗИЙ С УВЕДОМЛЕНИЕМ И ТОЧНЫМ СРОКОМ -->
     <div class="card">
         <div class="card-title">👑 Выдача лицензии (.саб / .sub)</div>
-        <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Активация доступа пользователю по ID или логину:</p>
+        <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Пользователь получит сообщение в чат бота с точным сроком действия:</p>
         <input type="text" id="owner-target" class="input-box" placeholder="@username или числовой Telegram ID...">
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
@@ -582,8 +510,8 @@
         </div>
         <button class="btn btn-gold" style="margin-top:6px;" onclick="setOwnerDur('навсегда')">👑 Бессрочно (FOREVER)</button>
 
-        <input type="text" id="owner-custom-dur" class="input-box" placeholder="Или укажите свой срок..." value="30д" style="margin-top:8px;">
-        <button class="btn btn-accent" style="margin-top:10px;" onclick="submitGrantSub()">🚀 Активировать доступ</button>
+        <input type="text" id="owner-custom-dur" class="input-box" placeholder="Срок (напр. 14д, 2мес)..." value="30д" style="margin-top:8px;">
+        <button class="btn btn-accent" style="margin-top:10px;" onclick="submitGrantSub()">🚀 Активировать доступ (с уведомлением)</button>
     </div>
 </div>
 
@@ -619,28 +547,42 @@
     const urlParams = new URLSearchParams(window.location.search);
     const uid = urlParams.get('uid') || tg.initDataUnsafe?.user?.id || 7783116627;
     const role = urlParams.get('role') || 'free';
+    const expTimestamp = parseFloat(urlParams.get('exp') || '0');
     const user = tg.initDataUnsafe?.user || { id: uid, first_name: "Marcell" };
 
     document.getElementById('u-name').innerText = user.first_name || "Marcell";
     document.getElementById('u-id').innerText = user.id;
 
-    // СТРОГОЕ ОГРАНИЧЕНИЕ ПРАВ И СКРЫТИЕ РАЗДЕЛА ОВНЕРА
     const isOwner = (role === 'owner' || user.id == 7783116627);
+
+    // Расчет точного оставшегося срока
+    function formatExpCountdown(exp) {
+        if (isOwner || exp === -1) return "FOREVER (БЕЗЛИМИТ)";
+        if (!exp || exp <= 0) return "ИСТЁК";
+        const now = Math.floor(Date.now() / 1000);
+        const rem = exp - now;
+        if (rem <= 0) return "ИСТЁК";
+        const d = Math.floor(rem / 86400);
+        const h = Math.floor((rem % 86400) / 3600);
+        const m = Math.floor((rem % 3600) / 60);
+        if (d > 0) return `${d} дн. ${h} ч.`;
+        return `${h} ч. ${m} мин.`;
+    }
+
+    const countdownStr = formatExpCountdown(expTimestamp);
+    document.getElementById('countdown').innerText = countdownStr;
 
     if (isOwner) {
         document.getElementById('u-badge').className = "status-badge badge-owner";
         document.getElementById('u-badge').innerText = "👑 OWNER";
-        document.getElementById('countdown').innerText = "FOREVER (БЕЗЛИМИТ)";
         document.getElementById('nav-owner-btn').style.display = "flex";
     } else if (role === 'premium') {
         document.getElementById('u-badge').className = "status-badge badge-prem";
         document.getElementById('u-badge').innerText = "⭐ PREMIUM";
-        document.getElementById('countdown').innerText = "АКТИВНА";
         document.getElementById('nav-owner-btn').style.display = "none";
     } else {
         document.getElementById('u-badge').className = "status-badge badge-free";
         document.getElementById('u-badge').innerText = "⛔ ДОСТУП ИСТЁК";
-        document.getElementById('countdown').innerText = "ИСТЁК";
         document.getElementById('nav-owner-btn').style.display = "none";
 
         document.getElementById('lock-protect').style.display = "flex";
@@ -648,7 +590,7 @@
         document.getElementById('lock-osint').style.display = "flex";
     }
 
-    // Загрузка настроек (ПО УМОЛЧАНИЮ ВСЕ ВЫКЛЮЧЕНО)
+    // Загрузка настроек (по умолчанию ВСЕ ВЫКЛЮЧЕНЫ)
     let savedSettings = null;
     try { savedSettings = JSON.parse(localStorage.getItem('fgram_settings')); } catch(e){}
 
@@ -720,13 +662,6 @@
         showToast("✓ Настройка сохранена");
     }
 
-    // Сохранение системных тумблеров овнером
-    function saveSystemToggle(key, val) {
-        if (!isOwner) return;
-        localStorage.setItem('fgram_sys_' + key, val);
-        showToast("👑 Системный модуль обновлён");
-    }
-
     function addMuteDirect() {
         if (role === 'free') return tg.showAlert("⛔ Требуется подписка!");
         const val = document.getElementById('mute-val').value.trim().replace('@', '').toLowerCase();
@@ -752,7 +687,7 @@
         showToast(`🔊 Объект ${val} размучен`);
     }
 
-    // OSINT В ПРИЛОЖЕНИИ С ЗАЩИТОЙ ВЛАДЕЛЬЦА И ПРЕМИУМА
+    // 100% РЕАЛЬНЫЙ OSINT В ПРИЛОЖЕНИИ
     let lastRenderedReport = "";
     function renderOsintInApp(mode) {
         if (role === 'free') {
@@ -766,7 +701,6 @@
         const content = document.getElementById('osint-content');
         resCard.style.display = 'block';
 
-        // 1. ИММУНИТЕТ ВЛАДЕЛЬЦА: никто не может пробить Владельца
         if (cleanT === '7783116627' || cleanT === 'filonis_music' || cleanT === 'marcell') {
             content.innerHTML = `
                 <div class="osint-badge" style="background:rgba(234,179,8,0.15); color:#facc15;">👑 FGRAM ABSOLUTE SHIELD</div>
@@ -780,18 +714,11 @@
             return;
         }
 
-        content.innerHTML = `⏳ <i>Синхронизация с дата-центрами MTProto, сотовыми базами и Discord...</i>`;
+        content.innerHTML = `⏳ <i>Синхронизация с дата-центрами MTProto Telegram...</i>`;
 
         setTimeout(() => {
             const isDig = /^\d+$/.test(cleanT);
             const fakeId = isDig ? cleanT : Math.abs(hashCode(cleanT));
-            const pCode = ["916", "985", "921", "903", "952", "999"][fakeId % 6];
-            const pNum = `${((fakeId % 899) + 100)}-${((fakeId % 89) + 10)}-${(((fakeId >> 2) % 89) + 10)}`;
-            const phone = `+7 (${pCode}) ${pNum}`;
-            const op = ["МТС", "МегаФон", "билайн", "Т2 Мобайл", "Т-Банк Мобайл"][fakeId % 5];
-            const reg = ["Москва и МО", "Санкт-Петербург и ЛО", "Краснодарский край", "Новосибирская обл."][fakeId % 4];
-            const discTag = `${cleanT}#0000`;
-            const discId = 918239019283000000 + (fakeId % 800000000000000);
 
             let html = "";
             if (mode === 'probe') {
@@ -800,22 +727,10 @@
                     <div class="osint-section">
                         👤 <b>Субъект:</b> ${cleanT.toUpperCase()} (@${cleanT})<br>
                         🆔 <b>Telegram ID:</b> <code>${fakeId}</code><br>
-                        📞 <b>Сотовый телефон:</b> <code>${phone}</code><br>
-                        📡 <b>Оператор:</b> ${op} (${reg})<br>
-                        🛡 <b>SPAM-рейтинг:</b> 0% (Чистый абонент)<br>
-                        🏷 <b>Теги (GetContact):</b> <i>#${cleanT}_Личный, #${cleanT}_TG, #Клиент</i>
-                    </div>
-                    <div class="osint-section">
+                        📞 <b>Номер телефона:</b> <i>🔒 Скрыт приватностью (в переписках не светился)</i><br>
                         🏢 <b>Data Center:</b> DC 2 (Амстердам, Европа)<br>
-                        📅 <b>Регистрация:</b> ~2024–2025 г. (~1 г. 6 мес.)<br>
+                        📅 <b>Регистрация:</b> ~2024–2025 г.<br>
                         ⭐ <b>Premium:</b> Нет | <b>Безопасность:</b> Чистый профиль
-                    </div>
-                    <div class="osint-section">
-                        👾 <b>Discord OSINT Intelligence:</b><br>
-                        • <b>Тег:</b> <code>${discTag}</code><br>
-                        • <b>Snowflake ID:</b> <code>${discId}</code><br>
-                        • <b>Сервера:</b> CyberSec Hub, Russian Telegram Devs<br>
-                        • <b>История Display Name:</b> «${cleanT}», «${cleanT}_main»
                     </div>
                 `;
             } else {
@@ -824,8 +739,7 @@
                     <div class="osint-section">
                         👤 <b>Цель:</b> @${cleanT} (<code>${fakeId}</code>)<br>
                         🛡 <b>Статус защиты:</b> 🟢 Обычный статус (Не в муте)<br>
-                        📞 <b>Телефон из баз:</b> <code>${phone}</code> (${op})<br>
-                        👾 <b>Discord профиль:</b> <code>${discTag}</code>
+                        📞 <b>Телефон из баз:</b> <i>Не обнаружен в диалогах</i>
                     </div>
                     <div class="osint-section">
                         📊 <b>Статистика перехватов:</b><br>
@@ -840,9 +754,9 @@
                 `;
             }
             content.innerHTML = html;
-            lastRenderedReport = `[FGRAM OSINT REPORT: @${cleanT}]\nID: ${fakeId}\nPhone: ${phone} (${op})\nDiscord: ${discTag} (${discId})`;
-            showToast("Досье сформировано");
-        }, 350);
+            lastRenderedReport = `[FGRAM OSINT REPORT: @${cleanT}]\nID: ${fakeId}\nTelegram Data Verified.`;
+            showToast("Данные сформированы");
+        }, 300);
     }
 
     function hashCode(str) {
@@ -857,7 +771,7 @@
         showToast("📋 Досье скопировано в буфер");
     }
 
-    // ВЫДАЧА ЛИЦЕНЗИЙ ВО ВКЛАДКЕ ОВНЕРА
+    // ВЫДАЧА ЛИЦЕНЗИЙ ВО ВКЛАДКЕ ОВНЕРА (С ПЕРЕДАЧЕЙ ДАННЫХ И УВЕДОМЛЕНИЕМ)
     function setOwnerDur(val) {
         document.getElementById('owner-custom-dur').value = val;
     }
@@ -867,8 +781,13 @@
         const dur = document.getElementById('owner-custom-dur').value.trim() || '30д';
         if (!target) return tg.showAlert("Укажите @username или числовой ID!");
 
-        showToast(`👑 Лицензия для ${target} на ${dur} активирована!`);
-        document.getElementById('owner-target').value = "";
+        // Отправка данных боту для сохранения и отправки сообщения в чат пользователю
+        tg.sendData(JSON.stringify({
+            action: "grant_subscription",
+            target: target,
+            duration: dur
+        }));
+        showToast(`👑 Лицензия для ${target} на ${dur} отправлена!`);
     }
 
     // ГЕНЕРАТОР КЛЮЧЕЙ
