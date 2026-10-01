@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FGram Suite Dashboard v24.0</title>
+    <title>FGram Suite Dashboard v25.0</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
             --bg: #050811;
-            --card-bg: rgba(13, 20, 36, 0.78);
+            --card-bg: rgba(13, 20, 36, 0.82);
             --card-border: rgba(56, 189, 248, 0.18);
             --accent: #38bdf8;
             --purple: #a855f7;
@@ -254,6 +254,20 @@
         .nav-btn.active { color: var(--accent); }
         .nav-icon { font-size: 20px; }
 
+        .pwd-display {
+            background: #04060c;
+            border: 1px dashed var(--accent);
+            border-radius: 12px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 13px;
+            color: #38bdf8;
+            word-break: break-all;
+            margin-top: 10px;
+            user-select: all;
+            text-align: center;
+        }
+
         .lock-overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -272,7 +286,7 @@
 </head>
 <body>
 
-<div id="toast">✅ Настройки успешно сохранены</div>
+<div id="toast">✅ Изменение сохранено</div>
 
 <div class="profile-card">
     <div class="profile-top">
@@ -303,6 +317,7 @@
     </div>
 </div>
 
+<!-- ВКЛАДКА 1: ЗАЩИТА (АВТОМАТИЧЕСКОЕ ПРИМЕНЕНИЕ БЕЗ КНОПКИ) -->
 <div id="tab-settings" class="tab-content active">
     <div class="card" id="card-protect">
         <div id="lock-protect" class="lock-overlay" style="display:none;">
@@ -312,7 +327,7 @@
             <button class="btn btn-accent" style="width:auto; padding:8px 18px;" onclick="switchNav('utils', document.querySelectorAll('.nav-btn')[3])">⭐ Продлить доступ</button>
         </div>
 
-        <div class="card-title">🛡 Комплекс безопасности диалогов</div>
+        <div class="card-title">🛡 Комплекс безопасности переписок</div>
 
         <div class="category-header">📡 Мониторинг входящих диалогов</div>
 
@@ -322,7 +337,7 @@
                 <p>Фиксация удалённого текста, фото, голосовых и видео-кружков</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-ad" onchange="updateToggle('anti_delete', this.checked)">
+                <input type="checkbox" id="set-ad" onchange="autoApplyToggle('anti_delete', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -333,18 +348,29 @@
                 <p>Сохранение оригинального варианта сообщения до правки</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-ae" onchange="updateToggle('anti_edit', this.checked)">
+                <input type="checkbox" id="set-ae" onchange="autoApplyToggle('anti_edit', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
 
         <div class="toggle-row">
             <div class="toggle-info">
-                <h4>Спасение одноразовых фото <span class="tag-pill">TTL</span></h4>
-                <p>Скачивание самоуничтожающихся медиафайлов с таймером</p>
+                <h4>Одноразовые фото <span class="tag-pill">TTL</span></h4>
+                <p>Скачивание самоуничтожающихся фото и видео с таймером</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-ttl" onchange="updateToggle('save_ttl_media', this.checked)">
+                <input type="checkbox" id="set-ttl" onchange="autoApplyToggle('save_ttl_media', this.checked)">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h4>Тихий режим <span class="tag-pill">БЕЗ ЗВУКА</span></h4>
+                <p>Доставка всех уведомлений и алертов без звука</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="set-sil" onchange="autoApplyToggle('silent_notifications', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -353,11 +379,11 @@
 
         <div class="toggle-row">
             <div class="toggle-info">
-                <h4>Флуд-детект (3 повтора) <span class="tag-pill" style="color:#f43f5e; background:rgba(244,63,94,0.15);">15 МИНУТ МУТА</span></h4>
-                <p>Мутит спамера на 15 минут с уведомлением об остатке времени</p>
+                <h4>Флуд-детект (3 повтора) <span class="tag-pill" style="color:#f43f5e; background:rgba(244,63,94,0.15);">15 МИН МУТА</span></h4>
+                <p>Блокирует спамера на 15 минут с уведомлением об остатке времени</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-asm" onchange="updateToggle('anti_spam_mute', this.checked)">
+                <input type="checkbox" id="set-asm" onchange="autoApplyToggle('anti_spam_mute', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -368,7 +394,7 @@
                 <p>Стирать любые сообщения от целей из вкладки «Мут»</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-am" onchange="updateToggle('auto_mute', this.checked)">
+                <input type="checkbox" id="set-am" onchange="autoApplyToggle('auto_mute', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -379,7 +405,7 @@
                 <p>Автоматическая очистка всех новых личных входящих сообщений</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-dnd" onchange="updateToggle('dnd', this.checked)">
+                <input type="checkbox" id="set-dnd" onchange="autoApplyToggle('dnd', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -392,7 +418,7 @@
                 <p>Защищает ваш Telegram-паспорт от запросов других игроков</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-adox" onchange="updateToggle('anti_dox', this.checked)">
+                <input type="checkbox" id="set-adox" onchange="autoApplyToggle('anti_dox', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -403,15 +429,14 @@
                 <p>Блокирует показ истории имён и телефонов в базах комплекса</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-ados" onchange="updateToggle('anti_dossier', this.checked)">
+                <input type="checkbox" id="set-ados" onchange="autoApplyToggle('anti_dossier', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
-
-        <button class="btn btn-accent" style="margin-top:16px;" onclick="syncSettingsWithBot()">💾 Применить настройки в FGram</button>
     </div>
 </div>
 
+<!-- ВКЛАДКА 2: МУТ-ЦЕНТР -->
 <div id="tab-mute" class="tab-content">
     <div class="card" id="card-mute">
         <div class="card-title">Чёрный список нарушителей</div>
@@ -428,9 +453,10 @@
     </div>
 </div>
 
+<!-- ВКЛАДКА 3: OSINT & ДОСЬЕ -->
 <div id="tab-osint" class="tab-content">
     <div class="card" id="card-osint">
-        <div class="card-title">🔍 OSINT Разведка и Дата Регистрации</div>
+        <div class="card-title">🔍 OSINT Разведка профилей</div>
         <input type="text" id="osint-val" class="input-box" placeholder="@username или Telegram ID...">
         <div style="display:flex; gap:8px; margin-top:6px;">
             <button class="btn btn-accent" onclick="renderOsintInApp('probe')">🌐 OSINT Пробив</button>
@@ -442,15 +468,27 @@
     </div>
 </div>
 
+<!-- ВКЛАДКА 4: УТИЛИТЫ (ГЕНЕРАТОР НАДЁЖНЫХ ПАРОЛЕЙ И КЛЮЧЕЙ) -->
 <div id="tab-utils" class="tab-content">
     <div class="card">
-        <div class="card-title">📅 Расчёт точной даты создания по ID</div>
-        <input type="number" id="calc-uid" class="input-box" placeholder="Например: 1234567890">
-        <button class="btn btn-accent" onclick="calculateRegDateFromId()">🔍 Рассчитать дату</button>
-        <div id="calc-uid-res" style="margin-top:10px; font-size:13px; font-weight:700;"></div>
+        <div class="card-title">🔐 Генератор паролей и ключей</div>
+        <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Создание взломостойких паролей и Seed-фраз для криптокошельков:</p>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+            <button class="btn btn-accent" onclick="generateCustomPassword(16)">Пароль 16 зн.</button>
+            <button class="btn btn-accent" onclick="generateCustomPassword(24)">Пароль 24 зн.</button>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px;">
+            <button class="btn btn-purple" onclick="generateCustomPassword(32)">Пароль 32 зн.</button>
+            <button class="btn btn-purple" onclick="generateSeedPhrase()">Seed 12 слов</button>
+        </div>
+
+        <div class="pwd-display" id="pwd-box" style="display:none;"></div>
+        <button id="copy-pwd-btn" class="btn btn-accent" style="display:none;" onclick="copyPassword()">📋 Скопировать в буфер</button>
     </div>
 </div>
 
+<!-- ВКЛАДКА 5: СКРЫТАЯ ПАНЕЛЬ ВЛАДЕЛЬЦА -->
 <div id="tab-owner" class="tab-content">
     <div class="card">
         <div class="card-title">👑 Скрытые функции Владельца</div>
@@ -534,7 +572,10 @@
         document.getElementById('lock-protect').style.display = "flex";
     }
 
-    let appSettings = {
+    let savedSettings = null;
+    try { savedSettings = JSON.parse(localStorage.getItem('fgram_settings')); } catch(e){}
+
+    let appSettings = savedSettings || {
         anti_delete: urlParams.get('ad') === '1',
         anti_edit: urlParams.get('ae') === '1',
         save_ttl_media: urlParams.get('ttl') === '1',
@@ -542,12 +583,14 @@
         auto_mute: urlParams.get('am') === '1',
         anti_spam_mute: urlParams.get('asm') === '1',
         anti_dox: urlParams.get('adox') === '1',
-        anti_dossier: urlParams.get('ados') === '1'
+        anti_dossier: urlParams.get('ados') === '1',
+        silent_notifications: urlParams.get('sil') === '1'
     };
 
     document.getElementById('set-ad').checked = appSettings.anti_delete;
     document.getElementById('set-ae').checked = appSettings.anti_edit;
     document.getElementById('set-ttl').checked = appSettings.save_ttl_media;
+    document.getElementById('set-sil').checked = appSettings.silent_notifications;
     document.getElementById('set-dnd').checked = appSettings.dnd;
     document.getElementById('set-asm').checked = appSettings.anti_spam_mute;
     document.getElementById('set-am').checked = appSettings.auto_mute;
@@ -583,7 +626,7 @@
         t.innerText = msg;
         t.classList.add('show');
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-        setTimeout(() => t.classList.remove('show'), 2200);
+        setTimeout(() => t.classList.remove('show'), 2000);
     }
 
     function switchNav(id, btn) {
@@ -594,19 +637,22 @@
         btn.classList.add('active');
     }
 
-    function updateToggle(key, val) {
-        if (role === 'free') return tg.showAlert("⛔ Требуется активная лицензия!");
+    // МОМЕНТАЛЬНОЕ ПРИМЕНЕНИЕ НАСТРОЙКИ ПРИ КЛИКЕ НА ТУМБЛЕР
+    function autoApplyToggle(key, val) {
+        if (role === 'free') {
+            document.getElementById(key).checked = !val;
+            return tg.showAlert("⛔ Требуется активная лицензия!");
+        }
         appSettings[key] = val;
-        showToast("✓ Изменение подготовлено к сохранению");
-    }
+        localStorage.setItem('fgram_settings', JSON.stringify(appSettings));
+        showToast(val ? "✅ Включено" : "❌ Выключено");
 
-    function syncSettingsWithBot() {
-        if (role === 'free') return tg.showAlert("⛔ Требуется подписка!");
-        tg.sendData(JSON.stringify({
-            action: "save_all_settings",
-            settings: appSettings
-        }));
-        showToast("✅ Настройки применены в FGram Platform!");
+        try {
+            tg.sendData(JSON.stringify({
+                action: "save_all_settings",
+                settings: appSettings
+            }));
+        } catch(e) {}
     }
 
     function addMuteDirect() {
@@ -632,21 +678,42 @@
         showToast(`🔊 Объект ${val} размучен`);
     }
 
-    function calculateRegDateFromId() {
-        const uid = parseInt(document.getElementById('calc-uid').value.trim()) || 0;
-        if (!uid) return;
-        let dateStr = "2025–2026 г.";
-        if (uid < 150000000) dateStr = "12 мая 2015 г. (11 лет)";
-        else if (uid < 500000000) dateStr = "18 сентября 2017 г. (9 лет)";
-        else if (uid < 1500000000) dateStr = "24 декабря 2020 г. (5 лет)";
-        else if (uid < 3000000000) dateStr = "16 апреля 2022 г. (4 года)";
-        else if (uid < 7000000000) dateStr = "08 октября 2024 г. (1.5 года)";
-        document.getElementById('calc-uid-res').innerHTML = `📅 Дата создания: <span style="color:var(--accent);">${dateStr}</span>`;
-    }
-
     function clearAllMutesDirect() {
         tg.sendData(JSON.stringify({ action: "clear_mutes" }));
         showToast("⚡ Все муты очищены");
+    }
+
+    // ГЕНЕРАТОР ПАРОЛЕЙ И КЛЮЧЕЙ
+    let currentKey = "";
+    function generateCustomPassword(len) {
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*()_-+=";
+        let res = "";
+        for (let i = 0; i < len; i++) res += chars.charAt(Math.floor(Math.random() * chars.length));
+        currentKey = res;
+        showKeyBox(res);
+    }
+
+    function generateSeedPhrase() {
+        const words = ["abandon", "ability", "able", "about", "above", "absent", "absorb", "abstract", "absurd", "abuse", "access", "accident", "account", "accuse", "achieve", "acid", "acoustic", "acquire", "across", "act", "action", "actor", "actress", "actual", "adapt", "add", "addict", "address", "adjust", "admit", "adult", "advance", "advice", "aerobic", "afford", "afraid", "again", "age", "agent", "agree", "ahead", "aim", "air", "airport", "aisle", "alarm", "album", "alcohol", "alert", "alien", "all", "alley", "allow", "almost", "alone", "alpha", "already", "also", "alter", "always", "amateur", "amazing", "among", "amount", "amused", "analyst", "anchor", "ancient", "anger", "angle", "angry", "animal", "ankle", "announce", "annual", "another", "answer", "antenna", "antique", "anxiety", "any", "apart", "apology", "appear", "apple", "approve", "april", "arch", "arctic", "area", "arena", "argue", "arm", "armed", "armor", "army", "around", "arrange", "arrest", "arrive", "arrow", "art", "artefact", "artist", "artwork", "ask", "aspect", "assault", "asset", "assist", "assume", "asthma", "athlete", "atom", "attack", "attend", "attitude", "attract", "auction", "audit", "august", "aunt", "author", "auto", "autumn", "average", "avocado", "avoid", "awake", "aware", "away", "awesome", "awful", "awkward", "axis"];
+        let phrase = [];
+        for (let i = 0; i < 12; i++) phrase.push(words[Math.floor(Math.random() * words.length)]);
+        currentKey = phrase.join(" ");
+        showKeyBox(currentKey);
+    }
+
+    function showKeyBox(val) {
+        const box = document.getElementById('pwd-box');
+        const btn = document.getElementById('copy-pwd-btn');
+        box.innerText = val;
+        box.style.display = 'block';
+        btn.style.display = 'block';
+        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+    }
+
+    function copyPassword() {
+        if (!currentKey) return;
+        navigator.clipboard.writeText(currentKey);
+        showToast("📋 Скопировано в буфер");
     }
 
     function renderOsintInApp(mode) {
