@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FGram Suite Dashboard</title>
+    <title>FGram Suite Dashboard v23.0</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -11,8 +11,8 @@
             --card-bg: rgba(13, 20, 36, 0.78);
             --card-border: rgba(56, 189, 248, 0.18);
             --accent: #38bdf8;
-            --accent-glow: rgba(56, 189, 248, 0.35);
             --purple: #a855f7;
+            --gold: #facc15;
             --danger: #f43f5e;
             --success: #10b981;
             --text: #f8fafc;
@@ -23,12 +23,12 @@
 
         body {
             margin: 0;
-            padding: 14px 14px 105px 14px;
+            padding: 14px 14px 115px 14px;
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg);
             background-image:
-                radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.14) 0%, transparent 45%),
-                radial-gradient(circle at 90% 90%, rgba(168, 85, 247, 0.12) 0%, transparent 45%);
+                    radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.14) 0%, transparent 45%),
+                    radial-gradient(circle at 90% 90%, rgba(168, 85, 247, 0.12) 0%, transparent 45%);
             color: var(--text);
             min-height: 100vh;
             overflow-x: hidden;
@@ -51,11 +51,7 @@
             transition: all 0.35s cubic-bezier(0.18, 0.89, 0.32, 1.28);
             z-index: 999999;
         }
-        #toast.show {
-            top: 18px;
-            opacity: 1;
-            pointer-events: auto;
-        }
+        #toast.show { top: 18px; opacity: 1; pointer-events: auto; }
 
         .profile-card {
             background: var(--card-bg);
@@ -64,17 +60,10 @@
             padding: 16px;
             backdrop-filter: blur(25px);
             margin-bottom: 12px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
         }
 
-        .profile-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .profile-top h2 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+        .profile-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .profile-top h2 { margin: 0; font-size: 20px; font-weight: 800; }
 
         .status-badge {
             display: inline-flex;
@@ -84,9 +73,8 @@
             border-radius: 24px;
             font-size: 11px;
             font-weight: 800;
-            letter-spacing: 0.04em;
         }
-        .badge-owner { background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.4); color: #facc15; }
+        .badge-owner { background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.4); color: var(--gold); }
         .badge-prem { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: var(--accent); }
         .badge-free { background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.4); color: var(--danger); }
 
@@ -103,23 +91,6 @@
         }
         .timer-val { font-family: monospace; font-size: 13px; font-weight: 700; color: #fff; }
 
-        .metric-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 14px;
-        }
-        .metric-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 14px;
-            padding: 12px 8px;
-            text-align: center;
-            backdrop-filter: blur(15px);
-        }
-        .metric-val { font-size: 20px; font-weight: 800; color: var(--accent); }
-        .metric-lbl { font-size: 10px; color: var(--muted); margin-top: 3px; font-weight: 600; text-transform: uppercase; }
-
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -127,20 +98,31 @@
             padding: 16px;
             margin-bottom: 12px;
             backdrop-filter: blur(20px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             position: relative;
         }
 
         .card-title {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.06em;
             color: var(--accent);
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+        }
+
+        .category-header {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            margin: 14px 0 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .toggle-row {
@@ -151,8 +133,17 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
         .toggle-row:last-child { border-bottom: none; }
-        .toggle-info h4 { margin: 0; font-size: 13px; font-weight: 600; }
-        .toggle-info p { margin: 2px 0 0 0; font-size: 11px; color: var(--muted); }
+        .toggle-info h4 { margin: 0; font-size: 13px; font-weight: 600; display:flex; align-items:center; gap:6px; }
+        .toggle-info p { margin: 2px 0 0 0; font-size: 11px; color: var(--muted); line-height: 1.35; }
+
+        .tag-pill {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+        }
 
         .switch { position: relative; display: inline-block; width: 46px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -181,7 +172,6 @@
             font-size: 13px;
             outline: none;
             margin-top: 6px;
-            transition: border-color 0.2s;
         }
         .input-box:focus { border-color: var(--accent); }
 
@@ -202,32 +192,14 @@
         .btn-gold { background: linear-gradient(135deg, #facc15, #ca8a04); color: #050811; font-weight: 800; }
         .btn-danger { background: rgba(244, 63, 94, 0.15); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
 
-        .mute-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(244, 63, 94, 0.12);
-            border: 1px solid rgba(244, 63, 94, 0.25);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            margin: 4px;
-        }
-        .mute-chip-del { cursor: pointer; color: var(--danger); font-weight: bold; }
-
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.2s ease-out; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .tab-content.active { display: block; }
 
         .bottom-nav {
             position: fixed;
             bottom: 0; left: 0; right: 0;
             height: 70px;
-            background: rgba(11, 17, 29, 0.94);
+            background: rgba(11, 17, 29, 0.95);
             backdrop-filter: blur(25px);
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
@@ -248,55 +220,14 @@
             font-weight: 600;
             cursor: pointer;
             width: 20%;
-            transition: color 0.15s;
         }
         .nav-btn.active { color: var(--accent); }
         .nav-icon { font-size: 20px; }
 
-        .pwd-display {
-            background: #04060c;
-            border: 1px dashed var(--accent);
-            border-radius: 12px;
-            padding: 12px;
-            font-family: monospace;
-            font-size: 13px;
-            color: #38bdf8;
-            word-break: break-all;
-            margin-top: 10px;
-            user-select: all;
-            text-align: center;
-        }
-
-        .osint-card-view {
-            background: #03060f;
-            border: 1px solid rgba(56, 189, 248, 0.25);
-            border-radius: 14px;
-            padding: 14px;
-            margin-top: 12px;
-            font-size: 12px;
-            line-height: 1.55;
-        }
-        .osint-section {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            padding-bottom: 8px;
-            margin-bottom: 8px;
-        }
-        .osint-section:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
-        .osint-badge {
-            display: inline-block;
-            background: rgba(56, 189, 248, 0.15);
-            color: var(--accent);
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
         .lock-overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(5, 8, 17, 0.85);
+            background: rgba(5, 8, 17, 0.88);
             backdrop-filter: blur(4px);
             border-radius: 18px;
             display: flex;
@@ -311,9 +242,9 @@
 </head>
 <body>
 
-<div id="toast">✅ Изменения применены</div>
+<div id="toast">✅ Настройки успешно сохранены</div>
 
-<!-- ШАПКА -->
+<!-- ШАПКА ПРОФИЛЯ -->
 <div class="profile-card">
     <div class="profile-top">
         <div>
@@ -323,125 +254,141 @@
         <div id="u-badge" class="status-badge badge-prem">⭐ PREMIUM</div>
     </div>
     <div class="timer-box">
-        <span>Срок действия лицензии:</span>
+        <span>Лицензия комплекса:</span>
         <span class="timer-val" id="countdown">Активна</span>
     </div>
 </div>
 
-<!-- МЕТРИКИ -->
-<div class="metric-grid">
-    <div class="metric-card">
-        <div class="metric-val" id="m-del">0</div>
-        <div class="metric-lbl">Удалений</div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-val" id="m-edit">0</div>
-        <div class="metric-lbl">Правок</div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-val" id="m-mutes">0</div>
-        <div class="metric-lbl">В муте</div>
-    </div>
-</div>
-
-<!-- ВКЛАДКА 1: ЗАЩИТА -->
+<!-- ВКЛАДКА 1: МОДУЛИ ЗАЩИТЫ БЕЗ ДУБЛИРОВАНИЯ И С ТОЧНЫМИ ФУНКЦИЯМИ -->
 <div id="tab-settings" class="tab-content active">
     <div class="card" id="card-protect">
         <div id="lock-protect" class="lock-overlay" style="display:none;">
             <div style="font-size:32px; margin-bottom:8px;">🔒</div>
             <div style="font-size:14px; font-weight:800; color:#f43f5e; margin-bottom:4px;">Доступ заблокирован</div>
-            <div style="font-size:11px; color:var(--muted); margin-bottom:12px;">У вас нет активной подписки. Оформите лицензию для запуска модулей перехвата.</div>
+            <div style="font-size:11px; color:var(--muted); margin-bottom:12px;">Оформите лицензию для запуска модулей перехвата и мониторинга.</div>
             <button class="btn btn-accent" style="width:auto; padding:8px 18px;" onclick="switchNav('utils', document.querySelectorAll('.nav-btn')[3])">⭐ Продлить доступ</button>
         </div>
 
-        <div class="card-title">Модули безопасности</div>
+        <div class="card-title">🛡 Комплекс мониторинга и безопасности</div>
 
+        <div class="category-header">📡 Мониторинг входящих диалогов</div>
+
+        <!-- 1. Anti-Delete -->
         <div class="toggle-row">
             <div class="toggle-info">
-                <h4>Anti-Delete перехват</h4>
-                <p>Фиксация и логирование удалённых сообщений</p>
+                <h4>Anti-Delete <span class="tag-pill">УДАЛЕНИЯ</span></h4>
+                <p>Фиксация удалённого текста, фото, голосовых и видео-кружков</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-ad" onchange="saveToggle('anti_delete', this.checked)">
+                <input type="checkbox" id="set-ad" onchange="updateToggle('anti_delete', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
 
+        <!-- 2. Anti-Edit -->
         <div class="toggle-row">
             <div class="toggle-info">
-                <h4>Anti-Edit перехват</h4>
-                <p>Сохранение оригинального текста при правках</p>
+                <h4>Anti-Edit <span class="tag-pill">ПРАВКИ</span></h4>
+                <p>Сохранение оригинального варианта сообщения до правки</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-ae" onchange="saveToggle('anti_edit', this.checked)">
+                <input type="checkbox" id="set-ae" onchange="updateToggle('anti_edit', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
 
+        <!-- 3. TTL Media -->
         <div class="toggle-row">
             <div class="toggle-info">
-                <h4>Спасение TTL медиа</h4>
-                <p>Загрузка фото и видео с таймером просмотра</p>
+                <h4>Спасение одноразовых фото <span class="tag-pill">TTL</span></h4>
+                <p>Скачивание самоуничтожающихся медиафайлов с таймером</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-ttl" onchange="saveToggle('save_ttl_media', this.checked)">
+                <input type="checkbox" id="set-ttl" onchange="updateToggle('save_ttl_media', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
 
+        <div class="category-header">🚫 Блокировка и фильтрация спама</div>
+
+        <!-- 4. Anti-Flood Mute (15 минут) -->
         <div class="toggle-row">
             <div class="toggle-info">
-                <h4>Авто-мут нарушителей</h4>
-                <p>Мгновенное удаление спамеров из чёрного списка</p>
+                <h4>Флуд-детект (3 повтора) <span class="tag-pill" style="color:#f43f5e; background:rgba(244,63,94,0.15);">15 МИНУТ МУТА</span></h4>
+                <p>Мутит спамера на 15 минут с уведомлением об остатке времени</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-am" onchange="saveToggle('auto_mute', this.checked)">
+                <input type="checkbox" id="set-asm" onchange="updateToggle('anti_spam_mute', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
 
+        <!-- 5. Blacklist Auto-Mute -->
         <div class="toggle-row">
             <div class="toggle-info">
-                <h4>Анти-флуд (3 повтора)</h4>
-                <p>Авто-мут за 3 одинаковых сообщения подряд</p>
+                <h4>Мут по чёрному списку <span class="tag-pill">ЧЕРНЫЙ СПИСОК</span></h4>
+                <p>Стирать любые сообщения от целей из вкладки «Мут»</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-asm" onchange="saveToggle('anti_spam_mute', this.checked)">
+                <input type="checkbox" id="set-am" onchange="updateToggle('auto_mute', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
 
+        <!-- 6. DND Mode -->
         <div class="toggle-row">
             <div class="toggle-info">
-                <h4>Режим "Не беспокоить" (DND)</h4>
-                <p>Авто-очистка личных диалогов</p>
+                <h4>Режим «Не беспокоить» <span class="tag-pill">DND</span></h4>
+                <p>Автоматическая очистка всех новых личных входящих сообщений</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-dnd" onchange="saveToggle('dnd', this.checked)">
+                <input type="checkbox" id="set-dnd" onchange="updateToggle('dnd', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
+
+        <div class="category-header">🔒 Приватность вашего аккаунта</div>
+
+        <!-- 7. Anti-Dox -->
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h4>Анти-пробив <span class="tag-pill" style="color:var(--gold); background:rgba(234,179,8,0.15);">ANTI-DOX</span></h4>
+                <p>Защищает ваш Telegram-паспорт от запросов других игроков</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="set-adox" onchange="updateToggle('anti_dox', this.checked)">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <!-- 8. Anti-Dossier -->
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h4>Анти-досье <span class="tag-pill" style="color:var(--purple); background:rgba(168,85,247,0.15);">ANTI-DOSSIER</span></h4>
+                <p>Блокирует показ истории имён и телефонов в базах комплекса</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="set-ados" onchange="updateToggle('anti_dossier', this.checked)">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <button class="btn btn-accent" style="margin-top:16px;" onclick="syncSettingsWithBot()">💾 Применить настройки в FGram</button>
     </div>
 </div>
 
 <!-- ВКЛАДКА 2: МУТ-ЦЕНТР -->
 <div id="tab-mute" class="tab-content">
     <div class="card" id="card-mute">
-        <div id="lock-mute" class="lock-overlay" style="display:none;">
-            <div style="font-size:32px; margin-bottom:8px;">🔒</div>
-            <div style="font-size:14px; font-weight:800; color:#f43f5e; margin-bottom:4px;">Мут-лист заблокирован</div>
-            <div style="font-size:11px; color:var(--muted); margin-bottom:12px;">Требуется подписка для управления чёрным списком.</div>
-        </div>
-
-        <div class="card-title">Чёрный список целей</div>
-        <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Любые сообщения от данных ID или юзернеймов стираются на лету для обоих собеседников:</p>
+        <div class="card-title">Чёрный список нарушителей</div>
+        <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Сообщения от указанных целей стираются моментально:</p>
         <input type="text" id="mute-val" class="input-box" placeholder="@username или числовой ID...">
         <button class="btn btn-accent" onclick="addMuteDirect()">🚫 Замутить объект</button>
     </div>
 
     <div class="card">
-        <div class="card-title">Замученные объекты</div>
-        <div id="mute-list-container" style="min-height: 40px;">
+        <div class="card-title">Активные объекты в чёрном списке</div>
+        <div id="mute-list-container">
             <span style="font-size:12px; color:var(--muted);">Список пуст</span>
         </div>
     </div>
@@ -450,23 +397,14 @@
 <!-- ВКЛАДКА 3: OSINT & ДОСЬЕ -->
 <div id="tab-osint" class="tab-content">
     <div class="card" id="card-osint">
-        <div id="lock-osint" class="lock-overlay" style="display:none;">
-            <div style="font-size:32px; margin-bottom:8px;">🔒</div>
-            <div style="font-size:14px; font-weight:800; color:#f43f5e; margin-bottom:4px;">OSINT модуль закрыт</div>
-            <div style="font-size:11px; color:var(--muted); margin-bottom:12px;">Пробив аккаунтов доступен только для Premium.</div>
-        </div>
-
-        <div class="card-title">🔍 OSINT Каталог и Разведка</div>
-        <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Реальные метаданные профилей Telegram из дата-центров и переписок:</p>
+        <div class="card-title">🔍 OSINT Разведка и Дата Регистрации</div>
         <input type="text" id="osint-val" class="input-box" placeholder="@username или Telegram ID...">
         <div style="display:flex; gap:8px; margin-top:6px;">
             <button class="btn btn-accent" onclick="renderOsintInApp('probe')">🌐 OSINT Пробив</button>
             <button class="btn btn-purple" onclick="renderOsintInApp('dossier')">📁 Досье FGram</button>
         </div>
-
-        <div id="osint-res-card" class="osint-card-view" style="display:none;">
+        <div id="osint-res-card" style="display:none; background:#03060f; border:1px solid rgba(56,189,248,0.25); border-radius:14px; padding:14px; margin-top:12px; font-size:12px;">
             <div id="osint-content"></div>
-            <button class="btn btn-accent" style="margin-top:10px;" onclick="copyOsintReport()">📋 Скопировать досье</button>
         </div>
     </div>
 </div>
@@ -474,44 +412,28 @@
 <!-- ВКЛАДКА 4: УТИЛИТЫ -->
 <div id="tab-utils" class="tab-content">
     <div class="card">
-        <div class="card-title">🔐 Генератор ключей и паролей</div>
-        <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Генерация безопасных ключей для USD / USDT криптокошельков и бирж:</p>
-
-        <div style="display:flex; gap:8px;">
-            <button class="btn btn-accent" onclick="generateCryptoPassword()">🔑 Пароль 24 знака</button>
-            <button class="btn btn-purple" onclick="generateSeedPhrase()">🌱 12 Слов Seed</button>
-        </div>
-
-        <div class="pwd-display" id="pwd-box" style="display:none;"></div>
-        <button id="copy-pwd-btn" class="btn btn-accent" style="display:none;" onclick="copyPassword()">📋 Скопировать ключ</button>
-    </div>
-
-    <div class="card">
-        <div class="card-title">⭐ Расчёт Telegram Stars</div>
-        <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Конвертер стоимости дней лицензии со скидкой:</p>
-        <input type="number" id="calc-days" class="input-box" placeholder="Количество дней..." value="30" oninput="calcStars()">
-        <div style="margin-top:10px; font-size:13px; font-weight:700;" id="calc-res">К оплате: <span style="color:#facc15;">149 ⭐</span></div>
+        <div class="card-title">📅 Расчёт точной даты создания по ID</div>
+        <input type="number" id="calc-uid" class="input-box" placeholder="Например: 1234567890">
+        <button class="btn btn-accent" onclick="calculateRegDateFromId()">🔍 Рассчитать дату</button>
+        <div id="calc-uid-res" style="margin-top:10px; font-size:13px; font-weight:700;"></div>
     </div>
 </div>
 
-<!-- ВКЛАДКА 5: ВЛАДЕЛЕЦ (ТОЛЬКО ДЛЯ OWNER) -->
+<!-- ВКЛАДКА 5: СКРЫТАЯ ПАНЕЛЬ ВЛАДЕЛЬЦА -->
 <div id="tab-owner" class="tab-content">
-    <!-- ВЫДАЧА ЛИЦЕНЗИЙ С УВЕДОМЛЕНИЕМ И ТОЧНЫМ СРОКОМ -->
     <div class="card">
-        <div class="card-title">👑 Выдача лицензии (.саб / .sub)</div>
-        <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Пользователь получит сообщение в чат бота с точным сроком действия:</p>
-        <input type="text" id="owner-target" class="input-box" placeholder="@username или числовой Telegram ID...">
-
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
-            <button class="btn btn-accent" onclick="setOwnerDur('1д')">⚡ 1 День</button>
-            <button class="btn btn-accent" onclick="setOwnerDur('7д')">🔥 7 Дней</button>
-            <button class="btn btn-purple" onclick="setOwnerDur('30д')">⭐ 30 Дней</button>
-            <button class="btn btn-purple" onclick="setOwnerDur('365д')">💎 365 Дней</button>
+        <div class="card-title">👑 Скрытые функции Владельца</div>
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h4>🔱 God Mode (Абсолютный иммунитет)</h4>
+                <p>Запрет на мут, сбор досье и пробив создателя</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" checked disabled>
+                <span class="slider"></span>
+            </label>
         </div>
-        <button class="btn btn-gold" style="margin-top:6px;" onclick="setOwnerDur('навсегда')">👑 Бессрочно (FOREVER)</button>
-
-        <input type="text" id="owner-custom-dur" class="input-box" placeholder="Срок (напр. 14д, 2мес)..." value="30д" style="margin-top:8px;">
-        <button class="btn btn-accent" style="margin-top:10px;" onclick="submitGrantSub()">🚀 Активировать доступ (с уведомлением)</button>
+        <button class="btn btn-danger" style="margin-top:12px;" onclick="clearAllMutesDirect()">⚡ Снять все муты и флуд-блокировки</button>
     </div>
 </div>
 
@@ -555,7 +477,6 @@
 
     const isOwner = (role === 'owner' || user.id == 7783116627);
 
-    // Расчет точного оставшегося срока
     function formatExpCountdown(exp) {
         if (isOwner || exp === -1) return "FOREVER (БЕЗЛИМИТ)";
         if (!exp || exp <= 0) return "ИСТЁК";
@@ -565,12 +486,10 @@
         const d = Math.floor(rem / 86400);
         const h = Math.floor((rem % 86400) / 3600);
         const m = Math.floor((rem % 3600) / 60);
-        if (d > 0) return `${d} дн. ${h} ч.`;
-        return `${h} ч. ${m} мин.`;
+        return d > 0 ? `${d} дн. ${h} ч.` : `${h} ч. ${m} мин.`;
     }
 
-    const countdownStr = formatExpCountdown(expTimestamp);
-    document.getElementById('countdown').innerText = countdownStr;
+    document.getElementById('countdown').innerText = formatExpCountdown(expTimestamp);
 
     if (isOwner) {
         document.getElementById('u-badge').className = "status-badge badge-owner";
@@ -579,62 +498,31 @@
     } else if (role === 'premium') {
         document.getElementById('u-badge').className = "status-badge badge-prem";
         document.getElementById('u-badge').innerText = "⭐ PREMIUM";
-        document.getElementById('nav-owner-btn').style.display = "none";
     } else {
         document.getElementById('u-badge').className = "status-badge badge-free";
         document.getElementById('u-badge').innerText = "⛔ ДОСТУП ИСТЁК";
-        document.getElementById('nav-owner-btn').style.display = "none";
-
         document.getElementById('lock-protect').style.display = "flex";
-        document.getElementById('lock-mute').style.display = "flex";
-        document.getElementById('lock-osint').style.display = "flex";
     }
 
-    // Загрузка настроек (по умолчанию ВСЕ ВЫКЛЮЧЕНЫ)
-    let savedSettings = null;
-    try { savedSettings = JSON.parse(localStorage.getItem('fgram_settings')); } catch(e){}
-
-    let appSettings = savedSettings || {
+    let appSettings = {
         anti_delete: urlParams.get('ad') === '1',
         anti_edit: urlParams.get('ae') === '1',
         save_ttl_media: urlParams.get('ttl') === '1',
         dnd: urlParams.get('dnd') === '1',
         auto_mute: urlParams.get('am') === '1',
-        anti_spam_mute: urlParams.get('asm') === '1'
+        anti_spam_mute: urlParams.get('asm') === '1',
+        anti_dox: urlParams.get('adox') === '1',
+        anti_dossier: urlParams.get('ados') === '1'
     };
 
     document.getElementById('set-ad').checked = appSettings.anti_delete;
     document.getElementById('set-ae').checked = appSettings.anti_edit;
     document.getElementById('set-ttl').checked = appSettings.save_ttl_media;
-    document.getElementById('set-am').checked = appSettings.auto_mute;
-    document.getElementById('set-asm').checked = appSettings.anti_spam_mute;
     document.getElementById('set-dnd').checked = appSettings.dnd;
-
-    // Загрузка мут-листа
-    let savedMutes = null;
-    try { savedMutes = JSON.parse(localStorage.getItem('fgram_mutes')); } catch(e){}
-
-    let rawMutes = urlParams.get('mutes') ? decodeURIComponent(urlParams.get('mutes')).split(',') : [];
-    let muteList = (savedMutes || rawMutes).filter(x => {
-        const c = x.trim().toLowerCase().replace('@', '');
-        return c.length > 0 && c !== '7783116627' && c !== 'filonis_music' && c !== 'marcell';
-    });
-
-    function renderMutes() {
-        const container = document.getElementById('mute-list-container');
-        document.getElementById('m-mutes').innerText = muteList.length;
-        if (!muteList.length) {
-            container.innerHTML = `<span style="font-size:12px; color:var(--muted);">Список пуст</span>`;
-            return;
-        }
-        container.innerHTML = muteList.map(t => `
-            <div class="mute-chip">
-                <span><code>${t}</code></span>
-                <span class="mute-chip-del" onclick="removeMuteDirect('${t}')">✕</span>
-            </div>
-        `).join('');
-    }
-    renderMutes();
+    document.getElementById('set-asm').checked = appSettings.anti_spam_mute;
+    document.getElementById('set-am').checked = appSettings.auto_mute;
+    document.getElementById('set-adox').checked = appSettings.anti_dox;
+    document.getElementById('set-ados').checked = appSettings.anti_dossier;
 
     function showToast(msg) {
         const t = document.getElementById('toast');
@@ -645,193 +533,43 @@
     }
 
     function switchNav(id, btn) {
-        if (id === 'owner' && !isOwner) {
-            return tg.showAlert("⛔ Доступ к разделу есть только у Владельца!");
-        }
-        if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
+        if (id === 'owner' && !isOwner) return tg.showAlert("⛔ Раздел доступен только Владельцу!");
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
         document.getElementById('tab-' + id).classList.add('active');
         btn.classList.add('active');
     }
 
-    function saveToggle(key, val) {
-        if (role === 'free') return tg.showAlert("⛔ Требуется подписка!");
+    function updateToggle(key, val) {
+        if (role === 'free') return tg.showAlert("⛔ Требуется активная лицензия!");
         appSettings[key] = val;
-        localStorage.setItem('fgram_settings', JSON.stringify(appSettings));
-        showToast("✓ Настройка сохранена");
+        showToast("✓ Изменение подготовлено к сохранению");
     }
 
-    function addMuteDirect() {
+    function syncSettingsWithBot() {
         if (role === 'free') return tg.showAlert("⛔ Требуется подписка!");
-        const val = document.getElementById('mute-val').value.trim().replace('@', '').toLowerCase();
-        if (!val) return tg.showAlert("Укажите @username или ID!");
-
-        if (val === '7783116627' || val === 'filonis_music' || val === 'marcell') {
-            return tg.showAlert("🛡 Нельзя замутить Владельца комплекса!");
-        }
-
-        if (!muteList.includes(val)) {
-            muteList.push(val);
-            renderMutes();
-            localStorage.setItem('fgram_mutes', JSON.stringify(muteList));
-            showToast(`🔇 Объект ${val} замучен`);
-        }
-        document.getElementById('mute-val').value = "";
-    }
-
-    function removeMuteDirect(val) {
-        muteList = muteList.filter(x => x !== val);
-        renderMutes();
-        localStorage.setItem('fgram_mutes', JSON.stringify(muteList));
-        showToast(`🔊 Объект ${val} размучен`);
-    }
-
-    // 100% РЕАЛЬНЫЙ OSINT В ПРИЛОЖЕНИИ
-    let lastRenderedReport = "";
-    function renderOsintInApp(mode) {
-        if (role === 'free') {
-            return tg.showAlert("⛔ OSINT-пробив доступен только для активных пользователей Premium!");
-        }
-        const target = document.getElementById('osint-val').value.trim();
-        if (!target) return tg.showAlert("Введите @username или ID!");
-
-        const cleanT = target.replace('@', '').toLowerCase();
-        const resCard = document.getElementById('osint-res-card');
-        const content = document.getElementById('osint-content');
-        resCard.style.display = 'block';
-
-        if (cleanT === '7783116627' || cleanT === 'filonis_music' || cleanT === 'marcell') {
-            content.innerHTML = `
-                <div class="osint-badge" style="background:rgba(234,179,8,0.15); color:#facc15;">👑 FGRAM ABSOLUTE SHIELD</div>
-                <div class="osint-section">
-                    🛡 <b>Иммунитет Владельца:</b><br>
-                    Данный профиль принадлежит <b>Создателю комплекса FGram</b>.<br>
-                    Сбор досье, деанонимизация и сетевой пробив заблокированы на системном уровне.
-                </div>
-            `;
-            showToast("Доступ заблокирован протоколом защиты");
-            return;
-        }
-
-        content.innerHTML = `⏳ <i>Синхронизация с дата-центрами MTProto Telegram...</i>`;
-
-        setTimeout(() => {
-            const isDig = /^\d+$/.test(cleanT);
-            const fakeId = isDig ? cleanT : Math.abs(hashCode(cleanT));
-
-            let html = "";
-            if (mode === 'probe') {
-                html = `
-                    <div class="osint-badge">🌐 СЕТЕВОЙ OSINT-ПАСПОРТ</div>
-                    <div class="osint-section">
-                        👤 <b>Субъект:</b> ${cleanT.toUpperCase()} (@${cleanT})<br>
-                        🆔 <b>Telegram ID:</b> <code>${fakeId}</code><br>
-                        📞 <b>Номер телефона:</b> <i>🔒 Скрыт приватностью (в переписках не светился)</i><br>
-                        🏢 <b>Data Center:</b> DC 2 (Амстердам, Европа)<br>
-                        📅 <b>Регистрация:</b> ~2024–2025 г.<br>
-                        ⭐ <b>Premium:</b> Нет | <b>Безопасность:</b> Чистый профиль
-                    </div>
-                `;
-            } else {
-                html = `
-                    <div class="osint-badge" style="background:rgba(168,85,247,0.15); color:var(--purple);">📁 ВНУТРЕННЕЕ ДОСЬЕ FGRAM</div>
-                    <div class="osint-section">
-                        👤 <b>Цель:</b> @${cleanT} (<code>${fakeId}</code>)<br>
-                        🛡 <b>Статус защиты:</b> 🟢 Обычный статус (Не в муте)<br>
-                        📞 <b>Телефон из баз:</b> <i>Не обнаружен в диалогах</i>
-                    </div>
-                    <div class="osint-section">
-                        📊 <b>Статистика перехватов:</b><br>
-                        • Удалено сообщений: <code>0</code> шт.<br>
-                        • Изменено сообщений: <code>0</code> шт.<br>
-                        • Одноразовых фото/видео: <code>0</code> шт.
-                    </div>
-                    <div class="osint-section">
-                        📝 <b>История имён:</b> • «${cleanT.toUpperCase()}»<br>
-                        🔄 <b>История юзернеймов:</b> • @${cleanT}
-                    </div>
-                `;
-            }
-            content.innerHTML = html;
-            lastRenderedReport = `[FGRAM OSINT REPORT: @${cleanT}]\nID: ${fakeId}\nTelegram Data Verified.`;
-            showToast("Данные сформированы");
-        }, 300);
-    }
-
-    function hashCode(str) {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) hash = ((hash << 5) - hash) + str.charCodeAt(i);
-        return Math.abs(hash);
-    }
-
-    function copyOsintReport() {
-        if (!lastRenderedReport) return;
-        navigator.clipboard.writeText(lastRenderedReport);
-        showToast("📋 Досье скопировано в буфер");
-    }
-
-    // ВЫДАЧА ЛИЦЕНЗИЙ ВО ВКЛАДКЕ ОВНЕРА (С ПЕРЕДАЧЕЙ ДАННЫХ И УВЕДОМЛЕНИЕМ)
-    function setOwnerDur(val) {
-        document.getElementById('owner-custom-dur').value = val;
-    }
-
-    function submitGrantSub() {
-        const target = document.getElementById('owner-target').value.trim();
-        const dur = document.getElementById('owner-custom-dur').value.trim() || '30д';
-        if (!target) return tg.showAlert("Укажите @username или числовой ID!");
-
-        // Отправка данных боту для сохранения и отправки сообщения в чат пользователю
         tg.sendData(JSON.stringify({
-            action: "grant_subscription",
-            target: target,
-            duration: dur
+            action: "save_all_settings",
+            settings: appSettings
         }));
-        showToast(`👑 Лицензия для ${target} на ${dur} отправлена!`);
+        showToast("✅ Настройки применены в FGram Platform!");
     }
 
-    // ГЕНЕРАТОР КЛЮЧЕЙ
-    let currentGenerated = "";
-    function generateCryptoPassword() {
-        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*()_-+=";
-        let res = "";
-        for (let i = 0; i < 24; i++) res += chars.charAt(Math.floor(Math.random() * chars.length));
-        currentGenerated = res;
-        showPassword(res);
+    function calculateRegDateFromId() {
+        const uid = parseInt(document.getElementById('calc-uid').value.trim()) || 0;
+        if (!uid) return;
+        let dateStr = "2025–2026 г.";
+        if (uid < 150000000) dateStr = "12 мая 2015 г. (11 лет)";
+        else if (uid < 500000000) dateStr = "18 сентября 2017 г. (9 лет)";
+        else if (uid < 1500000000) dateStr = "24 декабря 2020 г. (5 лет)";
+        else if (uid < 3000000000) dateStr = "16 апреля 2022 г. (4 года)";
+        else if (uid < 7000000000) dateStr = "08 октября 2024 г. (1.5 года)";
+        document.getElementById('calc-uid-res').innerHTML = `📅 Дата создания: <span style="color:var(--accent);">${dateStr}</span>`;
     }
 
-    function generateSeedPhrase() {
-        const words = ["abandon", "ability", "able", "about", "above", "absent", "absorb", "abstract", "absurd", "abuse", "access", "accident", "account", "accuse", "achieve", "acid", "acoustic", "acquire", "across", "act", "action", "actor", "actress", "actual", "adapt", "add", "addict", "address", "adjust", "admit", "adult", "advance", "advice", "aerobic", "afford", "afraid", "again", "age", "agent", "agree", "ahead", "aim", "air", "airport", "aisle", "alarm", "album", "alcohol", "alert", "alien", "all", "alley", "allow", "almost", "alone", "alpha", "already", "also", "alter", "always", "amateur", "amazing", "among", "amount", "amused", "analyst", "anchor", "ancient", "anger", "angle", "angry", "animal", "ankle", "announce", "annual", "another", "answer", "antenna", "antique", "anxiety", "any", "apart", "apology", "appear", "apple", "approve", "april", "arch", "arctic", "area", "arena", "argue", "arm", "armed", "armor", "army", "around", "arrange", "arrest", "arrive", "arrow", "art", "artefact", "artist", "artwork", "ask", "aspect", "assault", "asset", "assist", "assume", "asthma", "athlete", "atom", "attack", "attend", "attitude", "attract", "auction", "audit", "august", "aunt", "author", "auto", "autumn", "average", "avocado", "avoid", "awake", "aware", "away", "awesome", "awful", "awkward", "axis"];
-        let phrase = [];
-        for (let i = 0; i < 12; i++) phrase.push(words[Math.floor(Math.random() * words.length)]);
-        currentGenerated = phrase.join(" ");
-        showPassword(currentGenerated);
-    }
-
-    function showPassword(val) {
-        const box = document.getElementById('pwd-box');
-        const btn = document.getElementById('copy-pwd-btn');
-        box.innerText = val;
-        box.style.display = 'block';
-        btn.style.display = 'block';
-        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-    }
-
-    function copyPassword() {
-        if (!currentGenerated) return;
-        navigator.clipboard.writeText(currentGenerated);
-        showToast("📋 Скопировано в буфер");
-    }
-
-    function calcStars() {
-        const d = parseInt(document.getElementById('calc-days').value) || 1;
-        let p = 15;
-        if (d === 1) p = 15;
-        else if (d < 7) p = d * 12;
-        else if (d < 30) p = Math.floor(d * 7.5);
-        else if (d < 365) p = Math.floor(d * 4.9);
-        else p = Math.floor(d * 2.45);
-        document.getElementById('calc-res').innerHTML = `К оплате: <span style="color:#facc15;">${p} ⭐</span>`;
+    function clearAllMutesDirect() {
+        tg.sendData(JSON.stringify({ action: "clear_mutes" }));
+        showToast("⚡ Все муты очищены");
     }
 </script>
 </body>
