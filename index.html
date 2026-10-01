@@ -418,7 +418,7 @@ input:checked + .slider:before { transform: translateX(22px); }
     </div>
 </div>
 
-<!-- ВКЛАДКА 3: АНАЛИЗ ПРОФИЛЕЙ -->
+<!-- ВКЛАДКА 3: АНАЛИЗ ПРОФИЛЕЙ (ДОСЬЕ) -->
 <div id="tab-osint" class="tab-content">
     <div class="card">
         <div class="card-title">Досье профиля</div>
@@ -541,6 +541,7 @@ document.getElementById('u-name').innerText = fullName;
 document.getElementById('u-tag').innerText = username ? `@${username}` : "отсутствует";
 document.getElementById('u-id').innerText = uid;
 
+// Умная загрузка и кэширование аватарки в localStorage
 const avEl = document.getElementById('u-avatar');
 let photoUrl = tgUser?.photo_url;
 if (photoUrl) {
@@ -601,11 +602,11 @@ async function sendSilentSync(data) {
 
 const LSK_SET = 'asteria_set_' + uid;
 let S = JSON.parse(localStorage.getItem(LSK_SET)) || {
-    anti_delete: P.get('ad') === '1',
-    anti_edit: P.get('ae') === '1',
-    save_ttl_media: P.get('ttl') === '1',
+    anti_delete: P.get('ad') !== '0',
+    anti_edit: P.get('ae') !== '0',
+    save_ttl_media: P.get('ttl') !== '0',
     dnd: P.get('dnd') === '1',
-    anti_spam_mute: P.get('asm') === '1',
+    anti_spam_mute: P.get('asm') !== '0',
     anti_dox: P.get('adox') === '1',
     silent_notifications: P.get('sil') === '1'
 };
@@ -746,14 +747,14 @@ function calcHash(type) {
     b.style.display = 'block';
 }
 
-// Расхэширование без разрушения регистра Base64[cite: 5]
+// Расхэширование без разрушения регистра Base64 (исправлен баг со скриншота)[cite: 5]
 function dehash() {
     const raw = document.getElementById('dehash-input').value.trim();
     if (!raw) return tg.showAlert("Вставьте хэш или строку Base64!");
     const b = document.getElementById('dehash-out-box');
     b.style.display = 'block';
 
-    // 1. Пробуем декодировать как Base64
+    // 1. Проверяем декодирование как Base64 с сохранением регистра[cite: 5]
     try {
         const decoded = decodeURIComponent(escape(atob(raw)));
         if (decoded && /^[\x20-\x7E\sа-яА-ЯёЁ0-9!@#$%^&*()_\-+=\[\]{}|\\:;"'<>,.?\/]+$/.test(decoded)) {
