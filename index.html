@@ -101,7 +101,50 @@
       margin-bottom: 10px;
     }
 
-    /* СПИСОК ЗАМУЧЕННЫХ */
+    /* СВИТЧЕРЫ */
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 11px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-info b { display: block; font-size: 13px; margin-bottom: 2px; }
+    .toggle-info span { font-size: 11px; color: var(--muted); line-height: 1.3; display: block; }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+      margin-left: 12px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      inset: 0;
+      background-color: #334155;
+      transition: .25s ease;
+      border-radius: 24px;
+      cursor: pointer;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #fff;
+      transition: .25s ease;
+      border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--accent); }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    /* МУТ-ЛИСТ */
     .mute-list {
       display: flex;
       flex-direction: column;
@@ -133,28 +176,6 @@
       cursor: pointer;
     }
 
-    /* РЕФЕРАЛЫ И РАНГИ */
-    .rank-card {
-      background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(56, 189, 248, 0.1));
-      border: 1px solid rgba(168, 85, 247, 0.3);
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 12px;
-    }
-
-    .progress-bar-bg {
-      background: #1e293b;
-      height: 8px;
-      border-radius: 6px;
-      margin: 10px 0;
-      overflow: hidden;
-    }
-    .progress-bar-fill {
-      background: linear-gradient(90deg, var(--accent), var(--purple));
-      height: 100%;
-      width: 65%;
-    }
-
     .input-box {
       width: 100%;
       background: rgba(7, 11, 20, 0.9);
@@ -182,6 +203,7 @@
     .btn:active { transform: scale(0.98); }
     .btn-accent { background: var(--accent); color: #070b14; }
     .btn-purple { background: var(--purple); color: #fff; }
+    .btn-save { background: var(--accent); color: #070b14; display: none; }
 
     .bottom-nav {
       position: fixed;
@@ -230,8 +252,84 @@
     </div>
   </div>
 
-  <!-- ВКЛАДКА 1: МУТ-ЦЕНТР СО СПИСКОМ И КНОПКАМИ СНЯТИЯ -->
-  <div id="tab-mute" class="tab-content active">
+  <!-- ВКЛАДКА 1: МОДУЛИ (БЕЗ ЗАКРЫТИЯ ПРИ КЛИКЕ) -->
+  <div id="tab-modules" class="tab-content active">
+    <div class="card">
+      <div class="card-title">Модули защиты и перехвата</div>
+      
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <b>Anti-Delete Логгер</b>
+          <span>Перехват чужих удалений без логирования своих</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="sw-anti-delete" checked onchange="recordToggle('anti_delete', this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <b>Anti-Edit Детектор</b>
+          <span>Лог правок сообщений («Было» / «Стало»)</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="sw-anti-edit" checked onchange="recordToggle('anti_edit', this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <b>Таймер-медиа (TTL Downloader)</b>
+          <span>Скачивание одноразовых фото/видео</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="sw-save-ttl" checked onchange="recordToggle('save_ttl_media', this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <b>Режим «Не беспокоить» (DND)</b>
+          <span>Стирает входящие и дублирует вам в ЛС</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="sw-dnd" onchange="recordToggle('dnd', this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <b>Моментальный авто-мут</b>
+          <span>Стирание сообщений нарушителей</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="sw-auto-mute" checked onchange="recordToggle('auto_mute', this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <b>Тихие уведомления</b>
+          <span>Отчёты шпиона без звука</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="sw-silent" onchange="recordToggle('silent_notifications', this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <!-- Кнопка сохранения в интерфейсе -->
+      <button id="save-modules-btn" class="btn btn-save" onclick="applySettingsBatch()">💾 Применить изменённые настройки</button>
+    </div>
+  </div>
+
+  <!-- ВКЛАДКА 2: МУТ-ЛИСТ -->
+  <div id="tab-mute" class="tab-content">
     <div class="card">
       <div class="card-title">🔇 Добавить пользователя в мут</div>
       <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Сообщения нарушителя будут моментально стираться:</p>
@@ -240,19 +338,17 @@
     </div>
 
     <div class="card">
-      <div class="card-title">📋 Активный список заглушенных</div>
-      <div id="mute-list-container" class="mute-list">
-        <!-- Интерактивный список -->
-      </div>
+      <div class="card-title">📋 Заглушенные пользователи</div>
+      <div id="mute-list-container" class="mute-list"></div>
     </div>
   </div>
 
-  <!-- ВКЛАДКА 2: ВЫДАЧА ЛИЦЕНЗИЙ (ВЛАДЕЛЕЦ) -->
+  <!-- ВКЛАДКА 3: ВЫДАЧА (АДМИН) -->
   <div id="tab-admin" class="tab-content">
     <div class="card">
       <div class="card-title">👑 Выдача подписки пользователю</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Укажите ID получателя:</p>
-      <input type="text" id="grant-user" class="input-box" placeholder="Telegram ID пользователя...">
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Укажите ID или @username:</p>
+      <input type="text" id="grant-user" class="input-box" placeholder="ID или @username...">
 
       <p style="font-size:12px; color:var(--muted); margin:10px 0 6px 0;">Срок (понимает: 7 дней, 1 год, 30 сек, навсегда):</p>
       <input type="text" id="grant-dur" class="input-box" placeholder="Например: 14 дней или forever...">
@@ -261,40 +357,22 @@
     </div>
   </div>
 
-  <!-- ВКЛАДКА 3: РЕФЕРАЛЬНЫЙ СИНДИКАТ -->
+  <!-- ВКЛАДКА 4: РЕФЕРАЛЫ -->
   <div id="tab-refs" class="tab-content">
-    <div class="rank-card">
-      <div style="font-size:11px; font-weight:800; color:var(--gold); text-transform:uppercase;">Партнёрский Синдикат</div>
-      <h3 style="margin:4px 0 2px 0;">🥇 Ранг: Спецагент</h3>
-      <div style="font-size:12px; color:var(--muted);">Бонус: +2 дня за каждого участника</div>
-      
-      <div class="progress-bar-bg">
-        <div class="progress-bar-fill"></div>
-      </div>
-      <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--muted);">
-        <span>Прогресс ранга</span>
-        <span>7 из 10 чел.</span>
-      </div>
-    </div>
-
     <div class="card">
-      <div class="card-title">🔗 Пригласительная ссылка</div>
-      <button class="btn btn-purple" onclick="copyRef()">Скопировать реферальную ссылку</button>
-    </div>
-  </div>
-
-  <!-- ВКЛАДКА 4: ЗВЁЗДЫ -->
-  <div id="tab-stars" class="tab-content">
-    <div class="card">
-      <div class="card-title">⭐ Магазин Telegram Stars</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 10px 0;">Покупка подписки доступна прямо в основном чате бота через встроенный биллинг Telegram.</p>
-      <button class="btn btn-accent" onclick="openStarsInBot()">Открыть витрину звёзд в чате</button>
+      <div class="card-title">👥 Бонусные дни (+1 день)</div>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 10px 0;">За каждого приглашённого друга начисляется +1 день доступа!</p>
+      <button class="btn btn-purple" onclick="copyRef()">🔗 Скопировать ссылку</button>
     </div>
   </div>
 
   <!-- НАВБАР -->
   <div class="bottom-nav">
-    <button class="nav-btn active" onclick="switchNav('mute', this)">
+    <button class="nav-btn active" onclick="switchNav('modules', this)">
+      <span class="nav-icon">⚙️</span>
+      <span>Модули</span>
+    </button>
+    <button class="nav-btn" onclick="switchNav('mute', this)">
       <span class="nav-icon">🔇</span>
       <span>Мут</span>
     </button>
@@ -305,10 +383,6 @@
     <button class="nav-btn" onclick="switchNav('refs', this)">
       <span class="nav-icon">👥</span>
       <span>Рефералы</span>
-    </button>
-    <button class="nav-btn" onclick="switchNav('stars', this)">
-      <span class="nav-icon">⭐</span>
-      <span>Звёзды</span>
     </button>
   </div>
 
@@ -323,20 +397,50 @@
     document.getElementById('u-name').innerText = user.first_name;
     document.getElementById('u-id').innerText = user.id;
 
-    // Демонстрационный список активных мутов для интерфейса
+    // Локальный буфер настроек
+    let pendingSettings = {
+      anti_delete: true,
+      anti_edit: true,
+      save_ttl_media: true,
+      dnd: false,
+      auto_mute: true,
+      silent_notifications: false
+    };
+
     let mutedList = ["1685796201", "5489123041"];
+
+    function recordToggle(mod, state) {
+      if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
+      pendingSettings[mod] = state;
+      
+      // Показываем кнопку в интерфейсе и активируем Telegram MainButton
+      document.getElementById('save-modules-btn').style.display = 'block';
+      if (tg.MainButton) {
+        tg.MainButton.setText("💾 ПРИМЕНИТЬ НАСТРОЙКИ").show();
+        tg.MainButton.onClick(applySettingsBatch);
+      }
+    }
+
+    function applySettingsBatch() {
+      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      // Отправляем все измененные тумблеры за один раз
+      tg.sendData(JSON.stringify({
+        action: "save_all_settings",
+        settings: pendingSettings
+      }));
+    }
 
     function renderMuted() {
       const container = document.getElementById('mute-list-container');
       if (mutedList.length === 0) {
-        container.innerHTML = '<div style="font-size:12px; color:var(--muted); text-align:center; padding:10px;">В мут-листе нет пользователей</div>';
+        container.innerHTML = '<div style="font-size:12px; color:var(--muted); text-align:center; padding:10px;">Мут-лист пуст</div>';
         return;
       }
       container.innerHTML = mutedList.map(id => `
         <div class="mute-row">
           <div class="mute-info">
             <b>ID: ${id}</b>
-            <span>Сообщения стираются</span>
+            <span>Сообщения блокируются</span>
           </div>
           <button class="btn-sm-danger" onclick="unmuteItem('${id}')">Снять мут</button>
         </div>
@@ -385,10 +489,6 @@
       const link = `https://t.me/${bot}?start=ref_${user.id}`;
       navigator.clipboard.writeText(link);
       tg.showAlert("Реферальная ссылка скопирована:\n" + link);
-    }
-
-    function openStarsInBot() {
-      tg.close();
     }
   </script>
 </body>
