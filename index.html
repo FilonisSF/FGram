@@ -61,6 +61,8 @@
       font-weight: 800;
     }
     .badge-owner { background: rgba(250, 204, 21, 0.15); border: 1px solid rgba(250, 204, 21, 0.4); color: var(--gold); }
+    .badge-prem { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: var(--accent); }
+    .badge-expired { background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.4); color: var(--danger); }
 
     .timer-box {
       background: rgba(7, 11, 20, 0.8);
@@ -227,7 +229,7 @@
       font-size: 10px;
       font-weight: 600;
       cursor: pointer;
-      width: 25%;
+      width: 33%;
     }
     .nav-btn.active { color: var(--accent); }
     .nav-icon { font-size: 20px; }
@@ -239,14 +241,14 @@
   <div class="profile-card">
     <div class="profile-top">
       <div>
-        <h2 id="u-name">Marcell</h2>
-        <div style="font-size:12px; color:var(--muted); margin-top:2px;">ID: <span id="u-id">7783116627</span></div>
+        <h2 id="u-name">Пользователь</h2>
+        <div style="font-size:12px; color:var(--muted); margin-top:2px;">ID: <span id="u-id">...</span></div>
       </div>
-      <div id="u-badge" class="status-badge badge-owner">👑 OWNER</div>
+      <div id="u-badge" class="status-badge badge-prem">⭐ PREMIUM</div>
     </div>
     <div class="timer-box">
       <span>Статус:</span>
-      <span class="timer-val" id="countdown">БЕССРОЧНЫЙ ДОСТУП</span>
+      <span class="timer-val" id="countdown">Загрузка...</span>
     </div>
   </div>
 
@@ -340,7 +342,7 @@
     </div>
   </div>
 
-  <!-- ВКЛАДКА 3: ВЫДАЧА (АДМИН) -->
+  <!-- ВКЛАДКА 3: ВЫДАЧА (ТОЛЬКО ДЛЯ ВЛАДЕЛЬЦА) -->
   <div id="tab-admin" class="tab-content">
     <div class="card">
       <div class="card-title">👑 Выдача подписки пользователю</div>
@@ -376,7 +378,7 @@
       <span class="nav-icon">🔇</span>
       <span>Мут</span>
     </button>
-    <button class="nav-btn" onclick="switchNav('admin', this)">
+    <button class="nav-btn" id="nav-btn-admin" style="display:none;" onclick="switchNav('admin', this)">
       <span class="nav-icon">👑</span>
       <span>Выдача</span>
     </button>
@@ -394,13 +396,51 @@
     if (tg.MainButton) tg.MainButton.hide();
 
     const ADMIN_ID = 7783116627;
-    const user = tg.initDataUnsafe?.user || { id: ADMIN_ID, first_name: "Marcell" };
-
-    document.getElementById('u-name').innerText = user.first_name;
-    document.getElementById('u-id').innerText = user.id;
-
     const urlParams = new URLSearchParams(window.location.search);
+    const tgUser = tg.initDataUnsafe?.user;
 
+    const currentUserId = urlParams.get('uid') || (tgUser ? tgUser.id : ADMIN_ID);
+    const currentUserName = tgUser ? tgUser.first_name : "Пользователь";
+    const userRole = urlParams.get('role') || (parseInt(currentUserId) === ADMIN_ID ? "owner" : "premium");
+    const expTimestamp = parseFloat(urlParams.get('exp') || "0");
+
+    document.getElementById('u-name').innerText = currentUserName;
+    document.getElementById('u-id').innerText = currentUserId;
+
+    // ОТОБРАЖЕНИЕ РОЛЕЙ
+    const badgeEl = document.getElementById('u-badge');
+    const countdownEl = document.getElementById('countdown');
+    const adminNavBtn = document.getElementById('nav-btn-admin');
+
+    if (userRole === "owner") {
+      badgeEl.className = "status-badge badge-owner";
+      badgeEl.innerText = "👑 OWNER";
+      countdownEl.innerText = "БЕССРОЧНЫЙ ДОСТУП";
+      adminNavBtn.style.display = "flex";
+      document.querySelectorAll('.nav-btn').forEach(b => b.style.width = "25%");
+    } else if (userRole === "premium") {
+      badgeEl.className = "status-badge badge-prem";
+      badgeEl.innerText = "⭐ PREMIUM";
+      adminNavBtn.style.display = "none";
+      document.querySelectorAll('.nav-btn').forEach(b => b.style.width = "33%");
+
+      if (expTimestamp > 0) {
+        const rem = Math.max(0, Math.floor(expTimestamp - (Date.now() / 1000)));
+        const d = Math.floor(rem / 86400);
+        const h = Math.floor((rem % 86400) / 3600);
+        countdownEl.innerText = d > 0 ? `${d} дн. ${h} ч.` : `${h} ч.`;
+      } else {
+        countdownEl.innerText = "АКТИВЕН";
+      }
+    } else {
+      badgeEl.className = "status-badge badge-expired";
+      badgeEl.innerText = "⛔ ИСТЁК ДОСТУП";
+      countdownEl.innerText = "ТРЕБУЕТСЯ ПРОДЛЕНИЕ";
+      adminNavBtn.style.display = "none";
+      document.querySelectorAll('.nav-btn').forEach(b => b.style.width = "33%");
+    }
+
+    // ИНИЦИАЛИЗАЦИЯ НАСТРОЕК
     let pendingSettings = {
       anti_delete: urlParams.get('ad') !== '0',
       anti_edit: urlParams.get('ae') !== '0',
@@ -417,7 +457,8 @@
     document.getElementById('sw-auto-mute').checked = pendingSettings.auto_mute;
     document.getElementById('sw-silent').checked = pendingSettings.silent_notifications;
 
-    const mutesRaw = urlParams.get('mutes') || '';
+    // ПЕРСОНАЛЬНЫЙ МУТ-ЛИСТ
+    const mutesRaw = decodeURIComponent(urlParams.get('mutes') || '');
     let mutedList = mutesRaw ? mutesRaw.split(',').filter(x => x.length > 0) : [];
 
     function recordToggle(mod, state) {
@@ -426,12 +467,30 @@
       document.getElementById('save-modules-btn').style.display = 'block';
     }
 
+    // НАДЕЖНАЯ ПЕРЕДАЧА ДАННЫХ В БОТА
+    function sendActionToBot(actionData) {
+      let sent = false;
+      try {
+        tg.sendData(JSON.stringify(actionData));
+        sent = true;
+      } catch (e) {
+        sent = false;
+      }
+      if (!sent) {
+        // Защищённый Deep-Link для передачи настроек без сбоев
+        const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(actionData))));
+        const botUser = tg.initDataUnsafe?.bot?.username || "fgram_dox_bot";
+        tg.openTelegramLink(`https://t.me/${botUser}?start=act_${b64}`);
+      }
+    }
+
     function applySettingsBatch() {
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      tg.sendData(JSON.stringify({
+      sendActionToBot({
         action: "save_all_settings",
         settings: pendingSettings
-      }));
+      });
+      document.getElementById('save-modules-btn').style.display = 'none';
     }
 
     function renderMuted() {
@@ -466,7 +525,7 @@
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
       mutedList.push(val);
       renderMuted();
-      tg.sendData(JSON.stringify({ action: "add_mute", target: val }));
+      sendActionToBot({ action: "add_mute", target: val });
       document.getElementById('mute-input').value = "";
     }
 
@@ -474,7 +533,7 @@
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
       mutedList = mutedList.filter(id => id !== targetId);
       renderMuted();
-      tg.sendData(JSON.stringify({ action: "unmute_user", target: targetId }));
+      sendActionToBot({ action: "unmute_user", target: targetId });
     }
 
     function grantLicense() {
@@ -482,29 +541,27 @@
       const dur = document.getElementById('grant-dur').value.trim();
       if (!target || !dur) return tg.showAlert("Заполните оба поля!");
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
-      tg.sendData(JSON.stringify({ action: "grant_subscription", target: target, duration: dur }));
+      sendActionToBot({ action: "grant_subscription", target: target, duration: dur });
       document.getElementById('grant-user').value = "";
       document.getElementById('grant-dur').value = "";
     }
 
     function shareRef() {
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
-      const bot = tg.initDataUnsafe?.bot?.username || "fgram_dox_bot";
-      const link = `https://t.me/${bot}?start=ref_${user.id}`;
+      const botUser = tg.initDataUnsafe?.bot?.username || "fgram_dox_bot";
+      const link = `https://t.me/${botUser}?start=ref_${currentUserId}`;
       const promoText = "FGram Platform Suite — приватный модуль мониторинга и безопасности Telegram.\n\n" +
                         "• Фиксация удалённых и изменённых сообщений\n" +
                         "• Сохранение фото/видео с таймером просмотра\n" +
                         "• Защита от спама и моментальный авто-мут\n\n" +
                         "Активировать доступ:";
-      
-      const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(promoText)}`;
-      tg.openTelegramLink(shareUrl);
+      tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(promoText)}`);
     }
 
     function copyRef() {
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      const bot = tg.initDataUnsafe?.bot?.username || "fgram_dox_bot";
-      const link = `https://t.me/${bot}?start=ref_${user.id}`;
+      const botUser = tg.initDataUnsafe?.bot?.username || "fgram_dox_bot";
+      const link = `https://t.me/${botUser}?start=ref_${currentUserId}`;
       navigator.clipboard.writeText(link);
       tg.showAlert("Ссылка скопирована:\n" + link);
     }
