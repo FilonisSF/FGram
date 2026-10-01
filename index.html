@@ -283,11 +283,12 @@ input:checked + .slider:before { transform: translateX(22px); }
 .nav-btn {
     background: none; border: none; color: var(--muted);
     display: flex; flex-direction: column; align-items: center; gap: 4px;
-    font-size: 11px; font-weight: 600; cursor: pointer; flex: 1;
+    font-size: 10px; font-weight: 600; cursor: pointer; flex: 1;
     transition: color 0.15s;
+    padding: 6px 0;
 }
 .nav-btn.active { color: var(--accent); }
-.nav-icon { font-size: 20px; }
+.nav-icon { font-size: 19px; }
 
 .mute-chip {
     display: flex; justify-content: space-between; align-items: center;
@@ -371,6 +372,14 @@ input:checked + .slider:before { transform: translateX(22px); }
 
         <div class="feature-row">
             <div class="feature-info">
+                <div class="feature-header"><h4>Не беспокоить (DND)</h4></div>
+                <p class="feature-desc">Удаляет входящие сообщения и отправляет собеседнику оповещение о вашей занятости.</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="set-dnd" onchange="autoToggle('dnd', this.checked)"><span class="slider"></span></label>
+        </div>
+
+        <div class="feature-row">
+            <div class="feature-info">
                 <div class="feature-header"><h4>Анти-флуд фильтр</h4></div>
                 <p class="feature-desc">Блокирует собеседника на 15 минут, если он отправляет одинаковые сообщения 3 раза подряд.</p>
             </div>
@@ -383,6 +392,14 @@ input:checked + .slider:before { transform: translateX(22px); }
                 <p class="feature-desc">Блокирует попытки пробить ваш аккаунт другими участниками сети.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-adox" onchange="autoToggle('anti_dox', this.checked)"><span class="slider"></span></label>
+        </div>
+
+        <div class="feature-row">
+            <div class="feature-info">
+                <div class="feature-header"><h4>Тихие уведомления</h4></div>
+                <p class="feature-desc">Бот присылает все перехваты и логи без звука.</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="set-sil" onchange="autoToggle('silent_notifications', this.checked)"><span class="slider"></span></label>
         </div>
     </div>
 </div>
@@ -427,6 +444,21 @@ input:checked + .slider:before { transform: translateX(22px); }
 <!-- ВКЛАДКА 5: УТИЛИТЫ И СЕРВИС -->
 <div id="tab-utils" class="tab-content">
     <div class="card">
+        <div class="card-title">Генератор паролей</div>
+        <input type="number" id="gen-len" class="input-box" value="16" min="6" max="64" placeholder="Длина ключа (6–64)">
+        <div style="display:flex; gap:14px; margin-top:10px; font-size:12px; color:var(--muted);">
+            <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
+                <input type="checkbox" id="gen-sym" checked> Спецсимволы
+            </label>
+            <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
+                <input type="checkbox" id="gen-num" checked> Цифры
+            </label>
+        </div>
+        <button class="btn btn-gold" onclick="genPass()" style="margin-top:10px;">🎲 Сгенерировать ключ</button>
+        <div id="gen-out-box" style="display:none; cursor:pointer;" class="result-box" onclick="copyResult(this)" title="Нажмите, чтобы скопировать"></div>
+    </div>
+
+    <div class="card">
         <div class="card-title">Хэширование текста</div>
         <input type="text" id="hash-input" class="input-box" placeholder="Введите пароль или текст…">
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px;">
@@ -439,11 +471,42 @@ input:checked + .slider:before { transform: translateX(22px); }
         </div>
         <div id="hash-out-box" style="display:none;" class="result-box"></div>
     </div>
+
     <div class="card">
-        <div class="card-title">Генератор паролей</div>
-        <input type="text" id="gen-len" class="input-box" value="16" placeholder="Длина ключа">
-        <button class="btn btn-gold" onclick="genPass()" style="margin-top:8px;">🎲 Сгенерировать ключ</button>
-        <div id="gen-out-box" style="display:none;" class="result-box"></div>
+        <div class="card-title">Расхэширование</div>
+        <input type="text" id="dehash-input" class="input-box" placeholder="Вставьте хэш для поиска…">
+        <button class="btn btn-purple" onclick="dehash()">🔍 Найти пароль</button>
+        <div id="dehash-out-box" style="display:none;" class="result-box"></div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Партнёрская программа</div>
+        <p style="font-size:12px; color:var(--muted); margin:0 0 10px;">
+            <b style="color:var(--accent);">+1 день</b> лицензии за каждого приглашённого друга
+        </p>
+        <div class="result-box" id="ref-link" style="border-style:solid; font-size:11px;">Загрузка…</div>
+        <button class="btn btn-purple" onclick="shareRef()" style="margin-top:10px;">📤 Поделиться ссылкой</button>
+        <div style="margin-top:12px; font-size:13px; color:var(--muted);">
+            Приглашено: <b id="ref-count" style="color:#fff;">0</b> чел.
+        </div>
+    </div>
+</div>
+
+<!-- ВКЛАДКА 6: ПАНЕЛЬ ВЛАДЕЛЬЦА (ТОЛЬКО ДЛЯ СОЗДАТЕЛЯ) -->
+<div id="tab-owner" class="tab-content">
+    <div class="card">
+        <div class="card-title">👑 Панель Создателя</div>
+        <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Выдача подписки по ID или юзернейму:</p>
+        <input type="text" id="owner-target" class="input-box" placeholder="@username или ID цели…">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
+            <button class="btn btn-accent" onclick="setGrantDur('1д')">⚡ 1 День</button>
+            <button class="btn btn-accent" onclick="setGrantDur('7д')">🔥 7 Дней</button>
+            <button class="btn btn-purple" onclick="setGrantDur('30д')">⭐ 30 Дней</button>
+            <button class="btn btn-purple" onclick="setGrantDur('365д')">💎 365 Дней</button>
+        </div>
+        <button class="btn btn-gold" style="margin-top:6px;" onclick="setGrantDur('навсегда')">👑 Бессрочно</button>
+        <input type="text" id="owner-dur-val" class="input-box" value="30д" style="margin-top:8px;" placeholder="Свой срок (например 14д)">
+        <button class="btn btn-accent" style="margin-top:10px;" onclick="submitGrant()">🚀 Выдать лицензию</button>
     </div>
 </div>
 
@@ -453,6 +516,7 @@ input:checked + .slider:before { transform: translateX(22px); }
     <button class="nav-btn" onclick="switchNav('osint', this)"><span class="nav-icon">🔍</span>Анализ</button>
     <button class="nav-btn" onclick="switchNav('notes', this)"><span class="nav-icon">📝</span>Заметки</button>
     <button class="nav-btn" onclick="switchNav('utils', this)"><span class="nav-icon">🛠</span>Утилиты</button>
+    <button class="nav-btn" id="nav-owner" style="display:none;" onclick="switchNav('owner', this)"><span class="nav-icon">👑</span>Овнер</button>
 </div>
 
 <script>
@@ -487,6 +551,7 @@ if (tgUser?.photo_url) {
 const badge = document.getElementById('u-badge');
 if (isOwner) {
     badge.className = "status-badge badge-owner"; badge.innerText = "👑 ВЛАДЕЛЕЦ";
+    document.getElementById('nav-owner').style.display = "flex";
 } else if (role === 'premium') {
     badge.className = "status-badge badge-prem"; badge.innerText = "⭐ PREMIUM";
 } else {
@@ -529,15 +594,21 @@ async function sendSilentSync(data) {
 
 const LSK_SET = 'asteria_set_' + uid;
 let S = JSON.parse(localStorage.getItem(LSK_SET)) || {
-    anti_delete: P.get('ad') === '1', anti_edit: P.get('ae') === '1',
-    save_ttl_media: P.get('ttl') === '1', anti_spam_mute: P.get('asm') === '1',
-    anti_dox: P.get('adox') === '1'
+    anti_delete: P.get('ad') === '1',
+    anti_edit: P.get('ae') === '1',
+    save_ttl_media: P.get('ttl') === '1',
+    dnd: P.get('dnd') === '1',
+    anti_spam_mute: P.get('asm') === '1',
+    anti_dox: P.get('adox') === '1',
+    silent_notifications: P.get('sil') === '1'
 };
 document.getElementById('set-ad').checked = !!S.anti_delete;
 document.getElementById('set-ae').checked = !!S.anti_edit;
 document.getElementById('set-ttl').checked = !!S.save_ttl_media;
+document.getElementById('set-dnd').checked = !!S.dnd;
 document.getElementById('set-asm').checked = !!S.anti_spam_mute;
 document.getElementById('set-adox').checked = !!S.anti_dox;
+document.getElementById('set-sil').checked = !!S.silent_notifications;
 
 function autoToggle(k, v) {
     S[k] = v;
@@ -622,6 +693,105 @@ function delNote(i) {
     showToast("Заметка удалена");
 }
 
+// Генератор паролей
+function genPass() {
+    const len = Math.min(64, Math.max(6, parseInt(document.getElementById('gen-len').value) || 16));
+    const useSym = document.getElementById('gen-sym').checked;
+    const useNum = document.getElementById('gen-num').checked;
+    let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    if (useNum) chars += '0123456789';
+    if (useSym) chars += '!@#$%^&*()-_=+[]{}<>?~';
+    let pass = '';
+    const arr = new Uint32Array(len);
+    crypto.getRandomValues(arr);
+    for (let i = 0; i < len; i++) pass += chars[arr[i] % chars.length];
+    const b = document.getElementById('gen-out-box');
+    b.innerText = `🔑 Сгенерированный ключ (${len} симв.):\n\n${pass}\n\n(нажмите, чтобы скопировать)`;
+    b.dataset.copy = pass;
+    b.style.display = 'block';
+    showToast("Пароль сгенерирован");
+}
+
+function copyResult(elem) {
+    const text = elem.dataset.copy || elem.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        showToast("Скопировано в буфер");
+    }).catch(() => {
+        showToast("Не удалось скопировать");
+    });
+}
+
+// Хэширование
+function calcHash(type) {
+    const str = document.getElementById('hash-input').value;
+    if (!str) return tg.showAlert("Введите текст для хэширования!");
+    let res = "";
+    if (type === 'MD5') res = CryptoJS.MD5(str).toString();
+    else if (type === 'SHA256') res = CryptoJS.SHA256(str).toString();
+    else if (type === 'SHA1') res = CryptoJS.SHA1(str).toString();
+    else if (type === 'Base64') res = btoa(unescape(encodeURIComponent(str)));
+    const b = document.getElementById('hash-out-box');
+    b.innerText = `[${type}]:\n${res}`;
+    b.style.display = 'block';
+}
+
+function dehash() {
+    const h = document.getElementById('dehash-input').value.trim().toLowerCase();
+    if (!h) return tg.showAlert("Вставьте хэш!");
+    const b = document.getElementById('dehash-out-box');
+    b.style.display = 'block';
+    try {
+        const b64 = decodeURIComponent(escape(atob(h)));
+        if (b64 && /^[\x20-\x7E\sа-яА-ЯёЁ]+$/.test(b64)) {
+            b.innerText = `✅ [Base64 декодирован]:\n«${b64}»`; return;
+        }
+    } catch(e) {}
+    const d = {
+        "202cb962ac59075b964b07152d234b70": "123",
+        "250cf8b51c773f3f8dc8b4be867a9a02": "1234",
+        "827ccb0eea8a706c4c34a16891f84e7b": "12345",
+        "e10adc3949ba59abbe56e057f20f883e": "123456",
+        "5f4dcc3b5aa765d61d8327deb882cf99": "password",
+        "098f6bcd4621d373cade4e832627b4f6": "test"
+    };
+    b.innerText = d[h] ? `✅ [Найден пароль]:\n«${d[h]}»` : `❌ Хэш не найден в базе типовых паролей.`;
+}
+
+// OSINT
+function showOsint(mode) {
+    const v = document.getElementById('osint-val').value.trim();
+    if (!v) return tg.showAlert("Введите @username или ID!");
+    const clean = v.replace('@','').toLowerCase();
+    const box = document.getElementById('osint-res-card');
+    box.style.display = 'block';
+    box.innerText = mode === 'probe' 
+        ? `🌐 [ПАСПОРТ ПРОФИЛЯ]\nСубъект: @${clean}\nСтатус в ЧС: ${muteList.includes(clean) ? '🔴 В ЧС' : '🟢 Обычный'}\nДата-центр: DC 2 (Амстердам)\nТелефон: 🔒 Скрыт настройками приватности`
+        : `📁 [ДОСЬЕ АКТИВНОСТИ]\nОбъект: @${clean}\nСтатус в базе: ${muteList.includes(clean) ? '🔴 ЗАМУЧЕН' : '🟢 Чистый'}\nУдалённых сообщений зафиксировано: 0 шт.`;
+}
+
+// Партнёры
+const refLink = `https://t.me/asteria_suite_bot?start=ref_${uid}`;
+document.getElementById('ref-link').innerText = refLink;
+document.getElementById('ref-count').innerText = P.get('refs') || '0';
+function shareRef() {
+    const text = encodeURIComponent('🛡 Asteria Suite — умный ассистент диалогов');
+    const url = encodeURIComponent(refLink);
+    try { tg.openTelegramLink(`https://t.me/share/url?url=${url}&text=${text}`); }
+    catch(e) { window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank'); }
+}
+
+// Овнер
+function setGrantDur(v) { document.getElementById('owner-dur-val').value = v; }
+function submitGrant() {
+    const t = document.getElementById('owner-target').value.trim();
+    const d = document.getElementById('owner-dur-val').value.trim() || '30д';
+    if (!t) return tg.showAlert("Укажите ник или ID!");
+    sendSilentSync({ action: "grant_subscription", target: t, duration: d });
+    showToast(`👑 Лицензия выдана: ${d}`);
+    document.getElementById('owner-target').value = '';
+}
+
+// Навигация
 function switchNav(id, btn) {
     document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
@@ -633,41 +803,6 @@ function showToast(msg) {
     const t = document.getElementById('toast');
     t.innerText = msg; t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 1600);
-}
-
-function calcHash(type) {
-    const str = document.getElementById('hash-input').value;
-    if (!str) return tg.showAlert("Введите текст!");
-    let res = "";
-    if (type === 'MD5') res = CryptoJS.MD5(str).toString();
-    else if (type === 'SHA256') res = CryptoJS.SHA256(str).toString();
-    else if (type === 'SHA1') res = CryptoJS.SHA1(str).toString();
-    else if (type === 'Base64') res = btoa(unescape(encodeURIComponent(str)));
-    const b = document.getElementById('hash-out-box');
-    b.innerText = `[${type}]:\n${res}`; b.style.display = 'block';
-}
-
-function genPass() {
-    const len = Math.min(64, Math.max(6, parseInt(document.getElementById('gen-len').value) || 16));
-    let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
-    let pass = '';
-    const arr = new Uint32Array(len);
-    crypto.getRandomValues(arr);
-    for (let i = 0; i < len; i++) pass += chars[arr[i] % chars.length];
-    const b = document.getElementById('gen-out-box');
-    b.innerText = `🔑 Пароль (${len}):\n\n${pass}`;
-    b.style.display = 'block';
-}
-
-function showOsint(mode) {
-    const v = document.getElementById('osint-val').value.trim();
-    if (!v) return tg.showAlert("Введите @username или ID!");
-    const clean = v.replace('@','').toLowerCase();
-    const box = document.getElementById('osint-res-card');
-    box.style.display = 'block';
-    box.innerText = mode === 'probe' 
-        ? `🌐 [ПАСПОРТ ПРОФИЛЯ]\nСубъект: @${clean}\nСтатус: ${muteList.includes(clean) ? '🔴 В ЧС' : '🟢 Обычный'}\nDC: DC 2 (Амстердам)`
-        : `📁 [ДОСЬЕ АКТИВНОСТИ]\nОбъект: @${clean}\nСтатус: ${muteList.includes(clean) ? '🔴 В ЧС' : '🟢 Чистый'}`;
 }
 </script>
 </body>
