@@ -7,27 +7,30 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg: #070b19;
-            --card-bg: rgba(15, 23, 42, 0.85);
-            --card-border: rgba(56, 189, 248, 0.18);
+            --bg: #050711;
+            --card-bg: rgba(13, 20, 36, 0.75);
+            --card-border: rgba(56, 189, 248, 0.2);
             --accent: #38bdf8;
-            --purple: #a855f7;
+            --accent-glow: rgba(56, 189, 248, 0.35);
+            --purple: #c084fc;
+            --purple-bg: rgba(192, 132, 252, 0.15);
             --gold: #facc15;
-            --danger: #f43f5e;
+            --danger: #fb7185;
             --text: #f8fafc;
-            --muted: #64748b;
+            --muted: #94a3b8;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             margin: 0;
-            padding: 14px 14px 125px 14px;
+            padding: 14px 14px 110px 14px;
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg);
             background-image:
-                    radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.14) 0%, transparent 45%),
-                    radial-gradient(circle at 90% 90%, rgba(168, 85, 247, 0.12) 0%, transparent 45%);
+                radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.18) 0%, transparent 45%),
+                radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.18) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.7) 0%, transparent 100%);
             color: var(--text);
             min-height: 100vh;
             overflow-x: hidden;
@@ -38,48 +41,62 @@
             top: -120px;
             left: 50%;
             transform: translateX(-50%);
-            background: linear-gradient(135deg, #10b981, #059669);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(5, 150, 105, 0.95));
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
             color: #ffffff;
-            padding: 11px 24px;
+            padding: 10px 22px;
             border-radius: 40px;
             font-size: 12px;
             font-weight: 700;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
             opacity: 0;
             pointer-events: none;
             transition: all 0.35s cubic-bezier(0.18, 0.89, 0.32, 1.28);
             z-index: 999999;
         }
-        #toast.show { top: 18px; opacity: 1; pointer-events: auto; }
+        #toast.show { top: 16px; opacity: 1; pointer-events: auto; }
 
         .profile-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 16px;
-            backdrop-filter: blur(25px);
+            border-radius: 22px;
+            padding: 18px;
+            backdrop-filter: blur(30px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
             margin-bottom: 12px;
+            position: relative;
+            overflow: hidden;
         }
+        .profile-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 200%; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            animation: sweep 4s infinite linear;
+        }
+        @keyframes sweep { 0% { transform: translateX(0); } 100% { transform: translateX(100%); } }
 
         .profile-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .profile-top h2 { margin: 0; font-size: 20px; font-weight: 800; }
+        .profile-top h2 { margin: 0; font-size: 21px; font-weight: 800; letter-spacing: -0.02em; }
 
         .status-badge {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 6px 14px;
+            padding: 5px 13px;
             border-radius: 24px;
             font-size: 11px;
             font-weight: 800;
+            letter-spacing: 0.04em;
         }
-        .badge-owner { background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.4); color: var(--gold); }
+        .badge-owner { background: rgba(250, 204, 21, 0.15); border: 1px solid rgba(250, 204, 21, 0.4); color: var(--gold); }
         .badge-prem { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: var(--accent); }
-        .badge-free { background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.4); color: var(--danger); }
+        .badge-free { background: rgba(251, 113, 133, 0.15); border: 1px solid rgba(251, 113, 133, 0.4); color: var(--danger); }
 
         .timer-box {
-            background: rgba(5, 8, 17, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(5, 8, 17, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.07);
             border-radius: 12px;
             padding: 10px 14px;
             display: flex;
@@ -99,31 +116,32 @@
         .metric-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 14px;
-            padding: 12px 8px;
+            border-radius: 16px;
+            padding: 12px 6px;
             text-align: center;
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
         .metric-val { font-size: 20px; font-weight: 800; color: var(--accent); }
-        .metric-lbl { font-size: 10px; color: var(--muted); margin-top: 3px; font-weight: 600; text-transform: uppercase; }
+        .metric-lbl { font-size: 10px; color: var(--muted); margin-top: 3px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
 
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 18px;
+            border-radius: 20px;
             padding: 16px;
             margin-bottom: 12px;
-            backdrop-filter: blur(20px);
-            position: relative;
+            backdrop-filter: blur(25px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
         }
 
         .card-title {
             font-size: 12px;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.07em;
             color: var(--accent);
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -133,7 +151,7 @@
             font-size: 11px;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.06em;
             color: var(--muted);
             margin: 14px 0 6px 0;
             display: flex;
@@ -145,78 +163,89 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
+            padding: 11px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
         .toggle-row:last-child { border-bottom: none; }
         .toggle-info h4 { margin: 0; font-size: 13px; font-weight: 600; display:flex; align-items:center; gap:6px; }
-        .toggle-info p { margin: 2px 0 0 0; font-size: 11px; color: var(--muted); line-height: 1.35; }
+        .toggle-info p { margin: 3px 0 0 0; font-size: 11px; color: var(--muted); line-height: 1.35; }
 
         .tag-pill {
             font-size: 9px;
-            font-weight: 700;
+            font-weight: 800;
             padding: 2px 6px;
-            border-radius: 4px;
+            border-radius: 6px;
             background: rgba(56, 189, 248, 0.15);
             color: var(--accent);
         }
 
-        .switch { position: relative; display: inline-block; width: 46px; height: 26px; }
+        .switch { position: relative; display: inline-block; width: 48px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
             background-color: #1e293b;
-            transition: .25s;
+            transition: .25s ease;
             border-radius: 26px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
         .slider:before {
-            position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px;
+            position: absolute; content: ""; height: 20px; width: 20px; left: 2px; bottom: 2px;
             background-color: white;
-            transition: .25s;
+            transition: .25s cubic-bezier(0.4, 0, 0.2, 1);
             border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
         }
-        input:checked + .slider { background-color: var(--accent); }
-        input:checked + .slider:before { transform: translateX(20px); }
+        input:checked + .slider {
+            background-color: var(--accent);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+        input:checked + .slider:before { transform: translateX(22px); }
 
         .input-box {
             width: 100%;
-            background: rgba(5, 8, 17, 0.9);
+            background: rgba(5, 8, 17, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.12);
             padding: 12px 14px;
-            border-radius: 12px;
+            border-radius: 14px;
             color: #fff;
             font-size: 13px;
             outline: none;
             margin-top: 6px;
+            transition: border-color 0.2s;
         }
-        .input-box:focus { border-color: var(--accent); }
+        .input-box:focus { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
 
         .btn {
             width: 100%;
             padding: 13px;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             font-size: 13px;
             font-weight: 700;
             cursor: pointer;
             margin-top: 8px;
-            transition: all 0.15s ease-out;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
         .btn:active { transform: scale(0.98); opacity: 0.9; }
-        .btn-accent { background: linear-gradient(135deg, var(--accent), #0284c7); color: #050811; font-weight: 800; }
-        .btn-purple { background: linear-gradient(135deg, var(--purple), #7e22ce); color: #fff; font-weight: 700; }
+        .btn-accent { background: linear-gradient(135deg, var(--accent), #0284c7); color: #050811; font-weight: 800; box-shadow: 0 4px 15px var(--accent-glow); }
+        .btn-purple { background: linear-gradient(135deg, var(--purple), #7e22ce); color: #fff; }
         .btn-gold { background: linear-gradient(135deg, #facc15, #ca8a04); color: #050811; font-weight: 800; }
-        .btn-danger { background: rgba(244, 63, 94, 0.15); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
+        .btn-danger { background: rgba(251, 113, 133, 0.15); color: var(--danger); border: 1px solid rgba(251, 113, 133, 0.3); }
 
         .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .tab-content.active { display: block; animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
         .bottom-nav {
             position: fixed;
             bottom: 0; left: 0; right: 0;
-            height: 70px;
-            background: rgba(11, 17, 29, 0.95);
-            backdrop-filter: blur(25px);
+            height: 72px;
+            background: rgba(9, 14, 26, 0.92);
+            backdrop-filter: blur(30px);
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             justify-content: space-around;
@@ -236,6 +265,7 @@
             font-weight: 600;
             cursor: pointer;
             width: 20%;
+            transition: color 0.15s;
         }
         .nav-btn.active { color: var(--accent); }
         .nav-icon { font-size: 20px; }
@@ -260,8 +290,8 @@
             align-items: center;
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
-            padding: 8px 12px;
+            border-radius: 12px;
+            padding: 9px 14px;
             margin-top: 6px;
         }
         .mute-chip-del { color: var(--danger); cursor: pointer; font-weight: bold; }
@@ -305,7 +335,7 @@
     <div class="card" id="card-protect">
         <div class="card-title">🛡 Защита диалогов и аудит</div>
 
-        <div class="category-header">📡 Мониторинг входящих диалогов</div>
+        <div class="category-header">📡 Мониторинг диалогов</div>
 
         <div class="toggle-row">
             <div class="toggle-info">
@@ -332,7 +362,7 @@
         <div class="toggle-row">
             <div class="toggle-info">
                 <h4>Медиа с таймером <span class="tag-pill">TTL</span></h4>
-                <p>Сохранение одноразовых фото и видео</p>
+                <p>Сохранение одноразовых фото и видео до самоуничтожения</p>
             </div>
             <label class="switch">
                 <input type="checkbox" id="set-ttl" onchange="handleSettingToggle('save_ttl_media', this.checked)">
@@ -355,7 +385,7 @@
 
         <div class="toggle-row">
             <div class="toggle-info">
-                <h4>Флуд-фильтр (3 повтора) <span class="tag-pill" style="color:#f43f5e; background:rgba(244,63,94,0.15);">15 МИНУТ</span></h4>
+                <h4>Флуд-фильтр (3 повтора) <span class="tag-pill" style="color:var(--danger); background:rgba(251,113,133,0.15);">15 МИНУТ</span></h4>
                 <p>Блокирует спамера на 15 минут с уведомлением об остатке времени</p>
             </div>
             <label class="switch">
@@ -390,7 +420,7 @@
 
         <div class="toggle-row">
             <div class="toggle-info">
-                <h4>Приватность профиля <span class="tag-pill" style="color:var(--gold); background:rgba(234,179,8,0.15);">ПРИВАТ</span></h4>
+                <h4>Приватность профиля <span class="tag-pill" style="color:var(--gold); background:rgba(250,204,21,0.15);">ПРИВАТ</span></h4>
                 <p>Защищает ваш паспорт от запросов других участников</p>
             </div>
             <label class="switch">
@@ -401,7 +431,7 @@
 
         <div class="toggle-row">
             <div class="toggle-info">
-                <h4>Приватность истории <span class="tag-pill" style="color:var(--purple); background:rgba(168,85,247,0.15);">ИСТОРИЯ</span></h4>
+                <h4>Приватность истории <span class="tag-pill" style="color:var(--purple); background:var(--purple-bg);">ИСТОРИЯ</span></h4>
                 <p>Скрывает историю смены имён и телефонов</p>
             </div>
             <label class="switch">
@@ -442,7 +472,7 @@
     </div>
 </div>
 
-<!-- ВКЛАДКА 4: УТИЛИТЫ -->
+<!-- ВКЛАДКА 4: УТИЛИТЫ И ИНСТРУМЕНТЫ -->
 <div id="tab-utils" class="tab-content">
     <div class="card">
         <div class="card-title">🔐 Генератор безопасных ключей</div>
@@ -456,6 +486,17 @@
         </div>
         <div class="pwd-display" id="pwd-box" style="display:none;"></div>
         <button id="copy-pwd-btn" class="btn btn-accent" style="display:none;" onclick="copyPassword()">📋 Скопировать в буфер</button>
+    </div>
+
+    <!-- НОВАЯ УТИЛИТА: КОДИРОВЩИК / ДЕКОДЕР BASE64 -->
+    <div class="card">
+        <div class="card-title">🔏 Шифратор сообщений (Base64)</div>
+        <input type="text" id="crypt-val" class="input-box" placeholder="Введите текст для шифрования...">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px;">
+            <button class="btn btn-accent" onclick="encodeBase64()">Зашифровать</button>
+            <button class="btn btn-purple" onclick="decodeBase64()">Расшифровать</button>
+        </div>
+        <div class="pwd-display" id="crypt-box" style="display:none;"></div>
     </div>
 </div>
 
@@ -636,8 +677,13 @@
         localStorage.setItem('fgram_settings', JSON.stringify(appSettings));
         showToast(val ? "✅ Включено" : "❌ Выключено");
 
-        const btn = document.getElementById('save-settings-btn');
-        if (btn) btn.style.display = 'block';
+        // Мгновенная синхронизация с ботом и базой
+        try {
+            tg.sendData(JSON.stringify({
+                action: "save_all_settings",
+                settings: appSettings
+            }));
+        } catch(e) {}
     }
 
     function commitSettingsToBot() {
@@ -731,6 +777,28 @@
         if (!currentKey) return;
         navigator.clipboard.writeText(currentKey);
         showToast("📋 Скопировано в буфер");
+    }
+
+    function encodeBase64() {
+        const v = document.getElementById('crypt-val').value;
+        if (!v) return;
+        const res = btoa(unescape(encodeURIComponent(v)));
+        const box = document.getElementById('crypt-box');
+        box.innerText = res;
+        box.style.display = 'block';
+    }
+
+    function decodeBase64() {
+        const v = document.getElementById('crypt-val').value;
+        if (!v) return;
+        try {
+            const res = decodeURIComponent(escape(atob(v)));
+            const box = document.getElementById('crypt-box');
+            box.innerText = res;
+            box.style.display = 'block';
+        } catch(e) {
+            tg.showAlert("Некорректная строка Base64!");
+        }
     }
 
     function renderOsintInApp(mode) {
