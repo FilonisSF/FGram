@@ -344,7 +344,7 @@
     </div>
 </div>
 
-<!-- ВКЛАДКА 1: ЗАЩИТА -->
+<!-- ВКЛАДКА 1: ЗАЩИТА (ВСЕ ВЫКЛЮЧЕНО ПО ДЕФОЛТУ) -->
 <div id="tab-settings" class="tab-content active">
     <div class="card" id="card-protect">
         <div id="lock-protect" class="lock-overlay" style="display:none;">
@@ -507,7 +507,7 @@
                 <p>Логирование удалений в диалогах</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="sys-ad" checked onchange="saveSystemToggle('anti_delete_enabled', this.checked)">
+                <input type="checkbox" id="sys-ad" onchange="saveSystemToggle('anti_delete_enabled', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -518,7 +518,7 @@
                 <p>Фиксация правок сообщений</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="sys-ae" checked onchange="saveSystemToggle('anti_edit_enabled', this.checked)">
+                <input type="checkbox" id="sys-ae" onchange="saveSystemToggle('anti_edit_enabled', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -529,7 +529,7 @@
                 <p>Скачивание самоуничтожающихся медиа</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="sys-ttl" checked onchange="saveSystemToggle('save_ttl_enabled', this.checked)">
+                <input type="checkbox" id="sys-ttl" onchange="saveSystemToggle('save_ttl_enabled', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -618,7 +618,7 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const uid = urlParams.get('uid') || tg.initDataUnsafe?.user?.id || 7783116627;
-    const role = urlParams.get('role') || 'owner';
+    const role = urlParams.get('role') || 'free';
     const user = tg.initDataUnsafe?.user || { id: uid, first_name: "Marcell" };
 
     document.getElementById('u-name').innerText = user.first_name || "Marcell";
@@ -648,17 +648,17 @@
         document.getElementById('lock-osint').style.display = "flex";
     }
 
-    // Загрузка настроек
+    // Загрузка настроек (ПО УМОЛЧАНИЮ ВСЕ ВЫКЛЮЧЕНО)
     let savedSettings = null;
     try { savedSettings = JSON.parse(localStorage.getItem('fgram_settings')); } catch(e){}
 
     let appSettings = savedSettings || {
-        anti_delete: urlParams.get('ad') !== '0',
-        anti_edit: urlParams.get('ae') !== '0',
-        save_ttl_media: urlParams.get('ttl') !== '0',
+        anti_delete: urlParams.get('ad') === '1',
+        anti_edit: urlParams.get('ae') === '1',
+        save_ttl_media: urlParams.get('ttl') === '1',
         dnd: urlParams.get('dnd') === '1',
-        auto_mute: urlParams.get('am') !== '0',
-        anti_spam_mute: urlParams.get('asm') !== '0'
+        auto_mute: urlParams.get('am') === '1',
+        anti_spam_mute: urlParams.get('asm') === '1'
     };
 
     document.getElementById('set-ad').checked = appSettings.anti_delete;
@@ -732,7 +732,6 @@
         const val = document.getElementById('mute-val').value.trim().replace('@', '').toLowerCase();
         if (!val) return tg.showAlert("Укажите @username или ID!");
 
-        // Защита владельца от мута
         if (val === '7783116627' || val === 'filonis_music' || val === 'marcell') {
             return tg.showAlert("🛡 Нельзя замутить Владельца комплекса!");
         }
@@ -767,7 +766,7 @@
         const content = document.getElementById('osint-content');
         resCard.style.display = 'block';
 
-        // 1. ИММУНИТЕТ ВЛАДЕЛЬЦА
+        // 1. ИММУНИТЕТ ВЛАДЕЛЬЦА: никто не может пробить Владельца
         if (cleanT === '7783116627' || cleanT === 'filonis_music' || cleanT === 'marcell') {
             content.innerHTML = `
                 <div class="osint-badge" style="background:rgba(234,179,8,0.15); color:#facc15;">👑 FGRAM ABSOLUTE SHIELD</div>
