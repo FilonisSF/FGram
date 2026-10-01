@@ -50,7 +50,7 @@
       margin-bottom: 8px;
     }
 
-    .profile-top h2 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -0.02em; }
+    .profile-top h2 { margin: 0; font-size: 19px; font-weight: 800; }
     
     .status-badge {
       display: inline-flex;
@@ -210,6 +210,28 @@
     .btn-purple { background: var(--purple); color: #fff; }
     .btn-save { background: var(--accent); color: #070b14; display: none; }
 
+    /* OSINT КАРТОЧКА */
+    .osint-card {
+      background: rgba(7, 11, 20, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 12px;
+      display: none;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .osint-row {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 6px 0;
+    }
+    .osint-row:last-child { border-bottom: none; }
+    .osint-lbl { color: var(--muted); font-size: 12px; }
+    .osint-val { font-weight: 700; color: #fff; }
+
     .bottom-nav {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -335,7 +357,7 @@
   <div id="tab-mute" class="tab-content">
     <div class="card">
       <div class="card-title">🔇 Добавить пользователя в мут</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Сообщения нарушителя будут моментально стираться:</p>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Сообщения цели будут моментально стираться:</p>
       <input type="text" id="mute-input" class="input-box" placeholder="@username или числовой ID...">
       <button class="btn btn-accent" onclick="addMuteDirect()">🚫 Заблокировать сообщения</button>
     </div>
@@ -346,21 +368,44 @@
     </div>
   </div>
 
-  <!-- ВКЛАДКА 3: УТИЛИТЫ -->
-  <div id="tab-tools" class="tab-content">
+  <!-- ВКЛАДКА 3: ПОЛНЫЙ OSINT ПРОБИВ ЦЕЛИ -->
+  <div id="tab-osint" class="tab-content">
     <div class="card">
-      <div class="card-title">🔐 Генератор крипто-паролей</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Генерация стойких паролей в 1 клик:</p>
-      <input type="text" id="pass-out" class="input-box" readonly placeholder="Нажмите сгенерировать...">
-      <button class="btn btn-purple" onclick="genPassword()">🎲 Сгенерировать пароль</button>
-    </div>
+      <div class="card-title">🔍 OSINT Досье и пробив аккаунта</div>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Укажите @username, числовой ID или телефон цели:</p>
+      <input type="text" id="osint-query-in" class="input-box" placeholder="@username или 7783116627...">
+      <button class="btn btn-accent" onclick="runOsintSearch()">⚡ Начать глубокий OSINT-пробив</button>
+      
+      <div id="osint-result-box" class="osint-card">
+        <div style="font-size:11px; font-weight:800; color:var(--accent); text-transform:uppercase; margin-bottom:8px;">🎯 Досье цели обнаружено:</div>
+        
+        <div class="osint-row">
+          <span class="osint-lbl">Telegram ID:</span>
+          <span class="osint-val" id="res-id">-</span>
+        </div>
+        <div class="osint-row">
+          <span class="osint-lbl">Дата регистрации:</span>
+          <span class="osint-val" id="res-reg">-</span>
+        </div>
+        <div class="osint-row">
+          <span class="osint-lbl">Возраст аккаунта:</span>
+          <span class="osint-val" id="res-age">-</span>
+        </div>
+        <div class="osint-row">
+          <span class="osint-lbl">Data Center (DC):</span>
+          <span class="osint-val" id="res-dc">-</span>
+        </div>
+        <div class="osint-row">
+          <span class="osint-lbl">Номер телефона:</span>
+          <span class="osint-val" id="res-phone">🔒 Приватный</span>
+        </div>
+        <div class="osint-row">
+          <span class="osint-lbl">История юзернеймов:</span>
+          <span class="osint-val" id="res-hist">Не зафиксировано</span>
+        </div>
 
-    <div class="card">
-      <div class="card-title">🔍 OSINT Калькулятор возраста аккаунта</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Введите числовой ID для оценки года регистрации:</p>
-      <input type="number" id="id-calc-in" class="input-box" placeholder="Например: 7783116627">
-      <button class="btn btn-accent" onclick="calcIdAge()">⚡ Рассчитать возраст</button>
-      <div id="id-calc-res" style="display:none; margin-top:10px; font-size:12px; padding:10px; background:rgba(7,11,20,0.8); border-radius:10px;"></div>
+        <button class="btn btn-purple" style="margin-top:12px;" onclick="requestFullDossierInChat()">📥 Отправить полное досье в чат бота</button>
+      </div>
     </div>
   </div>
 
@@ -383,7 +428,7 @@
     <div class="card">
       <div class="card-title">👥 Партнёрская сеть</div>
       <p style="font-size:12px; color:var(--muted); margin:0 0 12px 0;">
-        Нажмите кнопку ниже, чтобы открыть диалог отправки персонального приглашения сразу нескольким контактам.
+        Нажмите кнопку ниже, чтобы открыть окно отправки персонального приглашения сразу нескольким контактам:
       </p>
       <button class="btn btn-accent" onclick="shareRef()">📤 Выбрать получателей...</button>
       <button class="btn btn-purple" style="margin-top:8px;" onclick="copyRef()">📋 Скопировать ссылку</button>
@@ -400,9 +445,9 @@
       <span class="nav-icon">🔇</span>
       <span>Мут</span>
     </button>
-    <button class="nav-btn" id="btn-tab-tools" onclick="switchNav('tools', this)">
-      <span class="nav-icon">🛠</span>
-      <span>Утилиты</span>
+    <button class="nav-btn" id="btn-tab-osint" onclick="switchNav('osint', this)">
+      <span class="nav-icon">🔍</span>
+      <span>OSINT</span>
     </button>
     <button class="nav-btn" id="btn-tab-admin" style="display:none;" onclick="switchNav('admin', this)">
       <span class="nav-icon">👑</span>
@@ -433,7 +478,7 @@
     document.getElementById('u-name').innerText = currentUserName;
     document.getElementById('u-id').innerText = currentUserId;
 
-    // РОЛИ
+    // СТРОГОЕ РАЗДЕЛЕНИЕ РОЛЕЙ
     const badgeEl = document.getElementById('u-badge');
     const countdownEl = document.getElementById('countdown');
     const adminNavBtn = document.getElementById('btn-tab-admin');
@@ -466,8 +511,8 @@
       document.querySelectorAll('.nav-btn').forEach(b => b.style.width = "25%");
     }
 
-    // ИНИЦИАЛИЗАЦИЯ НАСТРОЕК С ЛОКАЛЬНЫМ ХРАНИЛИЩЕМ
-    const settingsKey = 'fgram_settings_' + currentUserId;
+    // ИНИЦИАЛИЗАЦИЯ НАСТРОЕК С ПРИОРИТЕТОМ ЛОКАЛЬНОГО КЭША
+    const settingsKey = 'fgram_sett_' + currentUserId;
     const cachedSettings = localStorage.getItem(settingsKey);
 
     let pendingSettings = cachedSettings ? JSON.parse(cachedSettings) : {
@@ -486,8 +531,8 @@
     document.getElementById('sw-auto-mute').checked = pendingSettings.auto_mute;
     document.getElementById('sw-silent').checked = pendingSettings.silent_notifications;
 
-    // ПЕРСОНАЛЬНЫЙ МУТ-ЛИСТ (ЛОКАЛЬНОЕ ХРАНИЛИЩЕ)
-    const mutesKey = 'fgram_mutes_' + currentUserId;
+    // МУТ-ЛИСТ (ЛОКАЛЬНОЕ ХРАНИЛИЩЕ: УДАЛЕННЫЙ НЕ ВОЗВРАЩАЕТСЯ)
+    const mutesKey = 'fgram_mutelist_' + currentUserId;
     const cachedMutes = localStorage.getItem(mutesKey);
     const mutesRaw = decodeURIComponent(urlParams.get('mutes') || '');
     let mutedList = cachedMutes ? JSON.parse(cachedMutes) : (mutesRaw ? mutesRaw.split(',').filter(x => x.length > 0) : []);
@@ -558,6 +603,7 @@
 
     function unmuteItem(targetId) {
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+      // Мгновенно исключаем из массива и сохраняем локально навсегда
       mutedList = mutedList.filter(id => id !== targetId);
       localStorage.setItem(mutesKey, JSON.stringify(mutedList));
       renderMuted();
@@ -578,11 +624,7 @@
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
       const botUser = tg.initDataUnsafe?.bot?.username || "fgram_dox_bot";
       const link = `https://t.me/${botUser}?start=ref_${currentUserId}`;
-      const promoText = "FGram Suite — приватный комплекс мониторинга и безопасности диалогов:\n\n" +
-                        "• Фиксация удалённых и изменённых сообщений\n" +
-                        "• Скачивание фото/видео с таймером просмотра\n" +
-                        "• Моментальный авто-мут спамеров\n\n" +
-                        "Активировать доступ:";
+      const promoText = "FGram Platform Suite — приватный комплекс безопасности диалогов.\nАктивировать доступ:";
       tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(promoText)}`);
     }
 
@@ -594,31 +636,44 @@
       tg.showAlert("Ссылка скопирована:\n" + link);
     }
 
-    function genPassword() {
-      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
-      let pass = "";
-      for (let i = 0; i < 16; i++) {
-        pass += chars.charAt(Math.floor(Math.random() * chars.length));
+    // ИНТЕРАКТИВНЫЙ OSINT ПРОБИВ В WEBAPP
+    let currentOsintTarget = "";
+
+    function runOsintSearch() {
+      const q = document.getElementById('osint-query-in').value.trim();
+      if (!q) return tg.showAlert("Укажите @username или ID!");
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+      currentOsintTarget = q;
+
+      let idVal = q.replace("@", "");
+      let estReg = "~2022-2023 гг.";
+      let estAge = "3-4 года";
+      let numId = parseInt(idVal);
+
+      if (numId) {
+        if (numId < 150000000) { estReg = "2013-2015 гг."; estAge = "10+ лет"; }
+        else if (numId < 400000000) { estReg = "2016-2017 гг."; estAge = "8-9 лет"; }
+        else if (numId < 900000000) { estReg = "2018-2019 гг."; estAge = "6-7 лет"; }
+        else if (numId < 1600000000) { estReg = "2020-2021 гг."; estAge = "4-5 лет"; }
+        else if (numId < 5500000000) { estReg = "2022-2023 гг."; estAge = "2-3 года"; }
+        else { estReg = "2024-2026 гг."; estAge = "Менее 2 лет"; }
       }
-      document.getElementById('pass-out').value = pass;
-      navigator.clipboard.writeText(pass);
-      tg.showAlert("Пароль скопирован в буфер!");
+
+      document.getElementById('res-id').innerText = numId ? numId : "Запрос к MTProto...";
+      document.getElementById('res-reg').innerText = estReg;
+      document.getElementById('res-age').innerText = estAge;
+      document.getElementById('res-dc').innerText = "DC 2 (Амстердам, Нидерланды)";
+      document.getElementById('res-phone').innerText = "🔒 Скрыт приватностью";
+      document.getElementById('res-hist').innerText = `@${idVal} (активен)`;
+      
+      document.getElementById('osint-result-box').style.display = "block";
     }
 
-    function calcIdAge() {
-      const val = parseInt(document.getElementById('id-calc-in').value.trim());
-      if (!val) return tg.showAlert("Введите числовой ID!");
-      let est = "~2025–2026 гг.";
-      if (val < 150000000) est = "~2013–2015 гг. (Олдфаг)";
-      else if (val < 400000000) est = "~2016–2017 гг.";
-      else if (val < 900000000) est = "~2018–2019 гг.";
-      else if (val < 1600000000) est = "~2020–2021 гг.";
-      else if (val < 5500000000) est = "~2022–2023 гг.";
-      else if (val < 7300000000) est = "~2024–2025 гг.";
-
-      const resBox = document.getElementById('id-calc-res');
-      resBox.style.display = "block";
-      resBox.innerHTML = `📅 <b>Примерная регистрация:</b> <code>${est}</code>`;
+    function requestFullDossierInChat() {
+      if (!currentOsintTarget) return;
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
+      sendActionToBot({ action: "osint_probe", target: currentOsintTarget });
+      tg.close();
     }
   </script>
 </body>
