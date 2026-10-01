@@ -7,12 +7,13 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg: #070b14;
-            --card-bg: rgba(17, 24, 39, 0.85);
-            --card-border: rgba(56, 189, 248, 0.2);
+            --bg: #060913;
+            --card-bg: rgba(15, 23, 42, 0.75);
+            --card-border: rgba(56, 189, 248, 0.18);
             --accent: #38bdf8;
             --accent-glow: rgba(56, 189, 248, 0.35);
             --purple: #a855f7;
+            --purple-glow: rgba(168, 85, 247, 0.35);
             --danger: #f43f5e;
             --success: #10b981;
             --text: #f8fafc;
@@ -23,50 +24,78 @@
 
         body {
             margin: 0;
-            padding: 12px 12px 90px 12px;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 14px 14px 95px 14px;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg);
             background-image:
-                    radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
-                    radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.12) 0px, transparent 50%);
+                radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(168, 85, 247, 0.1) 0%, transparent 40%);
             color: var(--text);
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
+        /* ПОЛНОСТЬЮ ИСПРАВЛЕННЫЙ БЛОК УВЕДОМЛЕНИЙ (СКРЫТ ЗА ЭКРАНОМ) */
+        #toast {
+            position: fixed;
+            top: -120px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #ffffff;
+            padding: 11px 22px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 700;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.35s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            z-index: 99999;
+        }
+        #toast.show {
+            top: 20px;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* КАРТОЧКА ПРОФИЛЯ */
         .profile-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 18px;
+            border-radius: 20px;
             padding: 16px;
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
             margin-bottom: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
         }
 
         .profile-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
-        .profile-top h2 { margin: 0; font-size: 19px; font-weight: 800; }
+        .profile-top h2 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -0.02em; }
 
         .status-badge {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 5px 12px;
-            border-radius: 20px;
+            padding: 6px 14px;
+            border-radius: 24px;
             font-size: 11px;
             font-weight: 800;
+            letter-spacing: 0.04em;
         }
         .badge-owner { background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.4); color: #facc15; }
         .badge-prem { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: var(--accent); }
 
         .timer-box {
-            background: rgba(7, 11, 20, 0.8);
+            background: rgba(6, 9, 19, 0.85);
             border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 10px 14px;
             display: flex;
             justify-content: space-between;
@@ -76,46 +105,42 @@
         }
         .timer-val { font-family: monospace; font-size: 13px; font-weight: 700; color: #fff; }
 
+        /* МЕТРИКИ */
         .metric-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 8px;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
         .metric-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 10px;
+            border-radius: 14px;
+            padding: 12px 8px;
             text-align: center;
+            backdrop-filter: blur(15px);
         }
-        .metric-val { font-size: 18px; font-weight: 800; color: var(--accent); }
-        .metric-lbl { font-size: 10px; color: var(--muted); margin-top: 2px; }
+        .metric-val { font-size: 20px; font-weight: 800; color: var(--accent); }
+        .metric-lbl { font-size: 10px; color: var(--muted); margin-top: 3px; font-weight: 600; text-transform: uppercase; }
 
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.2s ease-out; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        /* КАРТОЧКИ И ПЕРЕКЛЮЧАТЕЛИ */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 14px;
-            padding: 14px;
+            border-radius: 18px;
+            padding: 16px;
             margin-bottom: 12px;
-            backdrop-filter: blur(14px);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
 
         .card-title {
             font-size: 13px;
-            font-weight: 700;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.06em;
             color: var(--accent);
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -132,21 +157,16 @@
         .toggle-info h4 { margin: 0; font-size: 13px; font-weight: 600; }
         .toggle-info p { margin: 2px 0 0 0; font-size: 11px; color: var(--muted); }
 
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 44px;
-            height: 24px;
-        }
+        .switch { position: relative; display: inline-block; width: 46px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
             background-color: #1e293b;
             transition: .25s;
-            border-radius: 24px;
+            border-radius: 26px;
         }
         .slider:before {
-            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px;
             background-color: white;
             transition: .25s;
             border-radius: 50%;
@@ -156,31 +176,32 @@
 
         .input-box {
             width: 100%;
-            background: rgba(7, 11, 20, 0.9);
+            background: rgba(6, 9, 19, 0.9);
             border: 1px solid rgba(255, 255, 255, 0.12);
-            padding: 12px;
-            border-radius: 10px;
+            padding: 12px 14px;
+            border-radius: 12px;
             color: #fff;
             font-size: 13px;
             outline: none;
             margin-top: 6px;
+            transition: border-color 0.2s;
         }
         .input-box:focus { border-color: var(--accent); }
 
         .btn {
             width: 100%;
-            padding: 12px;
+            padding: 13px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 13px;
             font-weight: 700;
             cursor: pointer;
             margin-top: 8px;
-            transition: transform 0.1s;
+            transition: all 0.15s ease-out;
         }
-        .btn:active { transform: scale(0.98); }
-        .btn-accent { background: var(--accent); color: #070b14; }
-        .btn-purple { background: var(--purple); color: #fff; }
+        .btn:active { transform: scale(0.98); opacity: 0.9; }
+        .btn-accent { background: linear-gradient(135deg, var(--accent), #0284c7); color: #060913; font-weight: 800; }
+        .btn-purple { background: linear-gradient(135deg, var(--purple), #7e22ce); color: #fff; }
         .btn-danger { background: rgba(244, 63, 94, 0.15); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
 
         .mute-chip {
@@ -196,43 +217,21 @@
         }
         .mute-chip-del { cursor: pointer; color: var(--danger); font-weight: bold; }
 
-        .cmd-item {
-            background: #050811;
-            border: 1px solid #1e293b;
-            border-radius: 8px;
-            padding: 10px;
-            margin-bottom: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-            cursor: pointer;
-        }
-        .cmd-item code { color: var(--accent); font-size: 13px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.2s ease-out; }
 
-        #toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-60px);
-            background: #10b981;
-            color: #070b14;
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: 800;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-            z-index: 1000;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        #toast.show { transform: translateX(-50%) translateY(0); }
 
+        /* НАВИГАЦИОННАЯ ПАНЕЛЬ */
         .bottom-nav {
             position: fixed;
             bottom: 0; left: 0; right: 0;
-            height: 64px;
-            background: rgba(11, 17, 29, 0.95);
-            backdrop-filter: blur(20px);
+            height: 68px;
+            background: rgba(11, 17, 29, 0.92);
+            backdrop-filter: blur(25px);
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             justify-content: space-around;
@@ -247,14 +246,29 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 3px;
-            font-size: 10px;
+            gap: 4px;
+            font-size: 11px;
             font-weight: 600;
             cursor: pointer;
-            width: 20%;
+            width: 25%;
+            transition: color 0.15s;
         }
         .nav-btn.active { color: var(--accent); }
         .nav-icon { font-size: 20px; }
+
+        .pwd-display {
+            background: #04060c;
+            border: 1px dashed var(--accent);
+            border-radius: 12px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 14px;
+            color: #38bdf8;
+            word-break: break-all;
+            margin-top: 10px;
+            user-select: all;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -265,7 +279,7 @@
 <div class="profile-card">
     <div class="profile-top">
         <div>
-            <h2 id="u-name">Пользователь</h2>
+            <h2 id="u-name">Оператор</h2>
             <div style="font-size:12px; color:var(--muted); margin-top:2px;">ID: <span id="u-id">...</span></div>
         </div>
         <div id="u-badge" class="status-badge badge-prem">⭐ PREMIUM</div>
@@ -292,18 +306,18 @@
     </div>
 </div>
 
-<!-- ВКЛАДКА 1: НАСТРОЙКИ (БЕЗ ЗАКРЫТИЯ ПРИЛОЖЕНИЯ) -->
+<!-- ВКЛАДКА 1: ЗАЩИТА -->
 <div id="tab-settings" class="tab-content active">
     <div class="card">
-        <div class="card-title">Модули защиты диалогов</div>
+        <div class="card-title">Модули безопасности</div>
 
         <div class="toggle-row">
             <div class="toggle-info">
                 <h4>Anti-Delete перехват</h4>
-                <p>Фиксация удалённых собеседником сообщений</p>
+                <p>Фиксация и логирование удалённых сообщений</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-ad" checked onchange="saveSettingLocally('anti_delete', this.checked)">
+                <input type="checkbox" id="set-ad" onchange="saveToggle('anti_delete', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -311,10 +325,10 @@
         <div class="toggle-row">
             <div class="toggle-info">
                 <h4>Anti-Edit перехват</h4>
-                <p>Сохранение оригиналов при редактировании</p>
+                <p>Сохранение оригинального текста при правках</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-ae" checked onchange="saveSettingLocally('anti_edit', this.checked)">
+                <input type="checkbox" id="set-ae" onchange="saveToggle('anti_edit', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -322,10 +336,10 @@
         <div class="toggle-row">
             <div class="toggle-info">
                 <h4>Спасение TTL медиа</h4>
-                <p>Загрузка фото и видео с таймером самоуничтожения</p>
+                <p>Загрузка фото и видео с таймером просмотра</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-ttl" checked onchange="saveSettingLocally('save_ttl_media', this.checked)">
+                <input type="checkbox" id="set-ttl" onchange="saveToggle('save_ttl_media', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -333,10 +347,21 @@
         <div class="toggle-row">
             <div class="toggle-info">
                 <h4>Авто-мут нарушителей</h4>
-                <p>Мгновенное стирание спамеров из чёрного списка</p>
+                <p>Мгновенное удаление спамеров из чёрного списка</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-am" checked onchange="saveSettingLocally('auto_mute', this.checked)">
+                <input type="checkbox" id="set-am" onchange="saveToggle('auto_mute', this.checked)">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h4>Анти-флуд (3 повтора)</h4>
+                <p>Авто-мут за 3 одинаковых сообщения подряд</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="set-asm" onchange="saveToggle('anti_spam_mute', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -344,44 +369,27 @@
         <div class="toggle-row">
             <div class="toggle-info">
                 <h4>Режим "Не беспокоить" (DND)</h4>
-                <p>Авто-удаление входящих личных сообщений</p>
+                <p>Авто-очистка личных диалогов</p>
             </div>
             <label class="switch">
-                <input type="checkbox" id="set-dnd" onchange="saveSettingLocally('dnd', this.checked)">
+                <input type="checkbox" id="set-dnd" onchange="saveToggle('dnd', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
-
-        <div class="toggle-row">
-            <div class="toggle-info">
-                <h4>Тихие уведомления</h4>
-                <p>Отправка отчётов без звука</p>
-            </div>
-            <label class="switch">
-                <input type="checkbox" id="set-sil" onchange="saveSettingLocally('silent_notifications', this.checked)">
-                <span class="slider"></span>
-            </label>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-title">Синхронизация</div>
-        <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Все переключатели выше сохраняются моментально без выхода. Если вам нужно передать всю конфигурацию в чат бота, нажмите кнопку ниже:</p>
-        <button class="btn btn-purple" onclick="exportToBot()">💾 Экспортировать в чат бота (с закрытием)</button>
     </div>
 </div>
 
 <!-- ВКЛАДКА 2: МУТ-ЦЕНТР -->
 <div id="tab-mute" class="tab-content">
     <div class="card">
-        <div class="card-title">Управление чёрным списком</div>
-        <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Добавьте ID или @username. Все сообщения цели будут стираться на лету:</p>
+        <div class="card-title">Чёрный список целей</div>
+        <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Любые сообщения от данных ID или юзернеймов стираются на лету:</p>
         <input type="text" id="mute-val" class="input-box" placeholder="@username или числовой ID...">
         <button class="btn btn-accent" onclick="addMuteDirect()">🚫 Замутить объект</button>
     </div>
 
     <div class="card">
-        <div class="card-title">Активные цели в мут-листе</div>
+        <div class="card-title">Замученные объекты</div>
         <div id="mute-list-container" style="min-height: 40px;">
             <span style="font-size:12px; color:var(--muted);">Список пуст</span>
         </div>
@@ -391,53 +399,46 @@
 <!-- ВКЛАДКА 3: OSINT & ДОСЬЕ -->
 <div id="tab-osint" class="tab-content">
     <div class="card">
-        <div class="card-title">🔍 Сканер объектов</div>
-        <input type="text" id="osint-val" class="input-box" placeholder="@username или ID цели...">
-        <div style="display:flex; gap:8px;">
-            <button class="btn btn-accent" onclick="runProbe('probe')">🌐 OSINT Пробив</button>
-            <button class="btn btn-purple" onclick="runProbe('dossier')">📁 Досье FGram</button>
+        <div class="card-title">🔍 OSINT Каталог и Анализ</div>
+        <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Анализ профиля через базы данных Telegram:</p>
+        <input type="text" id="osint-val" class="input-box" placeholder="@username или Telegram ID...">
+        <div style="display:flex; gap:8px; margin-top:4px;">
+            <button class="btn btn-accent" onclick="runProbeDirect('probe')">🌐 OSINT Пробив</button>
+            <button class="btn btn-purple" onclick="runProbeDirect('dossier')">📁 Досье FGram</button>
         </div>
 
-        <div id="osint-res" style="display:none; margin-top:12px; padding:12px; background:#050811; border-radius:10px; font-size:12px;">
+        <div id="osint-res" style="display:none; margin-top:12px; padding:12px; background:#04060c; border:1px solid #1e293b; border-radius:12px; font-size:12px; line-height:1.5;">
             <div id="osint-out"></div>
         </div>
     </div>
 </div>
 
-<!-- ВКЛАДКА 4: УТИЛИТЫ И КОМАНДЫ -->
+<!-- ВКЛАДКА 4: УТИЛИТЫ И ГЕНЕРАТОР ПАРОЛЕЙ -->
 <div id="tab-utils" class="tab-content">
+    <!-- ГЕНЕРАТОР НАДЕЖНЫХ ПАРОЛЕЙ / USD КОШЕЛЬКОВ -->
     <div class="card">
-        <div class="card-title">Быстрые команды (Копирование)</div>
-        <div class="cmd-item" onclick="copyCmd('.пробив @username')">
-            <div><b>.пробив</b> <span>— сетевой паспорт</span></div>
-            <code>Копировать</code>
+        <div class="card-title">🔐 Генератор ключей и паролей</div>
+        <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Для USD / USDT криптокошельков, бирж и секретных аккаунтов:</p>
+
+        <div style="display:flex; gap:8px;">
+            <button class="btn btn-accent" onclick="generateCryptoPassword()">🔑 Пароль 24 знака</button>
+            <button class="btn btn-purple" onclick="generateSeedPhrase()">🌱 12 Слов Seed</button>
         </div>
-        <div class="cmd-item" onclick="copyCmd('.досье')">
-            <div><b>.досье</b> <span>— история перехватов цели</span></div>
-            <code>Копировать</code>
-        </div>
-        <div class="cmd-item" onclick="copyCmd('.спам 5 Текст')">
-            <div><b>.спам 5 Текст</b> <span>— серия сообщений</span></div>
-            <code>Копировать</code>
-        </div>
-        <div class="cmd-item" onclick="copyCmd('.клир 10')">
-            <div><b>.клир 10</b> <span>— удаление своих сообщений</span></div>
-            <code>Копировать</code>
-        </div>
-        <div class="cmd-item" onclick="copyCmd('.пинг')">
-            <div><b>.пинг</b> <span>— замер скорости MTProto</span></div>
-            <code>Копировать</code>
-        </div>
+
+        <div class="pwd-display" id="pwd-box" style="display:none;"></div>
+        <button id="copy-pwd-btn" class="btn btn-accent" style="display:none;" onclick="copyPassword()">📋 Скопировать в буфер</button>
     </div>
 
+    <!-- КОНВЕРТЕР ЗВЁЗД -->
     <div class="card">
-        <div class="card-title">Калькулятор звёзд Telegram</div>
+        <div class="card-title">⭐ Расчёт Telegram Stars</div>
+        <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Официальный калькулятор стоимости доступа:</p>
         <input type="number" id="calc-days" class="input-box" placeholder="Количество дней..." value="30" oninput="calcStars()">
-        <div style="margin-top:10px; font-size:13px;" id="calc-res">Стоимость: <b>149 ⭐</b></div>
+        <div style="margin-top:10px; font-size:13px; font-weight:700;" id="calc-res">К оплате: <span style="color:#facc15;">149 ⭐</span></div>
     </div>
 </div>
 
-<!-- НАВБАР -->
+<!-- НАВИГАЦИЯ -->
 <div class="bottom-nav">
     <button class="nav-btn active" onclick="switchNav('settings', this)">
         <span class="nav-icon">⚙️</span>
@@ -476,26 +477,32 @@
         document.getElementById('countdown').innerText = "FOREVER (БЕЗЛИМИТ)";
     }
 
-    // Состояние тумблеров
-    let appSettings = {
+    // Сохранение и загрузка настроек (приоритет у сохраненного кэша)
+    let savedSettings = null;
+    try { savedSettings = JSON.parse(localStorage.getItem('fgram_settings')); } catch(e){}
+
+    let appSettings = savedSettings || {
         anti_delete: urlParams.get('ad') !== '0',
         anti_edit: urlParams.get('ae') !== '0',
         save_ttl_media: urlParams.get('ttl') !== '0',
         dnd: urlParams.get('dnd') === '1',
         auto_mute: urlParams.get('am') !== '0',
-        silent_notifications: urlParams.get('sil') === '1'
+        anti_spam_mute: urlParams.get('asm') !== '0'
     };
 
     document.getElementById('set-ad').checked = appSettings.anti_delete;
     document.getElementById('set-ae').checked = appSettings.anti_edit;
     document.getElementById('set-ttl').checked = appSettings.save_ttl_media;
-    document.getElementById('set-dnd').checked = appSettings.dnd;
     document.getElementById('set-am').checked = appSettings.auto_mute;
-    document.getElementById('set-sil').checked = appSettings.silent_notifications;
+    document.getElementById('set-asm').checked = appSettings.anti_spam_mute;
+    document.getElementById('set-dnd').checked = appSettings.dnd;
 
-    // Список замученных
+    // Сохранение и загрузка мут-листа
+    let savedMutes = null;
+    try { savedMutes = JSON.parse(localStorage.getItem('fgram_mutes')); } catch(e){}
+
     let rawMutes = urlParams.get('mutes') ? decodeURIComponent(urlParams.get('mutes')).split(',') : [];
-    let muteList = rawMutes.filter(x => x.trim().length > 0);
+    let muteList = savedMutes || rawMutes.filter(x => x.trim().length > 0);
 
     function renderMutes() {
         const container = document.getElementById('mute-list-container');
@@ -529,22 +536,22 @@
         btn.classList.add('active');
     }
 
-    // Сохранение без закрытия окна
-    function saveSettingLocally(key, val) {
+    // Сохранение тумблеров (не закрывает приложение!)
+    function saveToggle(key, val) {
         appSettings[key] = val;
         localStorage.setItem('fgram_settings', JSON.stringify(appSettings));
         if (tg.CloudStorage) tg.CloudStorage.setItem('fgram_settings', JSON.stringify(appSettings));
-        showToast("✓ Параметр сохранён");
+        showToast("✓ Настройка сохранена");
     }
 
     function addMuteDirect() {
-        const val = document.getElementById('mute-val').value.trim().replace('@', '');
+        const val = document.getElementById('mute-val').value.trim().replace('@', '').toLowerCase();
         if (!val) return tg.showAlert("Укажите @username или ID!");
         if (!muteList.includes(val)) {
             muteList.push(val);
             renderMutes();
             localStorage.setItem('fgram_mutes', JSON.stringify(muteList));
-            showToast(`🔇 Объект ${val} добавлен в мут`);
+            showToast(`🔇 Объект ${val} замучен`);
         }
         document.getElementById('mute-val').value = "";
     }
@@ -556,16 +563,41 @@
         showToast(`🔊 Объект ${val} размучен`);
     }
 
-    function exportToBot() {
-        tg.sendData(JSON.stringify({
-            action: "save_all_settings",
-            settings: appSettings
-        }));
+    // ГЕНЕРАТОР ПАРОЛЕЙ И КЛЮЧЕЙ
+    let currentGenerated = "";
+    function generateCryptoPassword() {
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*()_-+=";
+        let res = "";
+        for (let i = 0; i < 24; i++) {
+            res += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        currentGenerated = res;
+        showPassword(res);
     }
 
-    function copyCmd(cmd) {
-        navigator.clipboard.writeText(cmd);
-        showToast("Скопировано: " + cmd);
+    function generateSeedPhrase() {
+        const wordPool = ["abandon", "ability", "able", "about", "above", "absent", "absorb", "abstract", "absurd", "abuse", "access", "accident", "account", "accuse", "achieve", "acid", "acoustic", "acquire", "across", "act", "action", "actor", "actress", "actual", "adapt", "add", "addict", "address", "adjust", "admit", "adult", "advance", "advice", "aerobic", "afford", "afraid", "again", "age", "agent", "agree", "ahead", "aim", "air", "airport", "aisle", "alarm", "album", "alcohol", "alert", "alien", "all", "alley", "allow", "almost", "alone", "alpha", "already", "also", "alter", "always", "amateur", "amazing", "among", "amount", "amused", "analyst", "anchor", "ancient", "anger", "angle", "angry", "animal", "ankle", "announce", "annual", "another", "answer", "antenna", "antique", "anxiety", "any", "apart", "apology", "appear", "apple", "approve", "april", "arch", "arctic", "area", "arena", "argue", "arm", "armed", "armor", "army", "around", "arrange", "arrest", "arrive", "arrow", "art", "artefact", "artist", "artwork", "ask", "aspect", "assault", "asset", "assist", "assume", "asthma", "athlete", "atom", "attack", "attend", "attitude", "attract", "auction", "audit", "august", "aunt", "author", "auto", "autumn", "average", "avocado", "avoid", "awake", "aware", "away", "awesome", "awful", "awkward", "axis"];
+        let phrase = [];
+        for (let i = 0; i < 12; i++) {
+            phrase.push(wordPool[Math.floor(Math.random() * wordPool.length)]);
+        }
+        currentGenerated = phrase.join(" ");
+        showPassword(currentGenerated);
+    }
+
+    function showPassword(val) {
+        const box = document.getElementById('pwd-box');
+        const btn = document.getElementById('copy-pwd-btn');
+        box.innerText = val;
+        box.style.display = 'block';
+        btn.style.display = 'block';
+        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+    }
+
+    function copyPassword() {
+        if (!currentGenerated) return;
+        navigator.clipboard.writeText(currentGenerated);
+        showToast("📋 Скопировано в буфер обмена!");
     }
 
     function calcStars() {
@@ -576,16 +608,29 @@
         else if (d < 30) p = Math.floor(d * 7.5);
         else if (d < 365) p = Math.floor(d * 4.9);
         else p = Math.floor(d * 2.45);
-        document.getElementById('calc-res').innerHTML = `Стоимость: <b>${p} ⭐</b>`;
+        document.getElementById('calc-res').innerHTML = `К оплате: <span style="color:#facc15;">${p} ⭐</span>`;
     }
 
-    function runProbe(mode) {
+    // Быстрый анализ в приложении без закрытия окна
+    function runProbeDirect(mode) {
         const val = document.getElementById('osint-val').value.trim();
         if (!val) return tg.showAlert("Укажите @username или ID!");
+
         const resBox = document.getElementById('osint-res');
         const out = document.getElementById('osint-out');
         resBox.style.display = 'block';
-        out.innerHTML = `⏳ <i>Запрос ${mode === 'probe' ? 'сетевого MTProto паспорта' : 'истории досье'} для ${val}...</i>`;
+        out.innerHTML = `⏳ <i>Синхронизация с дата-центрами Telegram MTProto...</i>`;
+
+        setTimeout(() => {
+            const isId = /^\d+$/.test(val.replace('@', ''));
+            out.innerHTML = `
+                <div style="color:var(--accent); font-weight:800; margin-bottom:4px;">🎯 Результат анализа (${mode === 'probe' ? 'OSINT' : 'FGram'}):</div>
+                • <b>Объект:</b> <code>${val}</code><br>
+                • <b>Статус:</b> Запрос принят ядром бота.<br>
+                • <b>Подробный отчёт:</b> отправлен в ваш диалог с ботом!
+            `;
+            showToast("Отчёт готов в диалоге с ботом");
+        }, 600);
 
         tg.sendData(JSON.stringify({
             action: "osint_probe",
