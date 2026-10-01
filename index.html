@@ -24,7 +24,7 @@
 
 body {
     margin: 0;
-    padding: 14px 14px calc(90px + env(safe-area-inset-bottom)) 14px;
+    padding: 14px 14px calc(95px + env(safe-area-inset-bottom)) 14px;
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
     background-color: var(--bg);
     background-image:
@@ -195,18 +195,6 @@ body {
 .feature-info { flex: 1; }
 .feature-header { display: flex; align-items: center; gap: 6px; }
 .feature-header h4 { margin: 0; font-size: 14px; font-weight: 700; }
-.feature-pill {
-    font-size: 9px;
-    font-weight: 800;
-    padding: 2px 6px;
-    border-radius: 6px;
-    text-transform: uppercase;
-}
-.pill-blue { background: rgba(56, 189, 248, 0.15); color: var(--accent); }
-.pill-purple { background: rgba(192, 132, 252, 0.15); color: var(--purple); }
-.pill-red { background: rgba(251, 113, 133, 0.15); color: var(--danger); }
-.pill-gold { background: rgba(250, 204, 21, 0.15); color: var(--gold); }
-
 .feature-desc {
     margin: 4px 0 0 0;
     font-size: 12px;
@@ -295,7 +283,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 .nav-btn {
     background: none; border: none; color: var(--muted);
     display: flex; flex-direction: column; align-items: center; gap: 4px;
-    font-size: 11px; font-weight: 600; cursor: pointer; width: 25%;
+    font-size: 11px; font-weight: 600; cursor: pointer; flex: 1;
     transition: color 0.15s;
 }
 .nav-btn.active { color: var(--accent); }
@@ -326,7 +314,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 </head>
 <body>
 
-<div id="toast">✅ Изменения сохранены</div>
+<div id="toast">✅ Изменения применены</div>
 
 <div class="profile-card">
     <div class="profile-top">
@@ -359,10 +347,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 
         <div class="feature-row">
             <div class="feature-info">
-                <div class="feature-header">
-                    <h4>Anti-Delete</h4>
-                    <span class="feature-pill pill-blue">Радар призраков</span>
-                </div>
+                <div class="feature-header"><h4>Anti-Delete</h4></div>
                 <p class="feature-desc">Перехватывает и сохраняет текст, голосовые и кружки, которые собеседник стёр в переписке.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-ad" onchange="autoToggle('anti_delete', this.checked)"><span class="slider"></span></label>
@@ -370,21 +355,15 @@ input:checked + .slider:before { transform: translateX(22px); }
 
         <div class="feature-row">
             <div class="feature-info">
-                <div class="feature-header">
-                    <h4>Anti-Edit</h4>
-                    <span class="feature-pill pill-purple">Детектор правок</span>
-                </div>
-                <p class="feature-desc">Логирует оригинальный текст сообщения до того, как автор успел его изменить или скрыть слова.</p>
+                <div class="feature-header"><h4>Anti-Edit</h4></div>
+                <p class="feature-desc">Логирует оригинальный текст сообщения до того, как автор успел его изменить.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-ae" onchange="autoToggle('anti_edit', this.checked)"><span class="slider"></span></label>
         </div>
 
         <div class="feature-row">
             <div class="feature-info">
-                <div class="feature-header">
-                    <h4>Одноразовые медиа</h4>
-                    <span class="feature-pill pill-gold">Ловушка TTL</span>
-                </div>
+                <div class="feature-header"><h4>Одноразовые медиа</h4></div>
                 <p class="feature-desc">Спасает самоуничтожающиеся фото и видеофайлы до истечения таймера просмотра.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-ttl" onchange="autoToggle('save_ttl_media', this.checked)"><span class="slider"></span></label>
@@ -392,22 +371,16 @@ input:checked + .slider:before { transform: translateX(22px); }
 
         <div class="feature-row">
             <div class="feature-info">
-                <div class="feature-header">
-                    <h4>Анти-флуд фильтр</h4>
-                    <span class="feature-pill pill-red">Таймаут 15 мин</span>
-                </div>
-                <p class="feature-desc">Если собеседник строчит одно и то же 3 раза подряд — его сообщения блокируются на 15 минут.</p>
+                <div class="feature-header"><h4>Анти-флуд фильтр</h4></div>
+                <p class="feature-desc">Блокирует собеседника на 15 минут, если он отправляет одинаковые сообщения 3 раза подряд.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-asm" onchange="autoToggle('anti_spam_mute', this.checked)"><span class="slider"></span></label>
         </div>
 
         <div class="feature-row">
             <div class="feature-info">
-                <div class="feature-header">
-                    <h4>Приватность профиля</h4>
-                    <span class="feature-pill pill-blue">Стелс-щит</span>
-                </div>
-                <p class="feature-desc">Блокирует попытки собрать досье и пробить ваш аккаунт другими участниками сети.</p>
+                <div class="feature-header"><h4>Приватность профиля</h4></div>
+                <p class="feature-desc">Блокирует попытки пробить ваш аккаунт другими участниками сети.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-adox" onchange="autoToggle('anti_dox', this.checked)"><span class="slider"></span></label>
         </div>
@@ -422,7 +395,7 @@ input:checked + .slider:before { transform: translateX(22px); }
         <button class="btn btn-accent" onclick="addMute()">🚫 Заблокировать объект</button>
     </div>
     <div class="card">
-        <div class="card-title">Заблокированные в ваших диалогах</div>
+        <div class="card-title">Заблокированные в диалогах</div>
         <div id="mute-list-container"><span style="font-size:12px; color:var(--muted);">Список пуст</span></div>
         <button class="btn btn-danger" style="margin-top:12px;" onclick="clearMutes()">⚡ Очистить весь список</button>
     </div>
@@ -464,11 +437,30 @@ input:checked + .slider:before { transform: translateX(22px); }
     </div>
 </div>
 
+<!-- ВКЛАДКА 5: ПАНЕЛЬ ВЛАДЕЛЬЦА (ТОЛЬКО ДЛЯ ВЛАДЕЛЬЦА) -->
+<div id="tab-owner" class="tab-content">
+    <div class="card">
+        <div class="card-title">👑 Панель Создателя</div>
+        <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Выдача подписки по ID или юзернейму:</p>
+        <input type="text" id="owner-target" class="input-box" placeholder="@username или ID цели…">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
+            <button class="btn btn-accent" onclick="setGrantDur('1д')">⚡ 1 День</button>
+            <button class="btn btn-accent" onclick="setGrantDur('7д')">🔥 7 Дней</button>
+            <button class="btn btn-purple" onclick="setGrantDur('30д')">⭐ 30 Дней</button>
+            <button class="btn btn-purple" onclick="setGrantDur('365д')">💎 365 Дней</button>
+        </div>
+        <button class="btn btn-gold" style="margin-top:6px;" onclick="setGrantDur('навсегда')">👑 Бессрочно</button>
+        <input type="text" id="owner-dur-val" class="input-box" value="30д" style="margin-top:8px;">
+        <button class="btn btn-accent" style="margin-top:10px;" onclick="submitGrant()">🚀 Выдать лицензию</button>
+    </div>
+</div>
+
 <div class="bottom-nav">
     <button class="nav-btn active" onclick="switchNav('settings', this)"><span class="nav-icon">🛡</span>Защита</button>
     <button class="nav-btn" onclick="switchNav('mute', this)"><span class="nav-icon">🔇</span>Мой ЧС</button>
     <button class="nav-btn" onclick="switchNav('osint', this)"><span class="nav-icon">🔍</span>Анализ</button>
     <button class="nav-btn" onclick="switchNav('utils', this)"><span class="nav-icon">🛠</span>Утилиты</button>
+    <button class="nav-btn" id="nav-owner" style="display:none;" onclick="switchNav('owner', this)"><span class="nav-icon">👑</span>Овнер</button>
 </div>
 
 <script>
@@ -483,7 +475,6 @@ const role = P.get('role') || 'free';
 const expTs = parseFloat(P.get('exp') || '0');
 const isOwner = (role === 'owner') || (parseInt(uid) === ADMIN_ID);
 
-// 1. Отображение Аватара, Имени, Юзернейма и ID
 const tgUser = tg.initDataUnsafe?.user;
 const firstName = tgUser?.first_name || P.get('name') || "Оператор";
 const lastName = tgUser?.last_name || "";
@@ -502,9 +493,14 @@ if (tgUser?.photo_url) {
 }
 
 const badge = document.getElementById('u-badge');
-if (isOwner) { badge.className = "status-badge badge-owner"; badge.innerText = "👑 ВЛАДЕЛЕЦ"; }
-else if (role === 'premium') { badge.className = "status-badge badge-prem"; badge.innerText = "⭐ PREMIUM"; }
-else { badge.className = "status-badge badge-free"; badge.innerText = "⛔ ДОСТУП ИСТЁК"; }
+if (isOwner) {
+    badge.className = "status-badge badge-owner"; badge.innerText = "👑 ВЛАДЕЛЕЦ";
+    document.getElementById('nav-owner').style.display = "flex";
+} else if (role === 'premium') {
+    badge.className = "status-badge badge-prem"; badge.innerText = "⭐ PREMIUM";
+} else {
+    badge.className = "status-badge badge-free"; badge.innerText = "⛔ ДОСТУП ИСТЁК";
+}
 
 function formatExp(exp) {
     if (isOwner || exp === -1) return "Бессрочно";
@@ -515,7 +511,6 @@ function formatExp(exp) {
 }
 document.getElementById('countdown').innerText = formatExp(expTs);
 
-// 2. БЕЗБАГОВАЯ ТИХАЯ СИНХРОНИЗАЦИЯ: отправляет сообщение и ТУТ ЖЕ стирает его
 async function sendSilentSync(data) {
     try {
         const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -543,7 +538,6 @@ async function sendSilentSync(data) {
     }
 }
 
-// 3. Автосохранение настроек при клике
 const LSK_SET = 'asteria_set_' + uid;
 let S = JSON.parse(localStorage.getItem(LSK_SET)) || {
     anti_delete: P.get('ad') === '1', anti_edit: P.get('ae') === '1',
@@ -563,7 +557,6 @@ function autoToggle(k, v) {
     sendSilentSync({ action: "toggle_setting", key: k, value: v });
 }
 
-// 4. Мут-лист
 const LSK_MUT = 'asteria_mut_' + uid;
 let rawMutes = P.get('mutes') ? decodeURIComponent(P.get('mutes')).split(',').map(x=>x.trim()).filter(Boolean) : [];
 let muteList = JSON.parse(localStorage.getItem(LSK_MUT)) || rawMutes;
@@ -622,7 +615,6 @@ function switchNav(id, btn) {
     btn.classList.add('active');
 }
 
-// Хэширование и дехэш
 function calcHash(type) {
     const str = document.getElementById('hash-input').value;
     if (!str) return tg.showAlert("Введите текст!");
@@ -651,7 +643,7 @@ function dehash() {
         "827ccb0eea8a706c4c34a16891f84e7b": "12345", "e10adc3949ba59abbe56e057f20f883e": "123456",
         "5f4dcc3b5aa765d61d8327deb882cf99": "password"
     };
-    b.innerText = d[h] ? `✅ [Найден пароль]:\n«${d[h]}»` : `❌ Пароль не найден в базе популярных паролей.`;
+    b.innerText = d[h] ? `✅ [Найден пароль]:\n«${d[h]}»` : `❌ Пароль не найден в базе.`;
 }
 
 function showOsint(mode) {
@@ -663,6 +655,15 @@ function showOsint(mode) {
     box.innerText = mode === 'probe' 
         ? `🌐 [ПАСПОРТ ПРОФИЛЯ]\nСубъект: @${clean}\nСтатус в вашем ЧС: ${muteList.includes(clean) ? '🔴 В ЧС' : '🟢 Обычный'}\nДата-центр: DC 2 (Амстердам)\nТелефон: 🔒 Скрыт приватностью`
         : `📁 [ДОСЬЕ АКТИВНОСТИ]\nОбъект: @${clean}\nСтатус в базе: ${muteList.includes(clean) ? '🔴 ЗАМУЧЕН' : '🟢 Чистый'}\nПерехвачено удалений: 0 шт.`;
+}
+
+function setGrantDur(v) { document.getElementById('owner-dur-val').value = v; }
+function submitGrant() {
+    const t = document.getElementById('owner-target').value.trim();
+    const d = document.getElementById('owner-dur-val').value.trim() || '30д';
+    if (!t) return tg.showAlert("Укажите ник или ID!");
+    sendSilentSync({ action: "grant_subscription", target: t, duration: d });
+    showToast(`👑 Лицензия выдана: ${d}`);
 }
 </script>
 </body>
