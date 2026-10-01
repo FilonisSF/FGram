@@ -360,9 +360,8 @@
     <div class="card">
       <div class="card-title">👥 Партнёрская сеть</div>
       <p style="font-size:12px; color:var(--muted); margin:0 0 12px 0;">
-        Отправьте персональную ссылку для подключения. Нажмите кнопку ниже, чтобы выбрать сразу нескольких получателей.
+        Нажмите кнопку ниже, чтобы открыть диалог отправки сообщения сразу нескольким друзьям.
       </p>
-      <!-- Нативное окно с выбором нескольких чатов как на скриншоте 2 -->
       <button class="btn btn-accent" onclick="shareRef()">📤 Выбрать получателей...</button>
       <button class="btn btn-purple" style="margin-top:8px;" onclick="copyRef()">📋 Скопировать ссылку</button>
     </div>
@@ -440,11 +439,8 @@
       document.querySelectorAll('.nav-btn').forEach(b => b.style.width = "33.3%");
     }
 
-    // ЛОКАЛЬНЫЙ КЭШ НАСТРОЕК (МГНОВЕННОЕ СОХРАНЕНИЕ)
-    const settingsKey = 'fgram_settings_' + currentUserId;
-    const cachedSettings = localStorage.getItem(settingsKey);
-
-    let pendingSettings = cachedSettings ? JSON.parse(cachedSettings) : {
+    // ИНИЦИАЛИЗАЦИЯ НАСТРОЕК
+    let pendingSettings = {
       anti_delete: urlParams.get('ad') !== '0',
       anti_edit: urlParams.get('ae') !== '0',
       save_ttl_media: urlParams.get('ttl') !== '0',
@@ -460,11 +456,9 @@
     document.getElementById('sw-auto-mute').checked = pendingSettings.auto_mute;
     document.getElementById('sw-silent').checked = pendingSettings.silent_notifications;
 
-    // ЛОКАЛЬНЫЙ КЭШ МУТ-ЛИСТА (УДАЛЁННЫЕ НЕ ВОЗВРАЩАЮТСЯ)
-    const mutesKey = 'fgram_mutes_' + currentUserId;
-    const cachedMutes = localStorage.getItem(mutesKey);
+    // ПЕРСОНАЛЬНЫЙ МУТ-ЛИСТ
     const mutesRaw = decodeURIComponent(urlParams.get('mutes') || '');
-    let mutedList = cachedMutes ? JSON.parse(cachedMutes) : (mutesRaw ? mutesRaw.split(',').filter(x => x.length > 0) : []);
+    let mutedList = mutesRaw ? mutesRaw.split(',').filter(x => x.length > 0) : [];
 
     function recordToggle(mod, state) {
       if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
@@ -473,14 +467,9 @@
     }
 
     function sendActionToBot(actionData) {
-      let sent = false;
       try {
         tg.sendData(JSON.stringify(actionData));
-        sent = true;
       } catch (e) {
-        sent = false;
-      }
-      if (!sent) {
         const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(actionData))));
         const botUser = tg.initDataUnsafe?.bot?.username || "fgram_dox_bot";
         tg.openTelegramLink(`https://t.me/${botUser}?start=act_${b64}`);
@@ -489,13 +478,12 @@
 
     function applySettingsBatch() {
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      localStorage.setItem(settingsKey, JSON.stringify(pendingSettings));
       sendActionToBot({
         action: "save_all_settings",
         settings: pendingSettings
       });
       document.getElementById('save-modules-btn').style.display = 'none';
-      tg.showAlert("✅ Настройки применены!");
+      tg.showAlert("✅ Настройки успешно сохранены!");
     }
 
     function renderMuted() {
@@ -505,7 +493,7 @@
         return;
       }
       container.innerHTML = mutedList.map(id => `
-        <div class="mute-row">
+        <div class="mute-row" id="mute-row-${id}">
           <div class="mute-info">
             <b>${id}</b>
             <span>Сообщения блокируются</span>
@@ -529,7 +517,6 @@
       if (!val) return tg.showAlert("Введите числовой ID или @username!");
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
       mutedList.push(val);
-      localStorage.setItem(mutesKey, JSON.stringify(mutedList));
       renderMuted();
       sendActionToBot({ action: "add_mute", target: val });
       document.getElementById('mute-input').value = "";
@@ -537,9 +524,8 @@
 
     function unmuteItem(targetId) {
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-      // Мгновенно удаляем из кэша и перерисовываем
+      // Мгновенное удаление элемента из DOM и массива
       mutedList = mutedList.filter(id => id !== targetId);
-      localStorage.setItem(mutesKey, JSON.stringify(mutedList));
       renderMuted();
       sendActionToBot({ action: "unmute_user", target: targetId });
     }
@@ -554,12 +540,11 @@
       document.getElementById('grant-dur').value = "";
     }
 
-    // МУЛЬТИ-ПЕРЕСЫЛКА (КАК НА 2 СКРИНШОТЕ)
+    // МУЛЬТИ-ОТПРАВКА КАК НА 2 СКРИНШОТЕ
     function shareRef() {
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
       const prepId = urlParams.get('prep');
 
-      // 1. Нативное окно Telegram ShareMessage (с кнопкой "Выбрать получателей...")
       if (prepId && tg.shareMessage) {
         tg.shareMessage(prepId, (success) => {
           if (!success) fallbackMultiShare();
