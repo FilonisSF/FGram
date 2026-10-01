@@ -15,7 +15,7 @@ body{margin:0;padding:14px 14px 100px;font-family:-apple-system,BlinkMacSystemFo
 .profile-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:22px;padding:18px;backdrop-filter:blur(30px);margin-bottom:12px;position:relative;overflow:hidden}
 .profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--purple),var(--gold))}
 .profile-top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.avatar{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#050811;box-shadow:0 0 20px var(--accent-glow);flex-shrink:0;background-size:cover;background-position:center;overflow:hidden}
+.avatar{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#050811;box-shadow:0 0 20px var(--accent-glow);flex-shrink:0;overflow:hidden}
 .avatar img{width:100%;height:100%;object-fit:cover}
 .profile-info{flex:1;min-width:0}
 .profile-info h2{margin:0;font-size:19px;font-weight:800}
@@ -69,16 +69,16 @@ input:checked+.slider:before{transform:translateX(22px)}
 .note-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:9px 12px;margin-top:6px;font-size:12px}
 .note-item .nd{color:var(--muted);font-size:10px;margin-bottom:3px}
 .hint{font-size:10px;color:var(--muted);margin-top:6px;line-height:1.4}
+.section-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:6px 0 4px}
 </style>
 </head>
 <body>
-
 <div id="toast">✅</div>
 
 <div id="blocked" class="blocked-screen">
     <div class="blocked-icon">⛔</div>
     <h2>Доступ ограничен</h2>
-    <p>У вас нет активной подписки Asteria Suite.</p>
+    <p>У вас нет активной подписки Asteria.</p>
     <button class="btn btn-gold" onclick="openBot('shop')">⭐ Оформить подписку</button>
 </div>
 
@@ -114,12 +114,12 @@ input:checked+.slider:before{transform:translateX(22px)}
         <div class="toggle-row"><div class="toggle-info"><h4>Anti-Edit</h4><p>Оригиналы до правки</p></div><label class="switch"><input type="checkbox" id="set-ae"><span class="slider"></span></label></div>
         <div class="toggle-row"><div class="toggle-info"><h4>TTL</h4><p>Одноразовые фото</p></div><label class="switch"><input type="checkbox" id="set-ttl"><span class="slider"></span></label></div>
         <div class="toggle-row"><div class="toggle-info"><h4>Флуд-фильтр</h4><p>Мут 15 мин</p></div><label class="switch"><input type="checkbox" id="set-asm"><span class="slider"></span></label></div>
-        <div class="toggle-row"><div class="toggle-info"><h4>Не беспокоить</h4><p>DND-режим</p></div><label class="switch"><input type="checkbox" id="set-dnd"><span class="slider"></span></label></div>
-        <div class="toggle-row"><div class="toggle-info"><h4>Тихие уведомления</h4><p>Без звука</p></div><label class="switch"><input type="checkbox" id="set-sil"><span class="slider"></span></label></div>
+        <div class="toggle-row"><div class="toggle-info"><h4>Не беспокоить</h4><p>DND</p></div><label class="switch"><input type="checkbox" id="set-dnd"><span class="slider"></span></label></div>
+        <div class="toggle-row"><div class="toggle-info"><h4>Тихие</h4><p>Без звука</p></div><label class="switch"><input type="checkbox" id="set-sil"><span class="slider"></span></label></div>
         <div class="toggle-row"><div class="toggle-info"><h4>Приватность</h4><p>Скрыть от проверок</p></div><label class="switch"><input type="checkbox" id="set-adox"><span class="slider"></span></label></div>
         <div class="toggle-row"><div class="toggle-info"><h4>Досье-приватность</h4><p>Скрыть историю</p></div><label class="switch"><input type="checkbox" id="set-ados"><span class="slider"></span></label></div>
         <button class="btn btn-accent" onclick="saveAllSettings()" style="margin-top:12px">💾 Сохранить в бота</button>
-        <div class="hint">Изменения сохраняются локально. Нажмите «Сохранить в бота» — WebApp свернётся, бот получит настройки. Вернитесь назад, чтобы продолжить.</div>
+        <div class="hint">Изменения сохранятся локально и отправятся в бота при нажатии. WebApp свернётся — вернитесь назад, чтобы продолжить.</div>
     </div>
 </div>
 
@@ -149,7 +149,6 @@ input:checked+.slider:before{transform:translateX(22px)}
     <div class="card"><div class="card-title">📝 Заметки</div>
         <input type="text" id="note-input" class="input-box" placeholder="Текст заметки...">
         <button class="btn btn-accent" onclick="addNote()">💾 Сохранить</button>
-        <button class="btn btn-purple" onclick="listNotes()" style="margin-top:6px">📋 Показать все</button>
         <div id="notes-list" style="margin-top:10px"></div>
     </div>
 </div>
@@ -214,8 +213,7 @@ input:checked+.slider:before{transform:translateX(22px)}
 
 <script>
 const tg = window.Telegram.WebApp;
-tg.ready();
-tg.expand();
+tg.ready(); tg.expand();
 try{tg.setHeaderColor('#050711')}catch(e){}
 try{tg.setBackgroundColor('#050711')}catch(e){}
 
@@ -227,15 +225,13 @@ const expTs = parseFloat(P.get('exp') || '0');
 const tgUser = tg.initDataUnsafe?.user || {};
 const isOwner = (role === 'owner') || (parseInt(uid) === 7783116627);
 
-// === АВАТАР ===
 const photoUrl = tgUser.photo_url || '';
 const av = document.getElementById('avatar');
 if (photoUrl) {
-    av.innerHTML = `<img src="${photoUrl}" alt="" onerror="this.parentNode.innerText='${(tgUser.first_name||'O').charAt(0).toUpperCase()}'">`;
+    av.innerHTML = `<img src="${photoUrl}" onerror="this.parentNode.innerText='${(tgUser.first_name||'O').charAt(0).toUpperCase()}'">`;
 } else {
     av.innerText = (tgUser.first_name || P.get('name') || 'O').charAt(0).toUpperCase();
 }
-
 document.getElementById('u-name').innerText = tgUser.first_name || P.get('name') || 'Оператор';
 document.getElementById('u-uname').innerText = '@' + (uname || 'username');
 document.getElementById('u-id').innerText = uid;
@@ -261,23 +257,17 @@ if (role === 'free' && !isOwner) {
     if (isOwner) document.getElementById('nav-admin').style.display = 'flex';
 }
 
-// === ГЛАВНАЯ ФУНКЦИЯ ОТПРАВКИ ДАННЫХ В БОТА ===
-function openBot(action, params = {}) {
+function openBot(action, params) {
+    params = params || {};
     const pairs = [];
-    for (const [k, v] of Object.entries(params)) {
-        pairs.push(`${k}=${encodeURIComponent(v)}`);
-    }
-    const paramStr = pairs.length ? `__${pairs.join('&')}` : '';
-    const startParam = `act_${action}${paramStr}`;
-    const url = `https://t.me/asteria_suite_bot?start=${encodeURIComponent(startParam)}`;
-    try {
-        tg.openTelegramLink(url);
-    } catch(e) {
-        window.open(url, '_blank');
-    }
+    for (const k in params) pairs.push(`${k}=${encodeURIComponent(params[k])}`);
+    const ps = pairs.length ? `__${pairs.join('&')}` : '';
+    const sp = `act_${action}${ps}`;
+    const url = `https://t.me/asteria_suite_bot?start=${encodeURIComponent(sp)}`;
+    try { tg.openTelegramLink(url); }
+    catch(e) { window.open(url, '_blank'); }
 }
 
-// === ТАЙМЕР ===
 function updateCountdown() {
     const el = document.getElementById('countdown');
     if (isOwner || expTs === -1) { el.innerText = 'Бессрочно'; el.style.color = '#facc15'; return; }
@@ -289,11 +279,10 @@ function updateCountdown() {
 }
 updateCountdown(); setInterval(updateCountdown, 30000);
 
-// === НАСТРОЙКИ (локально, отправка по кнопке) ===
 const LSK = 'asteria_settings_' + uid;
 let S = JSON.parse(localStorage.getItem(LSK) || '{}');
 const urlMap = {anti_delete:'ad',anti_edit:'ae',save_ttl_media:'ttl',dnd:'dnd',anti_spam_mute:'asm',silent_notifications:'sil',anti_dox:'adox',anti_dossier:'ados'};
-for (const [k,p] of Object.entries(urlMap)) if (!(k in S) && P.get(p) !== null) S[k] = P.get(p) === '1';
+for (const k in urlMap) if (!(k in S) && P.get(urlMap[k]) !== null) S[k] = P.get(urlMap[k]) === '1';
 
 document.getElementById('set-ad').checked = !!S.anti_delete;
 document.getElementById('set-ae').checked = !!S.anti_edit;
@@ -308,7 +297,7 @@ function bindToggle(id, key) {
     document.getElementById(id).addEventListener('change', function() {
         S[key] = this.checked;
         localStorage.setItem(LSK, JSON.stringify(S));
-        toast(this.checked ? '✅ Включено (нажмите «Сохранить»)' : '⭕ Выключено');
+        toast(this.checked ? '✅ Включено' : '⭕ Выключено');
         try { tg.HapticFeedback.impactOccurred('light'); } catch(e) {}
     });
 }
@@ -319,12 +308,11 @@ bindToggle('set-adox','anti_dox'); bindToggle('set-ados','anti_dossier');
 
 function saveAllSettings() {
     const params = {};
-    for (const [k, v] of Object.entries(S)) params[k] = v ? '1' : '0';
+    for (const k in S) params[k] = S[k] ? '1' : '0';
     openBot('save_all', params);
-    toast('📤 Отправка... Вернитесь назад');
+    toast('📤 Отправлено в бота. Вернитесь назад.');
 }
 
-// === ЧС ===
 const LSKM = 'asteria_mutes_' + uid;
 let mutes = JSON.parse(localStorage.getItem(LSKM) || '[]');
 const urlMutes = P.get('mutes');
@@ -339,86 +327,64 @@ function renderMutes() {
     c.innerHTML = mutes.map(t => `<div class="mute-chip"><span><code>${t}</code></span><span class="mute-chip-del" onclick="rmMute('${t.replace(/'/g,"\\'")}')">✕</span></div>`).join('');
 }
 renderMutes();
-
 function addMute() {
     let v = document.getElementById('mute-val').value.trim().replace('@','').toLowerCase();
     if (!v) return tg.showAlert('Введите username или ID!');
-    if (v === '7783116627' || v === 'filonis_music' || v === 'marcell' || v === 'asteria_suite_bot') {
-        return tg.showAlert('Этот аккаунт защищён!');
-    }
+    if (v === '7783116627' || v === 'filonis_music' || v === 'marcell' || v === 'asteria_suite_bot') return tg.showAlert('Этот аккаунт защищён!');
     if (mutes.includes(v)) return tg.showAlert('Уже в списке');
-    mutes.push(v);
-    localStorage.setItem(LSKM, JSON.stringify(mutes));
-    renderMutes();
+    mutes.push(v); localStorage.setItem(LSKM, JSON.stringify(mutes)); renderMutes();
     document.getElementById('mute-val').value = '';
-    openBot('add_mute', { target: v });
-    toast('🔇 Отправлено боту');
+    openBot('add_mute', { target: v }); toast('🔇 Отправлено боту');
 }
 function rmMute(v) {
     mutes = mutes.filter(x => x !== v);
-    localStorage.setItem(LSKM, JSON.stringify(mutes));
-    renderMutes();
-    openBot('remove_mute', { target: v });
-    toast('🔊 Отправлено боту');
+    localStorage.setItem(LSKM, JSON.stringify(mutes)); renderMutes();
+    openBot('remove_mute', { target: v }); toast('🔊 Отправлено боту');
 }
 function clearMutes() {
-    mutes = [];
-    localStorage.setItem(LSKM, JSON.stringify([]));
-    renderMutes();
-    openBot('clear_mutes', {});
-    toast('⚡ Отправлено боту');
+    mutes = []; localStorage.setItem(LSKM, JSON.stringify([])); renderMutes();
+    openBot('clear_mutes', {}); toast('⚡ Отправлено боту');
 }
 
-// === АНАЛИЗ ===
 function queryOsint(mode) {
     const t = document.getElementById('osint-val').value.trim();
     if (!t) return tg.showAlert('Введите @username или ID!');
     openBot(mode === 'probe' ? 'query_profile' : 'query_dossier', { target: t });
-    toast('🔍 Отправлено боту. Вернитесь назад');
+    toast('🔍 Отправлено боту. Вернитесь назад.');
 }
 
-// === ЗАМЕТКИ ===
 const LSKN = 'asteria_notes_' + uid;
 let notes = JSON.parse(localStorage.getItem(LSKN) || '[]');
 function renderNotes() {
     const c = document.getElementById('notes-list');
     document.getElementById('m-notes').innerText = notes.length;
-    if (!notes.length) { c.innerHTML = '<div class="hint">Заметок пока нет</div>'; return; }
+    if (!notes.length) { c.innerHTML = '<div class="hint">Заметок нет</div>'; return; }
     c.innerHTML = notes.slice(-10).map((n, i) => `
         <div class="note-item">
             <div class="nd">${n.date || ''} <span style="color:var(--danger);cursor:pointer;float:right" onclick="delNote(${notes.length-10+i})">✕</span></div>
             ${n.text}
-        </div>
-    `).join('');
+        </div>`).join('');
 }
 renderNotes();
-
 function addNote() {
     const t = document.getElementById('note-input').value.trim();
     if (!t) return tg.showAlert('Введите текст!');
     const d = new Date();
-    const datestr = `${d.getDate()}.${d.getMonth()+1} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
-    notes.push({ text: t, date: datestr });
+    const ds = `${d.getDate()}.${d.getMonth()+1} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+    notes.push({ text: t, date: ds });
     localStorage.setItem(LSKN, JSON.stringify(notes));
     renderNotes();
     document.getElementById('note-input').value = '';
-    openBot('add_note', { note: t });
-    toast('📝 Отправлено боту');
-}
-function listNotes() {
-    const txt = notes.length ? notes.map((n,i)=>`${i+1}. [${n.date}] ${n.text}`).join('\n') : 'Пусто';
-    tg.showAlert(txt);
+    openBot('add_note', { note: t }); toast('📝 Отправлено боту');
 }
 function delNote(idx) {
     if (idx < 0 || idx >= notes.length) return;
     notes.splice(idx, 1);
     localStorage.setItem(LSKN, JSON.stringify(notes));
     renderNotes();
-    openBot('del_note', { idx: idx + 1 });
-    toast('🗑 Отправлено боту');
+    openBot('del_note', { idx: idx + 1 }); toast('🗑 Отправлено боту');
 }
 
-// === ПАРТНЁРЫ ===
 const refLink = `https://t.me/asteria_suite_bot?start=ref_${uid}`;
 document.getElementById('ref-link').innerText = refLink;
 document.getElementById('ref-count').innerText = P.get('refs') || '0';
@@ -429,7 +395,6 @@ function shareRef() {
     catch(e) { window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank'); }
 }
 
-// === УТИЛИТЫ ===
 function hashIt(type) {
     const v = document.getElementById('hash-input').value;
     if (!v) return tg.showAlert('Введите текст!');
@@ -458,7 +423,6 @@ function genPass() {
     try { tg.HapticFeedback.notificationOccurred('success'); } catch(e) {}
 }
 
-// === АДМИН ===
 function grantSub() {
     const t = document.getElementById('grant-target').value.trim();
     const d = document.getElementById('grant-dur').value.trim() || '30д';
@@ -475,7 +439,6 @@ function quickGrant(dur) {
     toast(`👑 Отправлено: ${dur}`);
 }
 
-// === НАВИГАЦИЯ ===
 function nav(id, btn) {
     document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
