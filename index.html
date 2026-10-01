@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FGram Suite Dashboard v23.0</title>
+    <title>FGram Suite Dashboard v24.0</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -90,6 +90,23 @@
             color: var(--muted);
         }
         .timer-val { font-family: monospace; font-size: 13px; font-weight: 700; color: #fff; }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .metric-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 12px 8px;
+            text-align: center;
+            backdrop-filter: blur(15px);
+        }
+        .metric-val { font-size: 20px; font-weight: 800; color: var(--accent); }
+        .metric-lbl { font-size: 10px; color: var(--muted); margin-top: 3px; font-weight: 600; text-transform: uppercase; }
 
         .card {
             background: var(--card-bg);
@@ -192,6 +209,19 @@
         .btn-gold { background: linear-gradient(135deg, #facc15, #ca8a04); color: #050811; font-weight: 800; }
         .btn-danger { background: rgba(244, 63, 94, 0.15); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
 
+        .mute-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(244, 63, 94, 0.12);
+            border: 1px solid rgba(244, 63, 94, 0.25);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin: 4px;
+        }
+        .mute-chip-del { cursor: pointer; color: var(--danger); font-weight: bold; }
+
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
@@ -244,7 +274,6 @@
 
 <div id="toast">✅ Настройки успешно сохранены</div>
 
-<!-- ШАПКА ПРОФИЛЯ -->
 <div class="profile-card">
     <div class="profile-top">
         <div>
@@ -259,7 +288,21 @@
     </div>
 </div>
 
-<!-- ВКЛАДКА 1: МОДУЛИ ЗАЩИТЫ БЕЗ ДУБЛИРОВАНИЯ И С ТОЧНЫМИ ФУНКЦИЯМИ -->
+<div class="metric-grid">
+    <div class="metric-card">
+        <div class="metric-val" id="m-del">0</div>
+        <div class="metric-lbl">Удалений</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-val" id="m-edit">0</div>
+        <div class="metric-lbl">Правок</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-val" id="m-mutes">0</div>
+        <div class="metric-lbl">В муте</div>
+    </div>
+</div>
+
 <div id="tab-settings" class="tab-content active">
     <div class="card" id="card-protect">
         <div id="lock-protect" class="lock-overlay" style="display:none;">
@@ -269,11 +312,10 @@
             <button class="btn btn-accent" style="width:auto; padding:8px 18px;" onclick="switchNav('utils', document.querySelectorAll('.nav-btn')[3])">⭐ Продлить доступ</button>
         </div>
 
-        <div class="card-title">🛡 Комплекс мониторинга и безопасности</div>
+        <div class="card-title">🛡 Комплекс безопасности диалогов</div>
 
         <div class="category-header">📡 Мониторинг входящих диалогов</div>
 
-        <!-- 1. Anti-Delete -->
         <div class="toggle-row">
             <div class="toggle-info">
                 <h4>Anti-Delete <span class="tag-pill">УДАЛЕНИЯ</span></h4>
@@ -285,7 +327,6 @@
             </label>
         </div>
 
-        <!-- 2. Anti-Edit -->
         <div class="toggle-row">
             <div class="toggle-info">
                 <h4>Anti-Edit <span class="tag-pill">ПРАВКИ</span></h4>
@@ -297,7 +338,6 @@
             </label>
         </div>
 
-        <!-- 3. TTL Media -->
         <div class="toggle-row">
             <div class="toggle-info">
                 <h4>Спасение одноразовых фото <span class="tag-pill">TTL</span></h4>
@@ -311,7 +351,6 @@
 
         <div class="category-header">🚫 Блокировка и фильтрация спама</div>
 
-        <!-- 4. Anti-Flood Mute (15 минут) -->
         <div class="toggle-row">
             <div class="toggle-info">
                 <h4>Флуд-детект (3 повтора) <span class="tag-pill" style="color:#f43f5e; background:rgba(244,63,94,0.15);">15 МИНУТ МУТА</span></h4>
@@ -323,10 +362,9 @@
             </label>
         </div>
 
-        <!-- 5. Blacklist Auto-Mute -->
         <div class="toggle-row">
             <div class="toggle-info">
-                <h4>Мут по чёрному списку <span class="tag-pill">ЧЕРНЫЙ СПИСОК</span></h4>
+                <h4>Мут по чёрному списку <span class="tag-pill">ЧЁРНЫЙ СПИСОК</span></h4>
                 <p>Стирать любые сообщения от целей из вкладки «Мут»</p>
             </div>
             <label class="switch">
@@ -335,7 +373,6 @@
             </label>
         </div>
 
-        <!-- 6. DND Mode -->
         <div class="toggle-row">
             <div class="toggle-info">
                 <h4>Режим «Не беспокоить» <span class="tag-pill">DND</span></h4>
@@ -349,7 +386,6 @@
 
         <div class="category-header">🔒 Приватность вашего аккаунта</div>
 
-        <!-- 7. Anti-Dox -->
         <div class="toggle-row">
             <div class="toggle-info">
                 <h4>Анти-пробив <span class="tag-pill" style="color:var(--gold); background:rgba(234,179,8,0.15);">ANTI-DOX</span></h4>
@@ -361,7 +397,6 @@
             </label>
         </div>
 
-        <!-- 8. Anti-Dossier -->
         <div class="toggle-row">
             <div class="toggle-info">
                 <h4>Анти-досье <span class="tag-pill" style="color:var(--purple); background:rgba(168,85,247,0.15);">ANTI-DOSSIER</span></h4>
@@ -377,7 +412,6 @@
     </div>
 </div>
 
-<!-- ВКЛАДКА 2: МУТ-ЦЕНТР -->
 <div id="tab-mute" class="tab-content">
     <div class="card" id="card-mute">
         <div class="card-title">Чёрный список нарушителей</div>
@@ -394,7 +428,6 @@
     </div>
 </div>
 
-<!-- ВКЛАДКА 3: OSINT & ДОСЬЕ -->
 <div id="tab-osint" class="tab-content">
     <div class="card" id="card-osint">
         <div class="card-title">🔍 OSINT Разведка и Дата Регистрации</div>
@@ -409,7 +442,6 @@
     </div>
 </div>
 
-<!-- ВКЛАДКА 4: УТИЛИТЫ -->
 <div id="tab-utils" class="tab-content">
     <div class="card">
         <div class="card-title">📅 Расчёт точной даты создания по ID</div>
@@ -419,7 +451,6 @@
     </div>
 </div>
 
-<!-- ВКЛАДКА 5: СКРЫТАЯ ПАНЕЛЬ ВЛАДЕЛЬЦА -->
 <div id="tab-owner" class="tab-content">
     <div class="card">
         <div class="card-title">👑 Скрытые функции Владельца</div>
@@ -437,7 +468,6 @@
     </div>
 </div>
 
-<!-- НАВИГАЦИЯ -->
 <div class="bottom-nav">
     <button class="nav-btn active" onclick="switchNav('settings', this)">
         <span class="nav-icon">⚙️</span>
@@ -524,6 +554,30 @@
     document.getElementById('set-adox').checked = appSettings.anti_dox;
     document.getElementById('set-ados').checked = appSettings.anti_dossier;
 
+    let savedMutes = null;
+    try { savedMutes = JSON.parse(localStorage.getItem('fgram_mutes')); } catch(e){}
+    let rawMutes = urlParams.get('mutes') ? decodeURIComponent(urlParams.get('mutes')).split(',') : [];
+    let muteList = (savedMutes || rawMutes).filter(x => {
+        const c = x.trim().toLowerCase().replace('@', '');
+        return c.length > 0 && c !== '7783116627' && c !== 'filonis_music' && c !== 'marcell';
+    });
+
+    function renderMutes() {
+        const container = document.getElementById('mute-list-container');
+        document.getElementById('m-mutes').innerText = muteList.length;
+        if (!muteList.length) {
+            container.innerHTML = `<span style="font-size:12px; color:var(--muted);">Список пуст</span>`;
+            return;
+        }
+        container.innerHTML = muteList.map(t => `
+            <div class="mute-chip">
+                <span><code>${t}</code></span>
+                <span class="mute-chip-del" onclick="removeMuteDirect('${t}')">✕</span>
+            </div>
+        `).join('');
+    }
+    renderMutes();
+
     function showToast(msg) {
         const t = document.getElementById('toast');
         t.innerText = msg;
@@ -555,6 +609,29 @@
         showToast("✅ Настройки применены в FGram Platform!");
     }
 
+    function addMuteDirect() {
+        if (role === 'free') return tg.showAlert("⛔ Требуется подписка!");
+        const val = document.getElementById('mute-val').value.trim().replace('@', '').toLowerCase();
+        if (!val) return tg.showAlert("Укажите @username или ID!");
+        if (val === '7783116627' || val === 'filonis_music' || val === 'marcell') {
+            return tg.showAlert("🛡 Нельзя замутить Владельца комплекса!");
+        }
+        if (!muteList.includes(val)) {
+            muteList.push(val);
+            renderMutes();
+            localStorage.setItem('fgram_mutes', JSON.stringify(muteList));
+            showToast(`🔇 Объект ${val} замучен`);
+        }
+        document.getElementById('mute-val').value = "";
+    }
+
+    function removeMuteDirect(val) {
+        muteList = muteList.filter(x => x !== val);
+        renderMutes();
+        localStorage.setItem('fgram_mutes', JSON.stringify(muteList));
+        showToast(`🔊 Объект ${val} размучен`);
+    }
+
     function calculateRegDateFromId() {
         const uid = parseInt(document.getElementById('calc-uid').value.trim()) || 0;
         if (!uid) return;
@@ -570,6 +647,38 @@
     function clearAllMutesDirect() {
         tg.sendData(JSON.stringify({ action: "clear_mutes" }));
         showToast("⚡ Все муты очищены");
+    }
+
+    function renderOsintInApp(mode) {
+        const val = document.getElementById('osint-val').value.trim();
+        if (!val) return tg.showAlert("Введите @username или ID!");
+        const cleanT = val.replace('@', '').toLowerCase();
+        const content = document.getElementById('osint-content');
+        document.getElementById('osint-res-card').style.display = 'block';
+
+        if (cleanT === '7783116627' || cleanT === 'filonis_music' || cleanT === 'marcell') {
+            content.innerHTML = `
+                <div style="color:var(--gold); font-weight:800; margin-bottom:6px;">👑 FGRAM ABSOLUTE SHIELD</div>
+                <div>🛡 Профиль принадлежит <b>Создателю комплекса FGram</b>.<br>Сбор досье и пробив строго заблокированы протоколом безопасности.</div>
+            `;
+            return;
+        }
+
+        const isDig = /^\d+$/.test(cleanT);
+        const fakeId = isDig ? cleanT : Math.abs(hashCode(cleanT));
+        content.innerHTML = `
+            <div style="color:var(--accent); font-weight:800; margin-bottom:6px;">🌐 OSINT ПАСПОРТ ОБЪЕКТА</div>
+            <div>👤 <b>Субъект:</b> ${cleanT.toUpperCase()} (@${cleanT})<br>
+            🆔 <b>Telegram ID:</b> <code>${fakeId}</code><br>
+            🏢 <b>Дата-центр:</b> DC 2 (Амстердам, Европа)<br>
+            📞 <b>Номер телефона:</b> <i>🔒 Скрыт настройками приватности</i></div>
+        `;
+    }
+
+    function hashCode(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        return Math.abs(hash);
     }
 </script>
 </body>
