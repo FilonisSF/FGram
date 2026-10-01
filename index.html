@@ -13,7 +13,6 @@
             --accent: #38bdf8;
             --accent-glow: rgba(56, 189, 248, 0.35);
             --purple: #a855f7;
-            --purple-glow: rgba(168, 85, 247, 0.35);
             --danger: #f43f5e;
             --success: #10b981;
             --text: #f8fafc;
@@ -24,7 +23,7 @@
 
         body {
             margin: 0;
-            padding: 14px 14px 100px 14px;
+            padding: 14px 14px 105px 14px;
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg);
             background-image:
@@ -35,7 +34,6 @@
             overflow-x: hidden;
         }
 
-        /* ПОЛНОСТЬЮ СКРЫТЫЙ БЛОК УВЕДОМЛЕНИЙ */
         #toast {
             position: fixed;
             top: -120px;
@@ -59,7 +57,6 @@
             pointer-events: auto;
         }
 
-        /* КАРТОЧКА ПРОФИЛЯ */
         .profile-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -91,6 +88,7 @@
         }
         .badge-owner { background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.4); color: #facc15; }
         .badge-prem { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: var(--accent); }
+        .badge-free { background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.4); color: var(--danger); }
 
         .timer-box {
             background: rgba(5, 8, 17, 0.85);
@@ -105,7 +103,6 @@
         }
         .timer-val { font-family: monospace; font-size: 13px; font-weight: 700; color: #fff; }
 
-        /* МЕТРИКИ */
         .metric-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -123,7 +120,6 @@
         .metric-val { font-size: 20px; font-weight: 800; color: var(--accent); }
         .metric-lbl { font-size: 10px; color: var(--muted); margin-top: 3px; font-weight: 600; text-transform: uppercase; }
 
-        /* КАРТОЧКИ И ПЕРЕКЛЮЧАТЕЛИ */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -132,6 +128,7 @@
             margin-bottom: 12px;
             backdrop-filter: blur(20px);
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            position: relative;
         }
 
         .card-title {
@@ -202,6 +199,7 @@
         .btn:active { transform: scale(0.98); opacity: 0.9; }
         .btn-accent { background: linear-gradient(135deg, var(--accent), #0284c7); color: #050811; font-weight: 800; }
         .btn-purple { background: linear-gradient(135deg, var(--purple), #7e22ce); color: #fff; font-weight: 700; }
+        .btn-gold { background: linear-gradient(135deg, #facc15, #ca8a04); color: #050811; font-weight: 800; }
         .btn-danger { background: rgba(244, 63, 94, 0.15); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
 
         .mute-chip {
@@ -225,11 +223,10 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* НАВИГАЦИОННАЯ ПАНЕЛЬ */
         .bottom-nav {
             position: fixed;
             bottom: 0; left: 0; right: 0;
-            height: 68px;
+            height: 70px;
             background: rgba(11, 17, 29, 0.94);
             backdrop-filter: blur(25px);
             border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -250,7 +247,7 @@
             font-size: 11px;
             font-weight: 600;
             cursor: pointer;
-            width: 25%;
+            width: 20%;
             transition: color 0.15s;
         }
         .nav-btn.active { color: var(--accent); }
@@ -295,6 +292,21 @@
             font-weight: 700;
             margin-bottom: 6px;
         }
+
+        .lock-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(5, 8, 17, 0.85);
+            backdrop-filter: blur(4px);
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 20px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -305,14 +317,14 @@
 <div class="profile-card">
     <div class="profile-top">
         <div>
-            <h2 id="u-name">Marcell</h2>
+            <h2 id="u-name">Оператор</h2>
             <div style="font-size:12px; color:var(--muted); margin-top:2px;">ID: <span id="u-id">...</span></div>
         </div>
-        <div id="u-badge" class="status-badge badge-owner">👑 OWNER</div>
+        <div id="u-badge" class="status-badge badge-prem">⭐ PREMIUM</div>
     </div>
     <div class="timer-box">
         <span>Статус лицензии:</span>
-        <span class="timer-val" id="countdown">FOREVER (БЕЗЛИМИТ)</span>
+        <span class="timer-val" id="countdown">Активна</span>
     </div>
 </div>
 
@@ -334,7 +346,15 @@
 
 <!-- ВКЛАДКА 1: ЗАЩИТА -->
 <div id="tab-settings" class="tab-content active">
-    <div class="card">
+    <div class="card" id="card-protect">
+        <!-- БЛОКИРОВКА ДЛЯ FREE ПОЛЬЗОВАТЕЛЕЙ -->
+        <div id="lock-protect" class="lock-overlay" style="display:none;">
+            <div style="font-size:32px; margin-bottom:8px;">🔒</div>
+            <div style="font-size:14px; font-weight:800; color:#f43f5e; margin-bottom:4px;">Доступ заблокирован</div>
+            <div style="font-size:11px; color:var(--muted); margin-bottom:12px;">У вас нет активной подписки. Оформите лицензию для запуска модулей перехвата.</div>
+            <button class="btn btn-accent" style="width:auto; padding:8px 18px;" onclick="switchNav('utils', document.querySelectorAll('.nav-btn')[3])">⭐ Продлить доступ</button>
+        </div>
+
         <div class="card-title">Модули безопасности</div>
 
         <div class="toggle-row">
@@ -407,7 +427,13 @@
 
 <!-- ВКЛАДКА 2: МУТ-ЦЕНТР -->
 <div id="tab-mute" class="tab-content">
-    <div class="card">
+    <div class="card" id="card-mute">
+        <div id="lock-mute" class="lock-overlay" style="display:none;">
+            <div style="font-size:32px; margin-bottom:8px;">🔒</div>
+            <div style="font-size:14px; font-weight:800; color:#f43f5e; margin-bottom:4px;">Мут-лист заблокирован</div>
+            <div style="font-size:11px; color:var(--muted); margin-bottom:12px;">Требуется подписка для управления чёрным списком.</div>
+        </div>
+
         <div class="card-title">Чёрный список целей</div>
         <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Любые сообщения от данных ID или юзернеймов стираются на лету для обоих собеседников:</p>
         <input type="text" id="mute-val" class="input-box" placeholder="@username или числовой ID...">
@@ -422,9 +448,15 @@
     </div>
 </div>
 
-<!-- ВКЛАДКА 3: OSINT & ДОСЬЕ (БЕЗ ЗАКРЫТИЯ ПРИЛОЖЕНИЯ) -->
+<!-- ВКЛАДКА 3: OSINT & ДОСЬЕ -->
 <div id="tab-osint" class="tab-content">
-    <div class="card">
+    <div class="card" id="card-osint">
+        <div id="lock-osint" class="lock-overlay" style="display:none;">
+            <div style="font-size:32px; margin-bottom:8px;">🔒</div>
+            <div style="font-size:14px; font-weight:800; color:#f43f5e; margin-bottom:4px;">OSINT модуль закрыт</div>
+            <div style="font-size:11px; color:var(--muted); margin-bottom:12px;">Пробив аккаунтов, номеров и Discord доступен только для Premium.</div>
+        </div>
+
         <div class="card-title">🔍 OSINT Каталог и Разведка</div>
         <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Пробив аккаунта, сотового номера, тегов GetContact и Discord:</p>
         <input type="text" id="osint-val" class="input-box" placeholder="@username или Telegram ID...">
@@ -440,7 +472,7 @@
     </div>
 </div>
 
-<!-- ВКЛАДКА 4: УТИЛИТЫ И ГЕНЕРАТОР КЛЮЧЕЙ -->
+<!-- ВКЛАДКА 4: УТИЛИТЫ -->
 <div id="tab-utils" class="tab-content">
     <div class="card">
         <div class="card-title">🔐 Генератор ключей и паролей</div>
@@ -463,6 +495,26 @@
     </div>
 </div>
 
+<!-- ВКЛАДКА 5: ВЛАДЕЛЕЦ (ТОЛЬКО ДЛЯ OWNER) -->
+<div id="tab-owner" class="tab-content">
+    <div class="card">
+        <div class="card-title">👑 Панель управления лицензиями</div>
+        <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Выдача полного Premium-доступа любому пользователю:</p>
+        <input type="text" id="owner-target" class="input-box" placeholder="@username или числовой Telegram ID...">
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
+            <button class="btn btn-accent" onclick="setOwnerDur('1д')">⚡ 1 День</button>
+            <button class="btn btn-accent" onclick="setOwnerDur('7д')">🔥 7 Дней</button>
+            <button class="btn btn-purple" onclick="setOwnerDur('30д')">⭐ 30 Дней</button>
+            <button class="btn btn-purple" onclick="setOwnerDur('365д')">💎 365 Дней</button>
+        </div>
+        <button class="btn btn-gold" style="margin-top:6px;" onclick="setOwnerDur('навсегда')">👑 Бессрочно (FOREVER)</button>
+
+        <input type="text" id="owner-custom-dur" class="input-box" placeholder="Или укажите свой срок (напр. 60 дней)..." value="30д" style="margin-top:8px;">
+        <button class="btn btn-accent" style="margin-top:10px;" onclick="submitGrantSub()">🚀 Активировать лицензию</button>
+    </div>
+</div>
+
 <!-- НАВИГАЦИЯ -->
 <div class="bottom-nav">
     <button class="nav-btn active" onclick="switchNav('settings', this)">
@@ -481,6 +533,10 @@
         <span class="nav-icon">🛠</span>
         <span>Утилиты</span>
     </button>
+    <button class="nav-btn" id="nav-owner-btn" style="display:none;" onclick="switchNav('owner', this)">
+        <span class="nav-icon">👑</span>
+        <span>Овнер</span>
+    </button>
 </div>
 
 <script>
@@ -490,16 +546,31 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const uid = urlParams.get('uid') || tg.initDataUnsafe?.user?.id || 7783116627;
-    const role = urlParams.get('role') || 'owner';
-    const user = tg.initDataUnsafe?.user || { id: uid, first_name: "Marcell" };
+    const role = urlParams.get('role') || 'free';
+    const user = tg.initDataUnsafe?.user || { id: uid, first_name: "Оператор" };
 
-    document.getElementById('u-name').innerText = user.first_name || "Marcell";
+    document.getElementById('u-name').innerText = user.first_name || "Оператор";
     document.getElementById('u-id').innerText = user.id;
 
+    // Определение прав и ролей
     if (role === 'owner' || user.id == 7783116627) {
         document.getElementById('u-badge').className = "status-badge badge-owner";
         document.getElementById('u-badge').innerText = "👑 OWNER";
         document.getElementById('countdown').innerText = "FOREVER (БЕЗЛИМИТ)";
+        document.getElementById('nav-owner-btn').style.display = "flex";
+    } else if (role === 'premium') {
+        document.getElementById('u-badge').className = "status-badge badge-prem";
+        document.getElementById('u-badge').innerText = "⭐ PREMIUM";
+        document.getElementById('countdown').innerText = "АКТИВНА";
+    } else {
+        document.getElementById('u-badge').className = "status-badge badge-free";
+        document.getElementById('u-badge').innerText = "⛔ ДОСТУП ИСТЁК";
+        document.getElementById('countdown').innerText = "ИСТЁК";
+
+        // Блокировка интерфейса для бесплатных пользователей
+        document.getElementById('lock-protect').style.display = "flex";
+        document.getElementById('lock-mute').style.display = "flex";
+        document.getElementById('lock-osint').style.display = "flex";
     }
 
     // Сохранение и загрузка настроек
@@ -522,7 +593,7 @@
     document.getElementById('set-asm').checked = appSettings.anti_spam_mute;
     document.getElementById('set-dnd').checked = appSettings.dnd;
 
-    // Сохранение и загрузка мут-листа с фильтрацией владельца
+    // Мут-лист
     let savedMutes = null;
     try { savedMutes = JSON.parse(localStorage.getItem('fgram_mutes')); } catch(e){}
 
@@ -565,6 +636,9 @@
     }
 
     function saveToggle(key, val) {
+        if (role === 'free') {
+            return tg.showAlert("⛔ Функция недоступна без подписки!");
+        }
         appSettings[key] = val;
         localStorage.setItem('fgram_settings', JSON.stringify(appSettings));
         if (tg.CloudStorage) tg.CloudStorage.setItem('fgram_settings', JSON.stringify(appSettings));
@@ -572,6 +646,7 @@
     }
 
     function addMuteDirect() {
+        if (role === 'free') return tg.showAlert("⛔ Требуется подписка!");
         const val = document.getElementById('mute-val').value.trim().replace('@', '').toLowerCase();
         if (!val) return tg.showAlert("Укажите @username или ID!");
         if (val === '7783116627' || val === 'filonis_music') {
@@ -593,9 +668,12 @@
         showToast(`🔊 Объект ${val} размучен`);
     }
 
-    // ПРОБИВ И ДОСЬЕ ПРЯМО В ПРИЛОЖЕНИИ (БЕЗ ЗАКРЫТИЯ!)
+    // OSINT В ПРИЛОЖЕНИИ
     let lastRenderedReport = "";
     function renderOsintInApp(mode) {
+        if (role === 'free') {
+            return tg.showAlert("⛔ OSINT-пробив доступен только для пользователей с активной подпиской!");
+        }
         const target = document.getElementById('osint-val').value.trim();
         if (!target) return tg.showAlert("Введите @username или ID!");
 
@@ -605,7 +683,6 @@
         resCard.style.display = 'block';
         content.innerHTML = `⏳ <i>Синхронизация с дата-центрами MTProto, сотовыми базами и Discord...</i>`;
 
-        // Генерация полноценного отчёта прямо на экране
         setTimeout(() => {
             const isDig = /^\d+$/.test(cleanT);
             const fakeId = isDig ? cleanT : Math.abs(hashCode(cleanT));
@@ -681,7 +758,21 @@
         showToast("📋 Досье скопировано в буфер");
     }
 
-    // ГЕНЕРАТОР ПАРОЛЕЙ И SEED-ФРАЗ
+    // ВЫДАЧА ПОДПИСКИ ВО ВКЛАДКЕ ОВНЕРА
+    function setOwnerDur(val) {
+        document.getElementById('owner-custom-dur').value = val;
+    }
+
+    function submitGrantSub() {
+        const target = document.getElementById('owner-target').value.trim();
+        const dur = document.getElementById('owner-custom-dur').value.trim() || '30д';
+        if (!target) return tg.showAlert("Укажите @username или числовой ID!");
+
+        showToast(`👑 Лицензия для ${target} активирована!`);
+        document.getElementById('owner-target').value = "";
+    }
+
+    // ГЕНЕРАТОР КЛЮЧЕЙ
     let currentGenerated = "";
     function generateCryptoPassword() {
         const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*()_-+=";
