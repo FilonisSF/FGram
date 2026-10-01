@@ -8,9 +8,10 @@
   <style>
     :root {
       --bg: #070b14;
-      --card-bg: rgba(17, 24, 39, 0.85);
-      --card-border: rgba(56, 189, 248, 0.2);
+      --card-bg: rgba(15, 23, 42, 0.75);
+      --card-border: rgba(56, 189, 248, 0.18);
       --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.3);
       --purple: #a855f7;
       --danger: #f43f5e;
       --gold: #facc15;
@@ -26,8 +27,8 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background-color: var(--bg);
       background-image: 
-        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.12) 0px, transparent 50%);
+        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.16) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.14) 0px, transparent 50%);
       color: var(--text);
       min-height: 100vh;
     }
@@ -35,10 +36,10 @@
     .profile-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 18px;
+      border-radius: 20px;
       padding: 16px;
-      backdrop-filter: blur(20px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      backdrop-filter: blur(25px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.45);
       margin-bottom: 14px;
     }
 
@@ -49,7 +50,7 @@
       margin-bottom: 8px;
     }
 
-    .profile-top h2 { margin: 0; font-size: 19px; font-weight: 800; }
+    .profile-top h2 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -0.02em; }
     
     .status-badge {
       display: inline-flex;
@@ -65,9 +66,9 @@
     .badge-expired { background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.4); color: var(--danger); }
 
     .timer-box {
-      background: rgba(7, 11, 20, 0.8);
+      background: rgba(7, 11, 20, 0.7);
       border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 10px;
+      border-radius: 12px;
       padding: 10px 14px;
       font-size: 12px;
       color: var(--muted);
@@ -88,19 +89,23 @@
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 14px;
+      border-radius: 16px;
+      padding: 15px;
       margin-bottom: 12px;
-      backdrop-filter: blur(14px);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
     }
 
     .card-title {
-      font-size: 13px;
-      font-weight: 700;
+      font-size: 12px;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       color: var(--accent);
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .toggle-row {
@@ -108,7 +113,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 11px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
     .toggle-row:last-child { border-bottom: none; }
     .toggle-info b { display: block; font-size: 13px; margin-bottom: 2px; }
@@ -142,7 +147,7 @@
       transition: .25s ease;
       border-radius: 50%;
     }
-    input:checked + .slider { background-color: var(--accent); }
+    input:checked + .slider { background-color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
     input:checked + .slider:before { transform: translateX(20px); }
 
     .mute-list {
@@ -158,19 +163,19 @@
       align-items: center;
       background: rgba(7, 11, 20, 0.8);
       border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 10px;
-      padding: 10px 12px;
+      border-radius: 12px;
+      padding: 10px 14px;
     }
 
     .mute-info b { display: block; font-size: 13px; }
     .mute-info span { font-size: 11px; color: var(--danger); }
 
     .btn-sm-danger {
-      background: rgba(244, 63, 94, 0.2);
-      border: 1px solid rgba(244, 63, 94, 0.4);
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid rgba(244, 63, 94, 0.35);
       color: var(--danger);
-      padding: 6px 12px;
-      border-radius: 8px;
+      padding: 6px 14px;
+      border-radius: 10px;
       font-size: 11px;
       font-weight: 700;
       cursor: pointer;
@@ -181,7 +186,7 @@
       background: rgba(7, 11, 20, 0.9);
       border: 1px solid rgba(255, 255, 255, 0.12);
       padding: 12px;
-      border-radius: 10px;
+      border-radius: 12px;
       color: #fff;
       font-size: 14px;
       outline: none;
@@ -191,16 +196,16 @@
 
     .btn {
       width: 100%;
-      padding: 12px;
+      padding: 13px;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       font-size: 13px;
       font-weight: 700;
       cursor: pointer;
       margin-top: 10px;
-      transition: transform 0.1s;
+      transition: transform 0.1s, opacity 0.2s;
     }
-    .btn:active { transform: scale(0.98); }
+    .btn:active { transform: scale(0.98); opacity: 0.9; }
     .btn-accent { background: var(--accent); color: #070b14; }
     .btn-purple { background: var(--purple); color: #fff; }
     .btn-save { background: var(--accent); color: #070b14; display: none; }
@@ -208,9 +213,9 @@
     .bottom-nav {
       position: fixed;
       bottom: 0; left: 0; right: 0;
-      height: 64px;
-      background: rgba(11, 17, 29, 0.95);
-      backdrop-filter: blur(20px);
+      height: 66px;
+      background: rgba(11, 17, 29, 0.96);
+      backdrop-filter: blur(25px);
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
       justify-content: space-around;
@@ -246,7 +251,7 @@
       <div id="u-badge" class="status-badge badge-prem">⭐ PREMIUM</div>
     </div>
     <div class="timer-box">
-      <span>Статус:</span>
+      <span>Лицензия:</span>
       <span class="timer-val" id="countdown">Загрузка...</span>
     </div>
   </div>
@@ -254,7 +259,7 @@
   <!-- ВКЛАДКА 1: МОДУЛИ -->
   <div id="tab-modules" class="tab-content active">
     <div class="card">
-      <div class="card-title">Модули защиты и перехвата</div>
+      <div class="card-title">⚙️ Модули перехвата и защиты</div>
       
       <div class="toggle-row">
         <div class="toggle-info">
@@ -281,7 +286,7 @@
       <div class="toggle-row">
         <div class="toggle-info">
           <b>Таймер-медиа (TTL Downloader)</b>
-          <span>Скачивание одноразовых фото/видео</span>
+          <span>Скачивание одноразовых фото/видео до сгорания</span>
         </div>
         <label class="switch">
           <input type="checkbox" id="sw-save-ttl" onchange="recordToggle('save_ttl_media', this.checked)">
@@ -322,7 +327,7 @@
         </label>
       </div>
 
-      <button id="save-modules-btn" class="btn btn-save" onclick="applySettingsBatch()">💾 Применить изменённые настройки</button>
+      <button id="save-modules-btn" class="btn btn-save" onclick="applySettingsBatch()">💾 Применить настройки</button>
     </div>
   </div>
 
@@ -341,7 +346,25 @@
     </div>
   </div>
 
-  <!-- ВКЛАДКА 3: ВЫДАЧА (ТОЛЬКО ДЛЯ ВЛАДЕЛЬЦА) -->
+  <!-- ВКЛАДКА 3: УТИЛИТЫ -->
+  <div id="tab-tools" class="tab-content">
+    <div class="card">
+      <div class="card-title">🔐 Генератор крипто-паролей</div>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Генерация стойких паролей в 1 клик:</p>
+      <input type="text" id="pass-out" class="input-box" readonly placeholder="Нажмите сгенерировать...">
+      <button class="btn btn-purple" onclick="genPassword()">🎲 Сгенерировать пароль</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🔍 OSINT Калькулятор возраста аккаунта</div>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Введите числовой ID для оценки года регистрации:</p>
+      <input type="number" id="id-calc-in" class="input-box" placeholder="Например: 7783116627">
+      <button class="btn btn-accent" onclick="calcIdAge()">⚡ Рассчитать возраст</button>
+      <div id="id-calc-res" style="display:none; margin-top:10px; font-size:12px; padding:10px; background:rgba(7,11,20,0.8); border-radius:10px;"></div>
+    </div>
+  </div>
+
+  <!-- ВКЛАДКА 4: ВЫДАЧА (ТОЛЬКО ВЛАДЕЛЕЦ) -->
   <div id="tab-admin" class="tab-content">
     <div class="card">
       <div class="card-title">👑 Выдача подписки пользователю</div>
@@ -355,12 +378,12 @@
     </div>
   </div>
 
-  <!-- ВКЛАДКА 4: РЕФЕРАЛЫ -->
+  <!-- ВКЛАДКА 5: РЕФЕРАЛЫ -->
   <div id="tab-refs" class="tab-content">
     <div class="card">
       <div class="card-title">👥 Партнёрская сеть</div>
       <p style="font-size:12px; color:var(--muted); margin:0 0 12px 0;">
-        Нажмите кнопку ниже, чтобы открыть диалог отправки сообщения сразу нескольким друзьям.
+        Нажмите кнопку ниже, чтобы открыть окно отправки приглашения сразу нескольким контактам:
       </p>
       <button class="btn btn-accent" onclick="shareRef()">📤 Выбрать получателей...</button>
       <button class="btn btn-purple" style="margin-top:8px;" onclick="copyRef()">📋 Скопировать ссылку</button>
@@ -376,6 +399,10 @@
     <button class="nav-btn" id="btn-tab-mute" onclick="switchNav('mute', this)">
       <span class="nav-icon">🔇</span>
       <span>Мут</span>
+    </button>
+    <button class="nav-btn" id="btn-tab-tools" onclick="switchNav('tools', this)">
+      <span class="nav-icon">🛠</span>
+      <span>Утилиты</span>
     </button>
     <button class="nav-btn" id="btn-tab-admin" style="display:none;" onclick="switchNav('admin', this)">
       <span class="nav-icon">👑</span>
@@ -406,7 +433,7 @@
     document.getElementById('u-name').innerText = currentUserName;
     document.getElementById('u-id').innerText = currentUserId;
 
-    // СТРОГОЕ РАЗДЕЛЕНИЕ РОЛЕЙ
+    // РОЛИ
     const badgeEl = document.getElementById('u-badge');
     const countdownEl = document.getElementById('countdown');
     const adminNavBtn = document.getElementById('btn-tab-admin');
@@ -416,12 +443,12 @@
       badgeEl.innerText = "👑 OWNER";
       countdownEl.innerText = "БЕССРОЧНЫЙ ДОСТУП";
       adminNavBtn.style.display = "flex";
-      document.querySelectorAll('.nav-btn').forEach(b => b.style.width = "25%");
+      document.querySelectorAll('.nav-btn').forEach(b => b.style.width = "20%");
     } else if (userRole === "premium") {
       badgeEl.className = "status-badge badge-prem";
       badgeEl.innerText = "⭐ PREMIUM";
       adminNavBtn.style.display = "none";
-      document.querySelectorAll('.nav-btn').forEach(b => b.style.width = "33.3%");
+      document.querySelectorAll('.nav-btn').forEach(b => b.style.width = "25%");
 
       if (expTimestamp > 0) {
         const rem = Math.max(0, Math.floor(expTimestamp - (Date.now() / 1000)));
@@ -436,7 +463,7 @@
       badgeEl.innerText = "⛔ ИСТЁК ДОСТУП";
       countdownEl.innerText = "ТРЕБУЕТСЯ ПРОДЛЕНИЕ";
       adminNavBtn.style.display = "none";
-      document.querySelectorAll('.nav-btn').forEach(b => b.style.width = "33.3%");
+      document.querySelectorAll('.nav-btn').forEach(b => b.style.width = "25%");
     }
 
     // ИНИЦИАЛИЗАЦИЯ НАСТРОЕК
@@ -524,7 +551,6 @@
 
     function unmuteItem(targetId) {
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-      // Мгновенное удаление элемента из DOM и массива
       mutedList = mutedList.filter(id => id !== targetId);
       renderMuted();
       sendActionToBot({ action: "unmute_user", target: targetId });
@@ -540,7 +566,6 @@
       document.getElementById('grant-dur').value = "";
     }
 
-    // МУЛЬТИ-ОТПРАВКА КАК НА 2 СКРИНШОТЕ
     function shareRef() {
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
       const prepId = urlParams.get('prep');
@@ -571,6 +596,34 @@
       const link = `https://t.me/${botUser}?start=ref_${currentUserId}`;
       navigator.clipboard.writeText(link);
       tg.showAlert("Ссылка скопирована:\n" + link);
+    }
+
+    // НОВЫЕ УТИЛИТЫ
+    function genPassword() {
+      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+      let pass = "";
+      for (let i = 0; i < 16; i++) {
+        pass += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      document.getElementById('pass-out').value = pass;
+      navigator.clipboard.writeText(pass);
+      tg.showAlert("Пароль скопирован в буфер!");
+    }
+
+    function calcIdAge() {
+      const val = parseInt(document.getElementById('id-calc-in').value.trim());
+      if (!val) return tg.showAlert("Введите числовой ID!");
+      let est = "~2025–2026 гг.";
+      if (val < 150000000) est = "~2013–2015 гг. (Олдфаг)";
+      else if (val < 400000000) est = "~2016–2017 гг.";
+      else if (val < 900000000) est = "~2018–2019 гг.";
+      else if (val < 1600000000) est = "~2020–2021 гг.";
+      else if (val < 5500000000) est = "~2022–2023 гг.";
+      else if (val < 7200000000) est = "~2024–2025 гг.";
+
+      const resBox = document.getElementById('id-calc-res');
+      resBox.style.display = "block";
+      resBox.innerHTML = `📅 <b>Примерная регистрация:</b> <code>${est}</code>`;
     }
   </script>
 </body>
