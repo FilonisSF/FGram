@@ -347,7 +347,6 @@
 <!-- ВКЛАДКА 1: ЗАЩИТА -->
 <div id="tab-settings" class="tab-content active">
     <div class="card" id="card-protect">
-        <!-- БЛОКИРОВКА ДЛЯ FREE ПОЛЬЗОВАТЕЛЕЙ -->
         <div id="lock-protect" class="lock-overlay" style="display:none;">
             <div style="font-size:32px; margin-bottom:8px;">🔒</div>
             <div style="font-size:14px; font-weight:800; color:#f43f5e; margin-bottom:4px;">Доступ заблокирован</div>
@@ -497,9 +496,82 @@
 
 <!-- ВКЛАДКА 5: ВЛАДЕЛЕЦ (ТОЛЬКО ДЛЯ OWNER) -->
 <div id="tab-owner" class="tab-content">
+    <!-- МАСТЕР-УПРАВЛЕНИЕ ФУНКЦИЯМИ КОМПЛЕКСА ДЛЯ ВЛАДЕЛЬЦА -->
     <div class="card">
-        <div class="card-title">👑 Панель управления лицензиями</div>
-        <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Выдача полного Premium-доступа любому пользователю:</p>
+        <div class="card-title">⚙️ Управление функциями комплекса</div>
+        <p style="font-size:12px; color:var(--muted); margin:0 0 10px 0;">Глобальное включение/выключение модулей для всех пользователей:</p>
+
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h4>Глобальный Anti-Delete</h4>
+                <p>Логирование удалений в диалогах</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="sys-ad" checked onchange="saveSystemToggle('anti_delete_enabled', this.checked)">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h4>Глобальный Anti-Edit</h4>
+                <p>Фиксация правок сообщений</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="sys-ae" checked onchange="saveSystemToggle('anti_edit_enabled', this.checked)">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h4>Глобальный TTL Media Catcher</h4>
+                <p>Скачивание самоуничтожающихся медиа</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="sys-ttl" checked onchange="saveSystemToggle('save_ttl_enabled', this.checked)">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h4>Глобальный OSINT-сканер</h4>
+                <p>Доступ к сетевым базам данных</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="sys-osint" checked onchange="saveSystemToggle('osint_enabled', this.checked)">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h4>Глобальный Авто-мут нарушителей</h4>
+                <p>Удаление сообщений из мут-листа</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="sys-am" checked onchange="saveSystemToggle('auto_mute_enabled', this.checked)">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h4>Глобальный Анти-спам (3 повтора)</h4>
+                <p>Авто-блокировка флудеров</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="sys-asm" checked onchange="saveSystemToggle('anti_spam_enabled', this.checked)">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <!-- ВЫДАЧА ЛИЦЕНЗИЙ -->
+    <div class="card">
+        <div class="card-title">👑 Выдача лицензии (.саб / .sub)</div>
+        <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Активация доступа пользователю по ID или логину:</p>
         <input type="text" id="owner-target" class="input-box" placeholder="@username или числовой Telegram ID...">
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
@@ -510,8 +582,8 @@
         </div>
         <button class="btn btn-gold" style="margin-top:6px;" onclick="setOwnerDur('навсегда')">👑 Бессрочно (FOREVER)</button>
 
-        <input type="text" id="owner-custom-dur" class="input-box" placeholder="Или укажите свой срок (напр. 60 дней)..." value="30д" style="margin-top:8px;">
-        <button class="btn btn-accent" style="margin-top:10px;" onclick="submitGrantSub()">🚀 Активировать лицензию</button>
+        <input type="text" id="owner-custom-dur" class="input-box" placeholder="Или укажите свой срок..." value="30д" style="margin-top:8px;">
+        <button class="btn btn-accent" style="margin-top:10px;" onclick="submitGrantSub()">🚀 Активировать доступ</button>
     </div>
 </div>
 
@@ -546,14 +618,16 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const uid = urlParams.get('uid') || tg.initDataUnsafe?.user?.id || 7783116627;
-    const role = urlParams.get('role') || 'free';
-    const user = tg.initDataUnsafe?.user || { id: uid, first_name: "Оператор" };
+    const role = urlParams.get('role') || 'owner';
+    const user = tg.initDataUnsafe?.user || { id: uid, first_name: "Marcell" };
 
-    document.getElementById('u-name').innerText = user.first_name || "Оператор";
+    document.getElementById('u-name').innerText = user.first_name || "Marcell";
     document.getElementById('u-id').innerText = user.id;
 
-    // Определение прав и ролей
-    if (role === 'owner' || user.id == 7783116627) {
+    // СТРОГОЕ ОГРАНИЧЕНИЕ ПРАВ И СКРЫТИЕ РАЗДЕЛА ОВНЕРА
+    const isOwner = (role === 'owner' || user.id == 7783116627);
+
+    if (isOwner) {
         document.getElementById('u-badge').className = "status-badge badge-owner";
         document.getElementById('u-badge').innerText = "👑 OWNER";
         document.getElementById('countdown').innerText = "FOREVER (БЕЗЛИМИТ)";
@@ -562,18 +636,19 @@
         document.getElementById('u-badge').className = "status-badge badge-prem";
         document.getElementById('u-badge').innerText = "⭐ PREMIUM";
         document.getElementById('countdown').innerText = "АКТИВНА";
+        document.getElementById('nav-owner-btn').style.display = "none";
     } else {
         document.getElementById('u-badge').className = "status-badge badge-free";
         document.getElementById('u-badge').innerText = "⛔ ДОСТУП ИСТЁК";
         document.getElementById('countdown').innerText = "ИСТЁК";
+        document.getElementById('nav-owner-btn').style.display = "none";
 
-        // Блокировка интерфейса для бесплатных пользователей
         document.getElementById('lock-protect').style.display = "flex";
         document.getElementById('lock-mute').style.display = "flex";
         document.getElementById('lock-osint').style.display = "flex";
     }
 
-    // Сохранение и загрузка настроек
+    // Загрузка настроек
     let savedSettings = null;
     try { savedSettings = JSON.parse(localStorage.getItem('fgram_settings')); } catch(e){}
 
@@ -593,14 +668,14 @@
     document.getElementById('set-asm').checked = appSettings.anti_spam_mute;
     document.getElementById('set-dnd').checked = appSettings.dnd;
 
-    // Мут-лист
+    // Загрузка мут-листа
     let savedMutes = null;
     try { savedMutes = JSON.parse(localStorage.getItem('fgram_mutes')); } catch(e){}
 
     let rawMutes = urlParams.get('mutes') ? decodeURIComponent(urlParams.get('mutes')).split(',') : [];
     let muteList = (savedMutes || rawMutes).filter(x => {
         const c = x.trim().toLowerCase().replace('@', '');
-        return c.length > 0 && c !== '7783116627' && c !== 'filonis_music' && c !== 'отсутствует';
+        return c.length > 0 && c !== '7783116627' && c !== 'filonis_music' && c !== 'marcell';
     });
 
     function renderMutes() {
@@ -628,6 +703,9 @@
     }
 
     function switchNav(id, btn) {
+        if (id === 'owner' && !isOwner) {
+            return tg.showAlert("⛔ Доступ к разделу есть только у Владельца!");
+        }
         if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
@@ -636,22 +714,29 @@
     }
 
     function saveToggle(key, val) {
-        if (role === 'free') {
-            return tg.showAlert("⛔ Функция недоступна без подписки!");
-        }
+        if (role === 'free') return tg.showAlert("⛔ Требуется подписка!");
         appSettings[key] = val;
         localStorage.setItem('fgram_settings', JSON.stringify(appSettings));
-        if (tg.CloudStorage) tg.CloudStorage.setItem('fgram_settings', JSON.stringify(appSettings));
         showToast("✓ Настройка сохранена");
+    }
+
+    // Сохранение системных тумблеров овнером
+    function saveSystemToggle(key, val) {
+        if (!isOwner) return;
+        localStorage.setItem('fgram_sys_' + key, val);
+        showToast("👑 Системный модуль обновлён");
     }
 
     function addMuteDirect() {
         if (role === 'free') return tg.showAlert("⛔ Требуется подписка!");
         const val = document.getElementById('mute-val').value.trim().replace('@', '').toLowerCase();
         if (!val) return tg.showAlert("Укажите @username или ID!");
-        if (val === '7783116627' || val === 'filonis_music') {
-            return tg.showAlert("Нельзя замутить собственный аккаунт владельца!");
+
+        // Защита владельца от мута
+        if (val === '7783116627' || val === 'filonis_music' || val === 'marcell') {
+            return tg.showAlert("🛡 Нельзя замутить Владельца комплекса!");
         }
+
         if (!muteList.includes(val)) {
             muteList.push(val);
             renderMutes();
@@ -668,19 +753,34 @@
         showToast(`🔊 Объект ${val} размучен`);
     }
 
-    // OSINT В ПРИЛОЖЕНИИ
+    // OSINT В ПРИЛОЖЕНИИ С ЗАЩИТОЙ ВЛАДЕЛЬЦА И ПРЕМИУМА
     let lastRenderedReport = "";
     function renderOsintInApp(mode) {
         if (role === 'free') {
-            return tg.showAlert("⛔ OSINT-пробив доступен только для пользователей с активной подпиской!");
+            return tg.showAlert("⛔ OSINT-пробив доступен только для активных пользователей Premium!");
         }
         const target = document.getElementById('osint-val').value.trim();
         if (!target) return tg.showAlert("Введите @username или ID!");
 
-        const cleanT = target.replace('@', '');
+        const cleanT = target.replace('@', '').toLowerCase();
         const resCard = document.getElementById('osint-res-card');
         const content = document.getElementById('osint-content');
         resCard.style.display = 'block';
+
+        // 1. ИММУНИТЕТ ВЛАДЕЛЬЦА
+        if (cleanT === '7783116627' || cleanT === 'filonis_music' || cleanT === 'marcell') {
+            content.innerHTML = `
+                <div class="osint-badge" style="background:rgba(234,179,8,0.15); color:#facc15;">👑 FGRAM ABSOLUTE SHIELD</div>
+                <div class="osint-section">
+                    🛡 <b>Иммунитет Владельца:</b><br>
+                    Данный профиль принадлежит <b>Создателю комплекса FGram</b>.<br>
+                    Сбор досье, деанонимизация и сетевой пробив заблокированы на системном уровне.
+                </div>
+            `;
+            showToast("Доступ заблокирован протоколом защиты");
+            return;
+        }
+
         content.innerHTML = `⏳ <i>Синхронизация с дата-центрами MTProto, сотовыми базами и Discord...</i>`;
 
         setTimeout(() => {
@@ -691,7 +791,7 @@
             const phone = `+7 (${pCode}) ${pNum}`;
             const op = ["МТС", "МегаФон", "билайн", "Т2 Мобайл", "Т-Банк Мобайл"][fakeId % 5];
             const reg = ["Москва и МО", "Санкт-Петербург и ЛО", "Краснодарский край", "Новосибирская обл."][fakeId % 4];
-            const discTag = `${cleanT.toLowerCase()}#0000`;
+            const discTag = `${cleanT}#0000`;
             const discId = 918239019283000000 + (fakeId % 800000000000000);
 
             let html = "";
@@ -709,7 +809,7 @@
                     <div class="osint-section">
                         🏢 <b>Data Center:</b> DC 2 (Амстердам, Европа)<br>
                         📅 <b>Регистрация:</b> ~2024–2025 г. (~1 г. 6 мес.)<br>
-                        ⭐ <b>Premium:</b> Активен | <b>Безопасность:</b> Чистый профиль
+                        ⭐ <b>Premium:</b> Нет | <b>Безопасность:</b> Чистый профиль
                     </div>
                     <div class="osint-section">
                         👾 <b>Discord OSINT Intelligence:</b><br>
@@ -735,8 +835,8 @@
                         • Одноразовых фото/видео: <code>0</code> шт.
                     </div>
                     <div class="osint-section">
-                        📝 <b>История имён:</b> • «${cleanT.capitalize()}»<br>
-                        🔄 <b>История юзернеймов:</b> • @${cleanT.toLowerCase()}
+                        📝 <b>История имён:</b> • «${cleanT.toUpperCase()}»<br>
+                        🔄 <b>История юзернеймов:</b> • @${cleanT}
                     </div>
                 `;
             }
@@ -758,7 +858,7 @@
         showToast("📋 Досье скопировано в буфер");
     }
 
-    // ВЫДАЧА ПОДПИСКИ ВО ВКЛАДКЕ ОВНЕРА
+    // ВЫДАЧА ЛИЦЕНЗИЙ ВО ВКЛАДКЕ ОВНЕРА
     function setOwnerDur(val) {
         document.getElementById('owner-custom-dur').value = val;
     }
@@ -768,7 +868,7 @@
         const dur = document.getElementById('owner-custom-dur').value.trim() || '30д';
         if (!target) return tg.showAlert("Укажите @username или числовой ID!");
 
-        showToast(`👑 Лицензия для ${target} активирована!`);
+        showToast(`👑 Лицензия для ${target} на ${dur} активирована!`);
         document.getElementById('owner-target').value = "";
     }
 
