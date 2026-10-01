@@ -100,6 +100,7 @@ body {
     font-size: 22px;
     font-weight: 800;
     color: var(--accent);
+    overflow: hidden;
 }
 
 .profile-meta { flex: 1; min-width: 0; }
@@ -349,7 +350,7 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div class="feature-row">
             <div class="feature-info">
                 <div class="feature-header"><h4>Anti-Delete</h4></div>
-                <p class="feature-desc">Перехватывает и пересылает вам удалённые собеседником сообщения и медиафайлы.</p>
+                <p class="feature-desc">Перехватывает и сохраняет текст, голосовые и видео-сообщения, удалённые собеседником.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-ad" onchange="autoToggle('anti_delete', this.checked)"><span class="slider"></span></label>
         </div>
@@ -365,7 +366,7 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div class="feature-row">
             <div class="feature-info">
                 <div class="feature-header"><h4>Одноразовые медиа (TTL)</h4></div>
-                <p class="feature-desc">Сохраняет фото и видео с таймером самоуничтожения.</p>
+                <p class="feature-desc">Спасает самоуничтожающиеся фото и видеофайлы до истечения таймера просмотра.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-ttl" onchange="autoToggle('save_ttl_media', this.checked)"><span class="slider"></span></label>
         </div>
@@ -373,7 +374,7 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div class="feature-row">
             <div class="feature-info">
                 <div class="feature-header"><h4>Не беспокоить (DND)</h4></div>
-                <p class="feature-desc">Удаляет входящие сообщения и отправляет автоответ о вашей занятости.</p>
+                <p class="feature-desc">Удаляет входящие сообщения собеседника и отправляет автоответ о вашей занятости.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-dnd" onchange="autoToggle('dnd', this.checked)"><span class="slider"></span></label>
         </div>
@@ -381,7 +382,7 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div class="feature-row">
             <div class="feature-info">
                 <div class="feature-header"><h4>Анти-флуд фильтр</h4></div>
-                <p class="feature-desc">Блокирует собеседника на 15 минут при отправке 3 одинаковых сообщений подряд.</p>
+                <p class="feature-desc">Блокирует собеседника на 15 минут за более чем 3 сообщения за 4 сек или 3 одинаковых подряд.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-asm" onchange="autoToggle('anti_spam_mute', this.checked)"><span class="slider"></span></label>
         </div>
@@ -389,7 +390,7 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div class="feature-row">
             <div class="feature-info">
                 <div class="feature-header"><h4>Приватность профиля</h4></div>
-                <p class="feature-desc">Защищает ваш аккаунт от сбора информации через досье другими пользователями.</p>
+                <p class="feature-desc">Защищает ваш аккаунт от сбора информации через досье другими участниками сети.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-adox" onchange="autoToggle('anti_dox', this.checked)"><span class="slider"></span></label>
         </div>
@@ -397,7 +398,7 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div class="feature-row">
             <div class="feature-info">
                 <div class="feature-header"><h4>Тихие уведомления</h4></div>
-                <p class="feature-desc">Все отчёты о перехватах приходят без звука.</p>
+                <p class="feature-desc">Все отчёты о перехватах удалений и спама приходят без звука.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-sil" onchange="autoToggle('silent_notifications', this.checked)"><span class="slider"></span></label>
         </div>
@@ -492,11 +493,11 @@ input:checked + .slider:before { transform: translateX(22px); }
     </div>
 </div>
 
-<!-- ВКЛАДКА 6: ПАНЕЛЬ ВЛАДЕЛЬЦА -->
+<!-- ВКЛАДКА 6: ПАНЕЛЬ ВЛАДЕЛЬЦА (ДЛЯ СОЗДАТЕЛЯ) -->
 <div id="tab-owner" class="tab-content">
     <div class="card">
         <div class="card-title">👑 Панель Создателя</div>
-        <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Активация лицензии по ID или @username:</p>
+        <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Активация и продление лицензии по ID или @username:</p>
         <input type="text" id="owner-target" class="input-box" placeholder="@username или ID цели…">
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
             <button class="btn btn-accent" onclick="setGrantDur('1д')">⚡ 1 День</button>
@@ -529,7 +530,7 @@ const P = new URLSearchParams(location.search);
 const uid = parseInt(P.get('uid') || tg.initDataUnsafe?.user?.id || ADMIN_ID);
 const role = P.get('role') || (uid === ADMIN_ID ? 'owner' : 'free');
 const expTs = parseFloat(P.get('exp') || '0');
-const isOwner = (uid === ADMIN_ID) || (role === 'owner');
+const isOwner = (uid === ADMIN_ID) || (role === 'owner') || (tg.initDataUnsafe?.user?.id === ADMIN_ID);
 
 const tgUser = tg.initDataUnsafe?.user;
 const firstName = tgUser?.first_name || P.get('name') || "Оператор";
@@ -541,20 +542,38 @@ document.getElementById('u-name').innerText = fullName;
 document.getElementById('u-tag').innerText = username ? `@${username}` : "отсутствует";
 document.getElementById('u-id').innerText = uid;
 
-// Умная загрузка и кэширование аватарки в localStorage
+// Умная загрузка фото профиля через Bot API + кэш
 const avEl = document.getElementById('u-avatar');
-let photoUrl = tgUser?.photo_url;
-if (photoUrl) {
-    localStorage.setItem('cached_avatar_' + uid, photoUrl);
-} else {
-    photoUrl = localStorage.getItem('cached_avatar_' + uid);
+async function loadAvatar() {
+    let cached = localStorage.getItem('cached_avatar_' + uid);
+    if (cached) {
+        avEl.innerHTML = `<img src="${cached}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+    }
+    if (tgUser?.photo_url) {
+        localStorage.setItem('cached_avatar_' + uid, tgUser.photo_url);
+        avEl.innerHTML = `<img src="${tgUser.photo_url}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+        return;
+    }
+    try {
+        const r1 = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUserProfilePhotos?user_id=${uid}&limit=1`);
+        const j1 = await r1.json();
+        if (j1.ok && j1.result?.total_count > 0) {
+            const fileId = j1.result.photos[0][0].file_id;
+            const r2 = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${fileId}`);
+            const j2 = await r2.json();
+            if (j2.ok && j2.result?.file_path) {
+                const fullUrl = `https://api.telegram.org/file/bot${BOT_TOKEN}/${j2.result.file_path}`;
+                localStorage.setItem('cached_avatar_' + uid, fullUrl);
+                avEl.innerHTML = `<img src="${fullUrl}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+                return;
+            }
+        }
+    } catch(e) {}
+    if (!cached) {
+        avEl.innerText = (firstName.charAt(0) || "A").toUpperCase();
+    }
 }
-
-if (photoUrl) {
-    avEl.innerHTML = `<img src="${photoUrl}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
-} else {
-    avEl.innerText = (firstName.charAt(0) || "A").toUpperCase();
-}
+loadAvatar();
 
 const badge = document.getElementById('u-badge');
 if (isOwner) {
@@ -575,6 +594,7 @@ function formatExp(exp) {
 }
 document.getElementById('countdown').innerText = formatExp(expTs);
 
+// Синхронизация с ботом через Bot API
 async function sendSilentSync(data) {
     try {
         const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -600,8 +620,9 @@ async function sendSilentSync(data) {
     } catch(e) { console.error(e); }
 }
 
+// Прямая синхронизация настроек из параметров URL
 const LSK_SET = 'asteria_set_' + uid;
-let S = JSON.parse(localStorage.getItem(LSK_SET)) || {
+let S = {
     anti_delete: P.get('ad') !== '0',
     anti_edit: P.get('ae') !== '0',
     save_ttl_media: P.get('ttl') !== '0',
@@ -610,6 +631,8 @@ let S = JSON.parse(localStorage.getItem(LSK_SET)) || {
     anti_dox: P.get('adox') === '1',
     silent_notifications: P.get('sil') === '1'
 };
+localStorage.setItem(LSK_SET, JSON.stringify(S));
+
 document.getElementById('set-ad').checked = !!S.anti_delete;
 document.getElementById('set-ae').checked = !!S.anti_edit;
 document.getElementById('set-ttl').checked = !!S.save_ttl_media;
@@ -625,9 +648,14 @@ function autoToggle(k, v) {
     sendSilentSync({ action: "toggle_setting", key: k, value: v });
 }
 
+// Прямая синхронизация Чёрного Списка из параметров URL
 const LSK_MUT = 'asteria_mut_' + uid;
-let rawMutes = P.get('mutes') ? decodeURIComponent(P.get('mutes')).split(',').map(x=>x.trim()).filter(Boolean) : [];
-let muteList = JSON.parse(localStorage.getItem(LSK_MUT)) || rawMutes;
+let urlMutesParam = P.get('mutes');
+let rawMutes = urlMutesParam !== null && urlMutesParam !== undefined
+    ? decodeURIComponent(urlMutesParam).split(',').map(x=>x.trim().toLowerCase().replace('@','')).filter(Boolean)
+    : null;
+let muteList = rawMutes !== null ? rawMutes : (JSON.parse(localStorage.getItem(LSK_MUT)) || []);
+localStorage.setItem(LSK_MUT, JSON.stringify(muteList));
 
 function renderMutes() {
     const c = document.getElementById('mute-list-container');
@@ -644,17 +672,21 @@ renderMutes();
 function addMute() {
     const v = document.getElementById('mute-val').value.trim().replace('@','').toLowerCase();
     if (!v) return tg.showAlert("Введите ник или ID!");
-    if (!muteList.includes(v)) {
-        muteList.push(v);
-        localStorage.setItem(LSK_MUT, JSON.stringify(muteList));
-        renderMutes();
-        showToast("Добавлен в ЧС");
-        sendSilentSync({ action: "add_mute", target: v });
+    if (muteList.includes(v)) {
+        return tg.showAlert("Данный объект уже находится в вашем чёрном списке!");
     }
+    muteList.push(v);
+    localStorage.setItem(LSK_MUT, JSON.stringify(muteList));
+    renderMutes();
+    showToast("Добавлен в ЧС");
+    sendSilentSync({ action: "add_mute", target: v });
     document.getElementById('mute-val').value = "";
 }
 
 function rmMute(t) {
+    if (!muteList.includes(t)) {
+        return tg.showAlert("Объект не найден в ЧС!");
+    }
     muteList = muteList.filter(x => x !== t);
     localStorage.setItem(LSK_MUT, JSON.stringify(muteList));
     renderMutes();
@@ -747,7 +779,7 @@ function calcHash(type) {
     b.style.display = 'block';
 }
 
-// Расхэширование без разрушения регистра Base64 (исправлен баг со скриншота)[cite: 5]
+// Расхэширование без разрушения регистра Base64[cite: 5]
 function dehash() {
     const raw = document.getElementById('dehash-input').value.trim();
     if (!raw) return tg.showAlert("Вставьте хэш или строку Base64!");
@@ -806,7 +838,7 @@ function shareRef() {
     catch(e) { window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank'); }
 }
 
-// Овнер
+// Выдача подписки Создателем
 function setGrantDur(v) { document.getElementById('owner-dur-val').value = v; }
 function submitGrant() {
     const t = document.getElementById('owner-target').value.trim();
