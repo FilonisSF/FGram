@@ -424,22 +424,7 @@ input:checked + .slider:before { transform: translateX(22px); }
     </div>
 </div>
 
-<!-- ВКЛАДКА 5: ПАРТНЁРЫ -->
-<div id="tab-refs" class="tab-content">
-    <div class="card">
-        <div class="card-title">Партнёрская программа</div>
-        <p style="font-size:12px; color:var(--muted); margin:0 0 10px;">
-            <b style="color:var(--accent);">+1 день</b> лицензии за каждого приглашённого друга
-        </p>
-        <div class="result-box" id="ref-link" style="border-style:solid; font-size:11px;">Загрузка…</div>
-        <button class="btn btn-purple" onclick="shareRef()" style="margin-top:10px;">📤 Поделиться ссылкой</button>
-        <div style="margin-top:12px; font-size:13px; color:var(--muted);">
-            Приглашено: <b id="ref-count" style="color:#fff;">0</b> чел.
-        </div>
-    </div>
-</div>
-
-<!-- ВКЛАДКА 6: УТИЛИТЫ -->
+<!-- ВКЛАДКА 5: УТИЛИТЫ И СЕРВИС -->
 <div id="tab-utils" class="tab-content">
     <div class="card">
         <div class="card-title">Хэширование текста</div>
@@ -456,7 +441,7 @@ input:checked + .slider:before { transform: translateX(22px); }
     </div>
     <div class="card">
         <div class="card-title">Генератор паролей</div>
-        <input type="text" id="gen-len" class="input-box" value="16" placeholder="Длина">
+        <input type="text" id="gen-len" class="input-box" value="16" placeholder="Длина ключа">
         <button class="btn btn-gold" onclick="genPass()" style="margin-top:8px;">🎲 Сгенерировать ключ</button>
         <div id="gen-out-box" style="display:none;" class="result-box"></div>
     </div>
@@ -467,7 +452,7 @@ input:checked + .slider:before { transform: translateX(22px); }
     <button class="nav-btn" onclick="switchNav('mute', this)"><span class="nav-icon">🔇</span>Мой ЧС</button>
     <button class="nav-btn" onclick="switchNav('osint', this)"><span class="nav-icon">🔍</span>Анализ</button>
     <button class="nav-btn" onclick="switchNav('notes', this)"><span class="nav-icon">📝</span>Заметки</button>
-    <button class="nav-btn" onclick="switchNav('refs', this)"><span class="nav-icon">👥</span>Партнёры</button>
+    <button class="nav-btn" onclick="switchNav('utils', this)"><span class="nav-icon">🛠</span>Утилиты</button>
 </div>
 
 <script>
@@ -635,17 +620,6 @@ function delNote(i) {
     localStorage.setItem(LSK_NOTE, JSON.stringify(notes));
     renderNotes();
     showToast("Заметка удалена");
-}
-
-// Партнёры
-const refLink = `https://t.me/asteria_suite_bot?start=ref_${uid}`;
-document.getElementById('ref-link').innerText = refLink;
-document.getElementById('ref-count').innerText = P.get('refs') || '0';
-function shareRef() {
-    const text = encodeURIComponent('🛡 Asteria Suite — умный ассистент диалогов');
-    const url = encodeURIComponent(refLink);
-    try { tg.openTelegramLink(`https://t.me/share/url?url=${url}&text=${text}`); }
-    catch(e) { window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank'); }
 }
 
 function switchNav(id, btn) {
