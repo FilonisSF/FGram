@@ -414,7 +414,32 @@ input:checked + .slider:before { transform: translateX(22px); }
     </div>
 </div>
 
-<!-- ВКЛАДКА 4: УТИЛИТЫ -->
+<!-- ВКЛАДКА 4: ЗАМЕТКИ -->
+<div id="tab-notes" class="tab-content">
+    <div class="card">
+        <div class="card-title">Приватные заметки</div>
+        <input type="text" id="note-input" class="input-box" placeholder="Текст заметки…">
+        <button class="btn btn-accent" onclick="addNote()">💾 Сохранить заметку</button>
+        <div id="notes-list" style="margin-top:10px;"></div>
+    </div>
+</div>
+
+<!-- ВКЛАДКА 5: ПАРТНЁРЫ -->
+<div id="tab-refs" class="tab-content">
+    <div class="card">
+        <div class="card-title">Партнёрская программа</div>
+        <p style="font-size:12px; color:var(--muted); margin:0 0 10px;">
+            <b style="color:var(--accent);">+1 день</b> лицензии за каждого приглашённого друга
+        </p>
+        <div class="result-box" id="ref-link" style="border-style:solid; font-size:11px;">Загрузка…</div>
+        <button class="btn btn-purple" onclick="shareRef()" style="margin-top:10px;">📤 Поделиться ссылкой</button>
+        <div style="margin-top:12px; font-size:13px; color:var(--muted);">
+            Приглашено: <b id="ref-count" style="color:#fff;">0</b> чел.
+        </div>
+    </div>
+</div>
+
+<!-- ВКЛАДКА 6: УТИЛИТЫ -->
 <div id="tab-utils" class="tab-content">
     <div class="card">
         <div class="card-title">Хэширование текста</div>
@@ -430,28 +455,10 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div id="hash-out-box" style="display:none;" class="result-box"></div>
     </div>
     <div class="card">
-        <div class="card-title">Расхеширование</div>
-        <input type="text" id="dehash-input" class="input-box" placeholder="Вставьте хэш для поиска…">
-        <button class="btn btn-purple" onclick="dehash()">🔍 Найти пароль</button>
-        <div id="dehash-out-box" style="display:none;" class="result-box"></div>
-    </div>
-</div>
-
-<!-- ВКЛАДКА 5: ПАНЕЛЬ ВЛАДЕЛЬЦА (ТОЛЬКО ДЛЯ ВЛАДЕЛЬЦА) -->
-<div id="tab-owner" class="tab-content">
-    <div class="card">
-        <div class="card-title">👑 Панель Создателя</div>
-        <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Выдача подписки по ID или юзернейму:</p>
-        <input type="text" id="owner-target" class="input-box" placeholder="@username или ID цели…">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
-            <button class="btn btn-accent" onclick="setGrantDur('1д')">⚡ 1 День</button>
-            <button class="btn btn-accent" onclick="setGrantDur('7д')">🔥 7 Дней</button>
-            <button class="btn btn-purple" onclick="setGrantDur('30д')">⭐ 30 Дней</button>
-            <button class="btn btn-purple" onclick="setGrantDur('365д')">💎 365 Дней</button>
-        </div>
-        <button class="btn btn-gold" style="margin-top:6px;" onclick="setGrantDur('навсегда')">👑 Бессрочно</button>
-        <input type="text" id="owner-dur-val" class="input-box" value="30д" style="margin-top:8px;">
-        <button class="btn btn-accent" style="margin-top:10px;" onclick="submitGrant()">🚀 Выдать лицензию</button>
+        <div class="card-title">Генератор паролей</div>
+        <input type="text" id="gen-len" class="input-box" value="16" placeholder="Длина">
+        <button class="btn btn-gold" onclick="genPass()" style="margin-top:8px;">🎲 Сгенерировать ключ</button>
+        <div id="gen-out-box" style="display:none;" class="result-box"></div>
     </div>
 </div>
 
@@ -459,8 +466,8 @@ input:checked + .slider:before { transform: translateX(22px); }
     <button class="nav-btn active" onclick="switchNav('settings', this)"><span class="nav-icon">🛡</span>Защита</button>
     <button class="nav-btn" onclick="switchNav('mute', this)"><span class="nav-icon">🔇</span>Мой ЧС</button>
     <button class="nav-btn" onclick="switchNav('osint', this)"><span class="nav-icon">🔍</span>Анализ</button>
-    <button class="nav-btn" onclick="switchNav('utils', this)"><span class="nav-icon">🛠</span>Утилиты</button>
-    <button class="nav-btn" id="nav-owner" style="display:none;" onclick="switchNav('owner', this)"><span class="nav-icon">👑</span>Овнер</button>
+    <button class="nav-btn" onclick="switchNav('notes', this)"><span class="nav-icon">📝</span>Заметки</button>
+    <button class="nav-btn" onclick="switchNav('refs', this)"><span class="nav-icon">👥</span>Партнёры</button>
 </div>
 
 <script>
@@ -495,7 +502,6 @@ if (tgUser?.photo_url) {
 const badge = document.getElementById('u-badge');
 if (isOwner) {
     badge.className = "status-badge badge-owner"; badge.innerText = "👑 ВЛАДЕЛЕЦ";
-    document.getElementById('nav-owner').style.display = "flex";
 } else if (role === 'premium') {
     badge.className = "status-badge badge-prem"; badge.innerText = "⭐ PREMIUM";
 } else {
@@ -533,9 +539,7 @@ async function sendSilentSync(data) {
                 })
             });
         }
-    } catch(e) {
-        console.error(e);
-    }
+    } catch(e) { console.error(e); }
 }
 
 const LSK_SET = 'asteria_set_' + uid;
@@ -602,10 +606,46 @@ function clearMutes() {
     sendSilentSync({ action: "clear_mutes" });
 }
 
-function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.innerText = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 1600);
+// Заметки
+const LSK_NOTE = 'asteria_notes_' + uid;
+let notes = JSON.parse(localStorage.getItem(LSK_NOTE)) || [];
+function renderNotes() {
+    const c = document.getElementById('notes-list');
+    if (!notes.length) { c.innerHTML = '<div style="font-size:12px;color:var(--muted)">Заметок нет</div>'; return; }
+    c.innerHTML = notes.slice(-8).map((n, i) => `
+        <div class="mute-chip" style="align-items:flex-start;">
+            <div style="flex:1;"><div style="font-size:10px;color:var(--muted)">${n.date}</div><div style="font-size:13px">${n.text}</div></div>
+            <span class="mute-chip-del" onclick="delNote(${i})">✕</span>
+        </div>`).join('');
+}
+renderNotes();
+function addNote() {
+    const t = document.getElementById('note-input').value.trim();
+    if (!t) return tg.showAlert("Введите текст!");
+    const d = new Date();
+    const ds = `${d.getDate()}.${d.getMonth()+1} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+    notes.push({ text: t, date: ds });
+    localStorage.setItem(LSK_NOTE, JSON.stringify(notes));
+    renderNotes();
+    document.getElementById('note-input').value = '';
+    showToast("Заметка сохранена");
+}
+function delNote(i) {
+    notes.splice(i, 1);
+    localStorage.setItem(LSK_NOTE, JSON.stringify(notes));
+    renderNotes();
+    showToast("Заметка удалена");
+}
+
+// Партнёры
+const refLink = `https://t.me/asteria_suite_bot?start=ref_${uid}`;
+document.getElementById('ref-link').innerText = refLink;
+document.getElementById('ref-count').innerText = P.get('refs') || '0';
+function shareRef() {
+    const text = encodeURIComponent('🛡 Asteria Suite — умный ассистент диалогов');
+    const url = encodeURIComponent(refLink);
+    try { tg.openTelegramLink(`https://t.me/share/url?url=${url}&text=${text}`); }
+    catch(e) { window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank'); }
 }
 
 function switchNav(id, btn) {
@@ -613,6 +653,12 @@ function switchNav(id, btn) {
     document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
     document.getElementById('tab-' + id).classList.add('active');
     btn.classList.add('active');
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.innerText = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 1600);
 }
 
 function calcHash(type) {
@@ -627,23 +673,16 @@ function calcHash(type) {
     b.innerText = `[${type}]:\n${res}`; b.style.display = 'block';
 }
 
-function dehash() {
-    const h = document.getElementById('dehash-input').value.trim().toLowerCase();
-    if (!h) return tg.showAlert("Вставьте хэш!");
-    const b = document.getElementById('dehash-out-box');
+function genPass() {
+    const len = Math.min(64, Math.max(6, parseInt(document.getElementById('gen-len').value) || 16));
+    let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
+    let pass = '';
+    const arr = new Uint32Array(len);
+    crypto.getRandomValues(arr);
+    for (let i = 0; i < len; i++) pass += chars[arr[i] % chars.length];
+    const b = document.getElementById('gen-out-box');
+    b.innerText = `🔑 Пароль (${len}):\n\n${pass}`;
     b.style.display = 'block';
-    try {
-        const b64 = decodeURIComponent(escape(atob(h)));
-        if (b64 && /^[\x20-\x7E\sа-яА-ЯёЁ]+$/.test(b64)) {
-            b.innerText = `✅ [Base64 декодирован]:\n«${b64}»`; return;
-        }
-    } catch(e) {}
-    const d = {
-        "202cb962ac59075b964b07152d234b70": "123", "250cf8b51c773f3f8dc8b4be867a9a02": "1234",
-        "827ccb0eea8a706c4c34a16891f84e7b": "12345", "e10adc3949ba59abbe56e057f20f883e": "123456",
-        "5f4dcc3b5aa765d61d8327deb882cf99": "password"
-    };
-    b.innerText = d[h] ? `✅ [Найден пароль]:\n«${d[h]}»` : `❌ Пароль не найден в базе.`;
 }
 
 function showOsint(mode) {
@@ -653,17 +692,8 @@ function showOsint(mode) {
     const box = document.getElementById('osint-res-card');
     box.style.display = 'block';
     box.innerText = mode === 'probe' 
-        ? `🌐 [ПАСПОРТ ПРОФИЛЯ]\nСубъект: @${clean}\nСтатус в вашем ЧС: ${muteList.includes(clean) ? '🔴 В ЧС' : '🟢 Обычный'}\nДата-центр: DC 2 (Амстердам)\nТелефон: 🔒 Скрыт приватностью`
-        : `📁 [ДОСЬЕ АКТИВНОСТИ]\nОбъект: @${clean}\nСтатус в базе: ${muteList.includes(clean) ? '🔴 ЗАМУЧЕН' : '🟢 Чистый'}\nПерехвачено удалений: 0 шт.`;
-}
-
-function setGrantDur(v) { document.getElementById('owner-dur-val').value = v; }
-function submitGrant() {
-    const t = document.getElementById('owner-target').value.trim();
-    const d = document.getElementById('owner-dur-val').value.trim() || '30д';
-    if (!t) return tg.showAlert("Укажите ник или ID!");
-    sendSilentSync({ action: "grant_subscription", target: t, duration: d });
-    showToast(`👑 Лицензия выдана: ${d}`);
+        ? `🌐 [ПАСПОРТ ПРОФИЛЯ]\nСубъект: @${clean}\nСтатус: ${muteList.includes(clean) ? '🔴 В ЧС' : '🟢 Обычный'}\nDC: DC 2 (Амстердам)`
+        : `📁 [ДОСЬЕ АКТИВНОСТИ]\nОбъект: @${clean}\nСтатус: ${muteList.includes(clean) ? '🔴 В ЧС' : '🟢 Чистый'}`;
 }
 </script>
 </body>
