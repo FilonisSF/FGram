@@ -229,7 +229,6 @@
       font-size: 10px;
       font-weight: 600;
       cursor: pointer;
-      width: 33%;
     }
     .nav-btn.active { color: var(--accent); }
     .nav-icon { font-size: 20px; }
@@ -361,28 +360,29 @@
     <div class="card">
       <div class="card-title">👥 Партнёрская сеть</div>
       <p style="font-size:12px; color:var(--muted); margin:0 0 12px 0;">
-        Отправьте персональную ссылку для мгновенного подключения к платформе. За каждое приглашение начисляется <b>+1 день</b> лицензии.
+        Отправьте персональную ссылку для подключения. Нажмите кнопку ниже, чтобы выбрать сразу нескольких получателей.
       </p>
-      <button class="btn btn-accent" onclick="shareRef()">📤 Поделиться доступом</button>
+      <!-- Нативное окно с выбором нескольких чатов как на скриншоте 2 -->
+      <button class="btn btn-accent" onclick="shareRef()">📤 Выбрать получателей...</button>
       <button class="btn btn-purple" style="margin-top:8px;" onclick="copyRef()">📋 Скопировать ссылку</button>
     </div>
   </div>
 
   <!-- НАВБАР -->
   <div class="bottom-nav">
-    <button class="nav-btn active" onclick="switchNav('modules', this)">
+    <button class="nav-btn active" id="btn-tab-modules" onclick="switchNav('modules', this)">
       <span class="nav-icon">⚙️</span>
       <span>Модули</span>
     </button>
-    <button class="nav-btn" onclick="switchNav('mute', this)">
+    <button class="nav-btn" id="btn-tab-mute" onclick="switchNav('mute', this)">
       <span class="nav-icon">🔇</span>
       <span>Мут</span>
     </button>
-    <button class="nav-btn" id="nav-btn-admin" style="display:none;" onclick="switchNav('admin', this)">
+    <button class="nav-btn" id="btn-tab-admin" style="display:none;" onclick="switchNav('admin', this)">
       <span class="nav-icon">👑</span>
       <span>Выдача</span>
     </button>
-    <button class="nav-btn" onclick="switchNav('refs', this)">
+    <button class="nav-btn" id="btn-tab-refs" onclick="switchNav('refs', this)">
       <span class="nav-icon">👥</span>
       <span>Партнёры</span>
     </button>
@@ -407,10 +407,10 @@
     document.getElementById('u-name').innerText = currentUserName;
     document.getElementById('u-id').innerText = currentUserId;
 
-    // ОТОБРАЖЕНИЕ РОЛЕЙ
+    // СТРОГОЕ РАЗДЕЛЕНИЕ РОЛЕЙ
     const badgeEl = document.getElementById('u-badge');
     const countdownEl = document.getElementById('countdown');
-    const adminNavBtn = document.getElementById('nav-btn-admin');
+    const adminNavBtn = document.getElementById('btn-tab-admin');
 
     if (userRole === "owner") {
       badgeEl.className = "status-badge badge-owner";
@@ -422,7 +422,7 @@
       badgeEl.className = "status-badge badge-prem";
       badgeEl.innerText = "⭐ PREMIUM";
       adminNavBtn.style.display = "none";
-      document.querySelectorAll('.nav-btn').forEach(b => b.style.width = "33%");
+      document.querySelectorAll('.nav-btn').forEach(b => b.style.width = "33.3%");
 
       if (expTimestamp > 0) {
         const rem = Math.max(0, Math.floor(expTimestamp - (Date.now() / 1000)));
@@ -437,11 +437,14 @@
       badgeEl.innerText = "⛔ ИСТЁК ДОСТУП";
       countdownEl.innerText = "ТРЕБУЕТСЯ ПРОДЛЕНИЕ";
       adminNavBtn.style.display = "none";
-      document.querySelectorAll('.nav-btn').forEach(b => b.style.width = "33%");
+      document.querySelectorAll('.nav-btn').forEach(b => b.style.width = "33.3%");
     }
 
-    // ИНИЦИАЛИЗАЦИЯ НАСТРОЕК
-    let pendingSettings = {
+    // ЛОКАЛЬНЫЙ КЭШ НАСТРОЕК (МГНОВЕННОЕ СОХРАНЕНИЕ)
+    const settingsKey = 'fgram_settings_' + currentUserId;
+    const cachedSettings = localStorage.getItem(settingsKey);
+
+    let pendingSettings = cachedSettings ? JSON.parse(cachedSettings) : {
       anti_delete: urlParams.get('ad') !== '0',
       anti_edit: urlParams.get('ae') !== '0',
       save_ttl_media: urlParams.get('ttl') !== '0',
@@ -457,9 +460,11 @@
     document.getElementById('sw-auto-mute').checked = pendingSettings.auto_mute;
     document.getElementById('sw-silent').checked = pendingSettings.silent_notifications;
 
-    // ПЕРСОНАЛЬНЫЙ МУТ-ЛИСТ
+    // ЛОКАЛЬНЫЙ КЭШ МУТ-ЛИСТА (УДАЛЁННЫЕ НЕ ВОЗВРАЩАЮТСЯ)
+    const mutesKey = 'fgram_mutes_' + currentUserId;
+    const cachedMutes = localStorage.getItem(mutesKey);
     const mutesRaw = decodeURIComponent(urlParams.get('mutes') || '');
-    let mutedList = mutesRaw ? mutesRaw.split(',').filter(x => x.length > 0) : [];
+    let mutedList = cachedMutes ? JSON.parse(cachedMutes) : (mutesRaw ? mutesRaw.split(',').filter(x => x.length > 0) : []);
 
     function recordToggle(mod, state) {
       if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
@@ -467,7 +472,6 @@
       document.getElementById('save-modules-btn').style.display = 'block';
     }
 
-    // НАДЕЖНАЯ ПЕРЕДАЧА ДАННЫХ В БОТА
     function sendActionToBot(actionData) {
       let sent = false;
       try {
@@ -477,7 +481,6 @@
         sent = false;
       }
       if (!sent) {
-        // Защищённый Deep-Link для передачи настроек без сбоев
         const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(actionData))));
         const botUser = tg.initDataUnsafe?.bot?.username || "fgram_dox_bot";
         tg.openTelegramLink(`https://t.me/${botUser}?start=act_${b64}`);
@@ -486,11 +489,13 @@
 
     function applySettingsBatch() {
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      localStorage.setItem(settingsKey, JSON.stringify(pendingSettings));
       sendActionToBot({
         action: "save_all_settings",
         settings: pendingSettings
       });
       document.getElementById('save-modules-btn').style.display = 'none';
+      tg.showAlert("✅ Настройки применены!");
     }
 
     function renderMuted() {
@@ -524,6 +529,7 @@
       if (!val) return tg.showAlert("Введите числовой ID или @username!");
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
       mutedList.push(val);
+      localStorage.setItem(mutesKey, JSON.stringify(mutedList));
       renderMuted();
       sendActionToBot({ action: "add_mute", target: val });
       document.getElementById('mute-input').value = "";
@@ -531,7 +537,9 @@
 
     function unmuteItem(targetId) {
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+      // Мгновенно удаляем из кэша и перерисовываем
       mutedList = mutedList.filter(id => id !== targetId);
+      localStorage.setItem(mutesKey, JSON.stringify(mutedList));
       renderMuted();
       sendActionToBot({ action: "unmute_user", target: targetId });
     }
@@ -546,16 +554,30 @@
       document.getElementById('grant-dur').value = "";
     }
 
+    // МУЛЬТИ-ПЕРЕСЫЛКА (КАК НА 2 СКРИНШОТЕ)
     function shareRef() {
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
-      const botUser = tg.initDataUnsafe?.bot?.username || "fgram_dox_bot";
-      const link = `https://t.me/${botUser}?start=ref_${currentUserId}`;
-      const promoText = "FGram Platform Suite — приватный модуль мониторинга и безопасности Telegram.\n\n" +
-                        "• Фиксация удалённых и изменённых сообщений\n" +
-                        "• Сохранение фото/видео с таймером просмотра\n" +
-                        "• Защита от спама и моментальный авто-мут\n\n" +
-                        "Активировать доступ:";
-      tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(promoText)}`);
+      const prepId = urlParams.get('prep');
+
+      // 1. Нативное окно Telegram ShareMessage (с кнопкой "Выбрать получателей...")
+      if (prepId && tg.shareMessage) {
+        tg.shareMessage(prepId, (success) => {
+          if (!success) fallbackMultiShare();
+        });
+      } else {
+        fallbackMultiShare();
+      }
+    }
+
+    function fallbackMultiShare() {
+      if (tg.switchInlineQuery) {
+        tg.switchInlineQuery("invite");
+      } else {
+        const botUser = tg.initDataUnsafe?.bot?.username || "fgram_dox_bot";
+        const link = `https://t.me/${botUser}?start=ref_${currentUserId}`;
+        const promoText = "FGram Suite — приватный комплекс безопасности диалогов.\nАктивировать доступ:";
+        tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(promoText)}`);
+      }
     }
 
     function copyRef() {
