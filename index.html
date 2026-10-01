@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FGram Suite Dashboard v28.0</title>
+    <title>FGram Suite Dashboard v29.0</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -209,19 +209,6 @@
         .btn-gold { background: linear-gradient(135deg, #facc15, #ca8a04); color: #050811; font-weight: 800; }
         .btn-danger { background: rgba(244, 63, 94, 0.15); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
 
-        .mute-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(244, 63, 94, 0.12);
-            border: 1px solid rgba(244, 63, 94, 0.25);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            margin: 4px;
-        }
-        .mute-chip-del { cursor: pointer; color: var(--danger); font-weight: bold; }
-
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
@@ -267,21 +254,6 @@
             user-select: all;
             text-align: center;
         }
-
-        .lock-overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(5, 8, 17, 0.88);
-            backdrop-filter: blur(4px);
-            border-radius: 18px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 50;
-            padding: 20px;
-            text-align: center;
-        }
     </style>
 </head>
 <body>
@@ -317,16 +289,9 @@
     </div>
 </div>
 
-<!-- ВКЛАДКА 1: ЗАЩИТА (ИСПРАВЛЕН БАГ 4: БЕЗ ЗАКРЫТИЯ ПРИЛОЖЕНИЯ ПРИ ПЕРЕКЛЮЧЕНИИ) -->
+<!-- ВКЛАДКА 1: ЗАЩИТА -->
 <div id="tab-settings" class="tab-content active">
     <div class="card" id="card-protect">
-        <div id="lock-protect" class="lock-overlay" style="display:none;">
-            <div style="font-size:32px; margin-bottom:8px;">🔒</div>
-            <div style="font-size:14px; font-weight:800; color:#f43f5e; margin-bottom:4px;">Доступ заблокирован</div>
-            <div style="font-size:11px; color:var(--muted); margin-bottom:12px;">Оформите лицензию для запуска модулей перехвата и мониторинга.</div>
-            <button class="btn btn-accent" style="width:auto; padding:8px 18px;" onclick="switchNav('utils', document.querySelectorAll('.nav-btn')[3])">⭐ Продлить доступ</button>
-        </div>
-
         <div class="card-title">🛡 Комплекс безопасности переписок</div>
 
         <div class="category-header">📡 Мониторинг входящих диалогов</div>
@@ -402,7 +367,7 @@
         <div class="toggle-row">
             <div class="toggle-info">
                 <h4>Режим «Не беспокоить» <span class="tag-pill">DND</span></h4>
-                <p>Автоматическая очистка всех новых личных входящих сообщений</p>
+                <p>Автоответ собеседнику и пересылка удалённых сообщений вам</p>
             </div>
             <label class="switch">
                 <input type="checkbox" id="set-dnd" onchange="handleSettingToggle('dnd', this.checked)">
@@ -440,24 +405,20 @@
 
 <!-- ВКЛАДКА 2: МУТ-ЦЕНТР -->
 <div id="tab-mute" class="tab-content">
-    <div class="card" id="card-mute">
+    <div class="card">
         <div class="card-title">Чёрный список нарушителей</div>
-        <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Сообщения от указанных целей стираются моментально:</p>
         <input type="text" id="mute-val" class="input-box" placeholder="@username или числовой ID...">
         <button class="btn btn-accent" onclick="addMuteDirect()">🚫 Замутить объект</button>
     </div>
-
     <div class="card">
         <div class="card-title">Активные объекты в чёрном списке</div>
-        <div id="mute-list-container">
-            <span style="font-size:12px; color:var(--muted);">Список пуст</span>
-        </div>
+        <div id="mute-list-container"><span style="font-size:12px; color:var(--muted);">Список пуст</span></div>
     </div>
 </div>
 
 <!-- ВКЛАДКА 3: OSINT & ДОСЬЕ -->
 <div id="tab-osint" class="tab-content">
-    <div class="card" id="card-osint">
+    <div class="card">
         <div class="card-title">🔍 OSINT Разведка профилей</div>
         <input type="text" id="osint-val" class="input-box" placeholder="@username или Telegram ID...">
         <div style="display:flex; gap:8px; margin-top:6px;">
@@ -474,8 +435,6 @@
 <div id="tab-utils" class="tab-content">
     <div class="card">
         <div class="card-title">🔐 Генератор паролей и ключей</div>
-        <p style="font-size:12px; color:var(--muted); margin:0 0 8px 0;">Создание надёжных паролей и Seed-фраз для криптокошельков:</p>
-
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
             <button class="btn btn-accent" onclick="generateCustomPassword(16)">Пароль 16 зн.</button>
             <button class="btn btn-accent" onclick="generateCustomPassword(24)">Пароль 24 зн.</button>
@@ -484,13 +443,12 @@
             <button class="btn btn-purple" onclick="generateCustomPassword(32)">Пароль 32 зн.</button>
             <button class="btn btn-purple" onclick="generateSeedPhrase()">Seed 12 слов</button>
         </div>
-
         <div class="pwd-display" id="pwd-box" style="display:none;"></div>
         <button id="copy-pwd-btn" class="btn btn-accent" style="display:none;" onclick="copyPassword()">📋 Скопировать в буфер</button>
     </div>
 </div>
 
-<!-- ВКЛАДКА 5: СКРЫТАЯ ПАНЕЛЬ ВЛАДЕЛЬЦА (ИСПРАВЛЕН БАГ 1) -->
+<!-- ВКЛАДКА 5: СКРЫТАЯ ПАНЕЛЬ ВЛАДЕЛЬЦА (С КАРТОЧКОЙ ВЫДАЧИ ПОДПИСКИ) -->
 <div id="tab-owner" class="tab-content">
     <div class="card">
         <div class="card-title">👑 Скрытые функции Владельца</div>
@@ -505,6 +463,23 @@
             </label>
         </div>
         <button class="btn btn-danger" style="margin-top:12px;" onclick="clearAllMutesDirect()">⚡ Снять все муты и флуд-блокировки</button>
+    </div>
+
+    <!-- ДОБАВЛЕНА КАРТОЧКА ВЫДАЧИ ЛИЦЕНЗИЙ -->
+    <div class="card">
+        <div class="card-title">👑 Выдача лицензии пользователю (.саб)</div>
+        <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Укажите @username или числовой Telegram ID:</p>
+        <input type="text" id="owner-target" class="input-box" placeholder="@username или ID цели...">
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
+            <button class="btn btn-accent" onclick="setOwnerDur('1д')">⚡ 1 День</button>
+            <button class="btn btn-accent" onclick="setOwnerDur('7д')">🔥 7 Дней</button>
+            <button class="btn btn-purple" onclick="setOwnerDur('30д')">⭐ 30 Дней</button>
+            <button class="btn btn-purple" onclick="setOwnerDur('365д')">💎 365 Дней</button>
+        </div>
+        <button class="btn btn-gold" style="margin-top:6px;" onclick="setOwnerDur('навсегда')">👑 Бессрочно (FOREVER)</button>
+        <input type="text" id="owner-custom-dur" class="input-box" value="30д" style="margin-top:8px;">
+        <button class="btn btn-accent" style="margin-top:10px;" onclick="submitGrantSub()">🚀 Выдать лицензию</button>
     </div>
 </div>
 
@@ -571,7 +546,6 @@
     } else {
         document.getElementById('u-badge').className = "status-badge badge-free";
         document.getElementById('u-badge').innerText = "⛔ ДОСТУП ИСТЁК";
-        document.getElementById('lock-protect').style.display = "flex";
     }
 
     let savedSettings = null;
@@ -643,7 +617,6 @@
         btn.classList.add('active');
     }
 
-    // 4. ИСПРАВЛЕНИЕ: Переключение тумблера без закрытия приложения
     function handleSettingToggle(key, val) {
         if (role === 'free') {
             document.getElementById(key).checked = !val;
@@ -653,7 +626,6 @@
         localStorage.setItem('fgram_settings', JSON.stringify(appSettings));
         showToast(val ? "✅ Включено" : "❌ Выключено");
 
-        // Показываем кнопку сохранения настроек в панели
         const btn = document.getElementById('save-settings-btn');
         if (btn) btn.style.display = 'block';
     }
@@ -662,6 +634,21 @@
         tg.sendData(JSON.stringify({
             action: "save_all_settings",
             settings: appSettings
+        }));
+    }
+
+    function setOwnerDur(val) {
+        document.getElementById('owner-custom-dur').value = val;
+    }
+
+    function submitGrantSub() {
+        const target = document.getElementById('owner-target').value.trim();
+        const dur = document.getElementById('owner-custom-dur').value.trim() || '30д';
+        if (!target) return tg.showAlert("Укажите @username или ID!");
+        tg.sendData(JSON.stringify({
+            action: "grant_subscription",
+            target: target,
+            duration: dur
         }));
     }
 
@@ -747,7 +734,7 @@
             if (appSettings.god_mode) {
                 content.innerHTML = `
                     <div style="color:var(--gold); font-weight:800; margin-bottom:6px;">👑 FGRAM ABSOLUTE SHIELD</div>
-                    <div>🛡 Профиль принадлежит <b>Создателю комплекса FGram</b>.<br>Сбор досье и пробив строго заблокированы протоколом безопасности.</div>
+                    <div>🛡 Профиль принадлежит <b>Создателю комплекса FGram</b>.<br>Сбор досье и пробив заблокированы.</div>
                 `;
                 return;
             }
