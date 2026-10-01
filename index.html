@@ -101,7 +101,6 @@
       margin-bottom: 10px;
     }
 
-    /* СВИТЧЕРЫ */
     .toggle-row {
       display: flex;
       justify-content: space-between;
@@ -144,7 +143,6 @@
     input:checked + .slider { background-color: var(--accent); }
     input:checked + .slider:before { transform: translateX(20px); }
 
-    /* МУТ-ЛИСТ */
     .mute-list {
       display: flex;
       flex-direction: column;
@@ -252,7 +250,7 @@
     </div>
   </div>
 
-  <!-- ВКЛАДКА 1: МОДУЛИ (БЕЗ ЗАКРЫТИЯ ПРИ КЛИКЕ) -->
+  <!-- ВКЛАДКА 1: МОДУЛИ -->
   <div id="tab-modules" class="tab-content active">
     <div class="card">
       <div class="card-title">Модули защиты и перехвата</div>
@@ -263,7 +261,7 @@
           <span>Перехват чужих удалений без логирования своих</span>
         </div>
         <label class="switch">
-          <input type="checkbox" id="sw-anti-delete" checked onchange="recordToggle('anti_delete', this.checked)">
+          <input type="checkbox" id="sw-anti-delete" onchange="recordToggle('anti_delete', this.checked)">
           <span class="slider"></span>
         </label>
       </div>
@@ -274,7 +272,7 @@
           <span>Лог правок сообщений («Было» / «Стало»)</span>
         </div>
         <label class="switch">
-          <input type="checkbox" id="sw-anti-edit" checked onchange="recordToggle('anti_edit', this.checked)">
+          <input type="checkbox" id="sw-anti-edit" onchange="recordToggle('anti_edit', this.checked)">
           <span class="slider"></span>
         </label>
       </div>
@@ -285,7 +283,7 @@
           <span>Скачивание одноразовых фото/видео</span>
         </div>
         <label class="switch">
-          <input type="checkbox" id="sw-save-ttl" checked onchange="recordToggle('save_ttl_media', this.checked)">
+          <input type="checkbox" id="sw-save-ttl" onchange="recordToggle('save_ttl_media', this.checked)">
           <span class="slider"></span>
         </label>
       </div>
@@ -307,7 +305,7 @@
           <span>Стирание сообщений нарушителей</span>
         </div>
         <label class="switch">
-          <input type="checkbox" id="sw-auto-mute" checked onchange="recordToggle('auto_mute', this.checked)">
+          <input type="checkbox" id="sw-auto-mute" onchange="recordToggle('auto_mute', this.checked)">
           <span class="slider"></span>
         </label>
       </div>
@@ -323,7 +321,7 @@
         </label>
       </div>
 
-      <!-- Кнопка сохранения в интерфейсе -->
+      <!-- ЕДИНСТВЕННАЯ КНОПКА СОХРАНЕНИЯ -->
       <button id="save-modules-btn" class="btn btn-save" onclick="applySettingsBatch()">💾 Применить изменённые настройки</button>
     </div>
   </div>
@@ -391,39 +389,47 @@
     tg.ready();
     tg.expand();
 
+    // Отключаем нативный Telegram MainButton во избежание задвоения кнопок
+    if (tg.MainButton) tg.MainButton.hide();
+
     const ADMIN_ID = 7783116627;
     const user = tg.initDataUnsafe?.user || { id: ADMIN_ID, first_name: "Marcell" };
 
     document.getElementById('u-name').innerText = user.first_name;
     document.getElementById('u-id').innerText = user.id;
 
-    // Локальный буфер настроек
+    // Считываем реальные настройки и мут-лист прямо из URL
+    const urlParams = new URLSearchParams(window.location.search);
+
     let pendingSettings = {
-      anti_delete: true,
-      anti_edit: true,
-      save_ttl_media: true,
-      dnd: false,
-      auto_mute: true,
-      silent_notifications: false
+      anti_delete: urlParams.get('ad') !== '0',
+      anti_edit: urlParams.get('ae') !== '0',
+      save_ttl_media: urlParams.get('ttl') !== '0',
+      dnd: urlParams.get('dnd') === '1',
+      auto_mute: urlParams.get('am') !== '0',
+      silent_notifications: urlParams.get('sil') === '1'
     };
 
-    let mutedList = ["1685796201", "5489123041"];
+    // Применяем положение тумблеров к переключателям
+    document.getElementById('sw-anti-delete').checked = pendingSettings.anti_delete;
+    document.getElementById('sw-anti-edit').checked = pendingSettings.anti_edit;
+    document.getElementById('sw-save-ttl').checked = pendingSettings.save_ttl_media;
+    document.getElementById('sw-dnd').checked = pendingSettings.dnd;
+    document.getElementById('sw-auto-mute').checked = pendingSettings.auto_mute;
+    document.getElementById('sw-silent').checked = pendingSettings.silent_notifications;
+
+    // Считываем настоящий мут-лист из базы
+    const mutesRaw = urlParams.get('mutes') || '';
+    let mutedList = mutesRaw ? mutesRaw.split(',').filter(x => x.length > 0) : [];
 
     function recordToggle(mod, state) {
       if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
       pendingSettings[mod] = state;
-      
-      // Показываем кнопку в интерфейсе и активируем Telegram MainButton
       document.getElementById('save-modules-btn').style.display = 'block';
-      if (tg.MainButton) {
-        tg.MainButton.setText("💾 ПРИМЕНИТЬ НАСТРОЙКИ").show();
-        tg.MainButton.onClick(applySettingsBatch);
-      }
     }
 
     function applySettingsBatch() {
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      // Отправляем все измененные тумблеры за один раз
       tg.sendData(JSON.stringify({
         action: "save_all_settings",
         settings: pendingSettings
@@ -439,7 +445,7 @@
       container.innerHTML = mutedList.map(id => `
         <div class="mute-row">
           <div class="mute-info">
-            <b>ID: ${id}</b>
+            <b>${id}</b>
             <span>Сообщения блокируются</span>
           </div>
           <button class="btn-sm-danger" onclick="unmuteItem('${id}')">Снять мут</button>
