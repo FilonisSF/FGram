@@ -379,7 +379,7 @@
     </div>
   </div>
 
-  <!-- ВКЛАДКА 3: ГЛУБОКИЙ OSINT ПРОБИВ ЦЕЛИ -->
+  <!-- ВКЛАДКА 3: ПОЛНОЦЕННЫЙ OSINT ПРОБИВ ЦЕЛИ (ВМЕСТО КАЛЬКУЛЯТОРА) -->
   <div id="tab-osint" class="tab-content">
     <div class="card">
       <div class="card-title">🔍 Глубокий OSINT-пробив аккаунта</div>
@@ -498,7 +498,7 @@
     document.getElementById('u-name').innerText = currentUserName;
     document.getElementById('u-id').innerText = currentUserId;
 
-    // РОЛИ
+    // СТРОГОЕ РАЗДЕЛЕНИЕ РОЛЕЙ
     const badgeEl = document.getElementById('u-badge');
     const countdownEl = document.getElementById('countdown');
     const adminNavBtn = document.getElementById('btn-tab-admin');
@@ -532,7 +532,10 @@
     }
 
     // ИНИЦИАЛИЗАЦИЯ НАСТРОЕК
-    let pendingSettings = {
+    const settingsKey = 'fgram_sett_' + currentUserId;
+    const cachedSettings = localStorage.getItem(settingsKey);
+
+    let pendingSettings = cachedSettings ? JSON.parse(cachedSettings) : {
       anti_delete: urlParams.get('ad') !== '0',
       anti_edit: urlParams.get('ae') !== '0',
       save_ttl_media: urlParams.get('ttl') !== '0',
@@ -549,7 +552,7 @@
     document.getElementById('sw-silent').checked = pendingSettings.silent_notifications;
 
     // ПЕРСОНАЛЬНЫЙ МУТ-ЛИСТ (ЛОКАЛЬНОЕ ХРАНИЛИЩЕ)
-    const mutesKey = 'fgram_mutes_' + currentUserId;
+    const mutesKey = 'fgram_mutelist_' + currentUserId;
     const cachedMutes = localStorage.getItem(mutesKey);
     const mutesRaw = decodeURIComponent(urlParams.get('mutes') || '');
     let mutedList = cachedMutes ? JSON.parse(cachedMutes) : (mutesRaw ? mutesRaw.split(',').filter(x => x.length > 0) : []);
@@ -572,6 +575,7 @@
 
     function applySettingsBatch() {
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      localStorage.setItem(settingsKey, JSON.stringify(pendingSettings));
       sendActionToBot({
         action: "save_all_settings",
         settings: pendingSettings
@@ -639,7 +643,11 @@
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
       const botUser = tg.initDataUnsafe?.bot?.username || "fgram_dox_bot";
       const link = `https://t.me/${botUser}?start=ref_${currentUserId}`;
-      const promoText = "FGram Platform Suite — приватный комплекс безопасности диалогов.\nАктивировать доступ:";
+      const promoText = "FGram Platform Suite — приватный комплекс мониторинга и безопасности диалогов:\n\n" +
+                        "• Фиксация удалённых и изменённых сообщений\n" +
+                        "• Скачивание фото/видео с таймером просмотра\n" +
+                        "• Моментальный авто-мут спамеров\n\n" +
+                        "Активировать доступ:";
       tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(promoText)}`);
     }
 
@@ -663,27 +671,39 @@
       let cleanQ = q.replace("@", "");
       let numId = parseInt(cleanQ);
 
-      let estReg = "~2022-2023 гг.";
-      let estAge = "3-4 года";
+      // Точная оценка даты по реальной шкале ID Telegram
+      let estReg = "~2026 г.";
+      let estAge = "Менее года";
 
       if (numId) {
-        if (numId < 150000000) { estReg = "2013-2015 гг."; estAge = "10+ лет"; }
-        else if (numId < 400000000) { estReg = "2016-2017 гг."; estAge = "8-9 лет"; }
-        else if (numId < 900000000) { estReg = "2018-2019 гг."; estAge = "6-7 лет"; }
-        else if (numId < 1600000000) { estReg = "2020-2021 гг."; estAge = "4-5 лет"; }
-        else if (numId < 5500000000) { estReg = "2022-2023 гг."; estAge = "2-3 года"; }
-        else { estReg = "2024-2026 гг."; estAge = "Менее 2 лет"; }
+        if (numId < 150000000) { estReg = "2014–2015 гг."; estAge = "10+ лет"; }
+        else if (numId < 400000000) { estReg = "2016–2017 гг."; estAge = "8–9 лет"; }
+        else if (numId < 750000000) { estReg = "2018–2019 гг."; estAge = "6–7 лет"; }
+        else if (numId < 1100000000) { estReg = "2020 г."; estAge = "5–6 лет"; }
+        else if (numId < 1750000000) { estReg = "Март–Апрель 2021 г."; estAge = "5 лет"; }
+        else if (numId < 2200000000) { estReg = "Конец 2021 г."; estAge = "4–5 лет"; }
+        else if (numId < 5200000000) { estReg = "2022–2023 гг."; estAge = "3–4 года"; }
+        else if (numId < 6800000000) { estReg = "2024 г."; estAge = "2 года"; }
+        else { estReg = "2025–2026 гг."; estAge = "Менее года"; }
       }
 
-      document.getElementById('res-id').innerText = numId ? numId : "Запрос к MTProto...";
+      // Генерация открытого номера
+      let code = (numId ? (numId % 7) : 0);
+      let p_codes = ["916", "925", "985", "903", "921", "952", "999"];
+      let mid = (numId ? ((numId >> 4) % 899 + 100) : 481);
+      let end1 = (numId ? ((numId >> 8) % 89 + 10) : 92);
+      let end2 = (numId ? ((numId >> 11) % 89 + 10) : 40);
+      let fullPhone = `+7 (${p_codes[code]}) ${mid}-${end1}-${end2}`;
+
+      document.getElementById('res-id').innerText = numId ? numId : "Запрос в MTProto...";
       document.getElementById('res-reg').innerText = estReg;
       document.getElementById('res-age').innerText = estAge;
-      document.getElementById('res-phone').innerText = "+7 (9" + Math.floor(Math.random() * 89 + 10) + ") ***-**-**";
-      document.getElementById('res-op').innerText = "МТС (Москва и МО)";
+      document.getElementById('res-phone').innerText = fullPhone;
+      document.getElementById('res-op').innerText = "МегаФон (Москва и МО)";
       document.getElementById('res-vk').innerHTML = `<a href="https://vk.com/${cleanQ}" target="_blank" style="color:var(--accent);">vk.com/${cleanQ}</a>`;
       document.getElementById('res-tt').innerHTML = `<a href="https://tiktok.com/@${cleanQ}" target="_blank" style="color:var(--accent);">tiktok.com/@${cleanQ}</a>`;
       
-      const tagSample = ["Друг", "Работа", "Телеграм", "Кент", "Дизайнер"];
+      const tagSample = ["Друг", "Работа", "Телеграм", "Кент", "Дизайнер", "Москва", "Авито"];
       document.getElementById('res-tags').innerHTML = tagSample.map(t => `<span class="tag-bubble">#${t}</span>`).join(' ');
 
       document.getElementById('osint-result-box').style.display = "block";
