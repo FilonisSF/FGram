@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FGram Suite Dashboard v25.0</title>
+    <title>FGram Suite Dashboard v26.0</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -286,7 +286,7 @@
 </head>
 <body>
 
-<div id="toast">✅ Изменение сохранено</div>
+<div id="toast">✅ Настройка применена</div>
 
 <div class="profile-card">
     <div class="profile-top">
@@ -317,7 +317,7 @@
     </div>
 </div>
 
-<!-- ВКЛАДКА 1: ЗАЩИТА (АВТОМАТИЧЕСКОЕ ПРИМЕНЕНИЕ БЕЗ КНОПКИ) -->
+<!-- ВКЛАДКА 1: ЗАЩИТА (МОМЕНТАЛЬНОЕ СОХРАНЕНИЕ ПРИ КЛИКЕ) -->
 <div id="tab-settings" class="tab-content active">
     <div class="card" id="card-protect">
         <div id="lock-protect" class="lock-overlay" style="display:none;">
@@ -468,7 +468,7 @@
     </div>
 </div>
 
-<!-- ВКЛАДКА 4: УТИЛИТЫ (ГЕНЕРАТОР НАДЁЖНЫХ ПАРОЛЕЙ И КЛЮЧЕЙ) -->
+<!-- ВКЛАДКА 4: УТИЛИТЫ (ГЕНЕРАТОР ПАРОЛЕЙ И КЛЮЧЕЙ) -->
 <div id="tab-utils" class="tab-content">
     <div class="card">
         <div class="card-title">🔐 Генератор паролей и ключей</div>
@@ -498,7 +498,7 @@
                 <p>Запрет на мут, сбор досье и пробив создателя</p>
             </div>
             <label class="switch">
-                <input type="checkbox" checked disabled>
+                <input type="checkbox" id="set-god" onchange="autoApplyToggle('god_mode', this.checked)">
                 <span class="slider"></span>
             </label>
         </div>
@@ -584,6 +584,7 @@
         anti_spam_mute: urlParams.get('asm') === '1',
         anti_dox: urlParams.get('adox') === '1',
         anti_dossier: urlParams.get('ados') === '1',
+        god_mode: urlParams.get('god') !== '0',
         silent_notifications: urlParams.get('sil') === '1'
     };
 
@@ -596,6 +597,9 @@
     document.getElementById('set-am').checked = appSettings.auto_mute;
     document.getElementById('set-adox').checked = appSettings.anti_dox;
     document.getElementById('set-ados').checked = appSettings.anti_dossier;
+    if (document.getElementById('set-god')) {
+        document.getElementById('set-god').checked = appSettings.god_mode;
+    }
 
     let savedMutes = null;
     try { savedMutes = JSON.parse(localStorage.getItem('fgram_mutes')); } catch(e){}
@@ -637,7 +641,6 @@
         btn.classList.add('active');
     }
 
-    // МОМЕНТАЛЬНОЕ ПРИМЕНЕНИЕ НАСТРОЙКИ ПРИ КЛИКЕ НА ТУМБЛЕР
     function autoApplyToggle(key, val) {
         if (role === 'free') {
             document.getElementById(key).checked = !val;
@@ -666,6 +669,9 @@
             muteList.push(val);
             renderMutes();
             localStorage.setItem('fgram_mutes', JSON.stringify(muteList));
+            try {
+                tg.sendData(JSON.stringify({ action: "add_mute", target: val }));
+            } catch(e) {}
             showToast(`🔇 Объект ${val} замучен`);
         }
         document.getElementById('mute-val').value = "";
@@ -675,15 +681,22 @@
         muteList = muteList.filter(x => x !== val);
         renderMutes();
         localStorage.setItem('fgram_mutes', JSON.stringify(muteList));
+        try {
+            tg.sendData(JSON.stringify({ action: "remove_mute", target: val }));
+        } catch(e) {}
         showToast(`🔊 Объект ${val} размучен`);
     }
 
     function clearAllMutesDirect() {
-        tg.sendData(JSON.stringify({ action: "clear_mutes" }));
+        muteList = [];
+        renderMutes();
+        localStorage.removeItem('fgram_mutes');
+        try {
+            tg.sendData(JSON.stringify({ action: "clear_mutes" }));
+        } catch(e) {}
         showToast("⚡ Все муты очищены");
     }
 
-    // ГЕНЕРАТОР ПАРОЛЕЙ И КЛЮЧЕЙ
     let currentKey = "";
     function generateCustomPassword(len) {
         const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*()_-+=";
