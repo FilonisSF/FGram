@@ -321,7 +321,6 @@
         </label>
       </div>
 
-      <!-- ЕДИНСТВЕННАЯ КНОПКА СОХРАНЕНИЯ -->
       <button id="save-modules-btn" class="btn btn-save" onclick="applySettingsBatch()">💾 Применить изменённые настройки</button>
     </div>
   </div>
@@ -358,9 +357,12 @@
   <!-- ВКЛАДКА 4: РЕФЕРАЛЫ -->
   <div id="tab-refs" class="tab-content">
     <div class="card">
-      <div class="card-title">👥 Бонусные дни (+1 день)</div>
-      <p style="font-size:12px; color:var(--muted); margin:0 0 10px 0;">За каждого приглашённого друга начисляется +1 день доступа!</p>
-      <button class="btn btn-purple" onclick="copyRef()">🔗 Скопировать ссылку</button>
+      <div class="card-title">👥 Партнёрская сеть</div>
+      <p style="font-size:12px; color:var(--muted); margin:0 0 12px 0;">
+        Отправьте персональную ссылку для мгновенного подключения к платформе. За каждое приглашение начисляется <b>+1 день</b> лицензии.
+      </p>
+      <button class="btn btn-accent" onclick="shareRef()">📤 Поделиться доступом</button>
+      <button class="btn btn-purple" style="margin-top:8px;" onclick="copyRef()">📋 Скопировать ссылку</button>
     </div>
   </div>
 
@@ -380,7 +382,7 @@
     </button>
     <button class="nav-btn" onclick="switchNav('refs', this)">
       <span class="nav-icon">👥</span>
-      <span>Рефералы</span>
+      <span>Партнёры</span>
     </button>
   </div>
 
@@ -389,7 +391,6 @@
     tg.ready();
     tg.expand();
 
-    // Отключаем нативный Telegram MainButton во избежание задвоения кнопок
     if (tg.MainButton) tg.MainButton.hide();
 
     const ADMIN_ID = 7783116627;
@@ -398,7 +399,6 @@
     document.getElementById('u-name').innerText = user.first_name;
     document.getElementById('u-id').innerText = user.id;
 
-    // Считываем реальные настройки и мут-лист прямо из URL
     const urlParams = new URLSearchParams(window.location.search);
 
     let pendingSettings = {
@@ -410,7 +410,6 @@
       silent_notifications: urlParams.get('sil') === '1'
     };
 
-    // Применяем положение тумблеров к переключателям
     document.getElementById('sw-anti-delete').checked = pendingSettings.anti_delete;
     document.getElementById('sw-anti-edit').checked = pendingSettings.anti_edit;
     document.getElementById('sw-save-ttl').checked = pendingSettings.save_ttl_media;
@@ -418,7 +417,6 @@
     document.getElementById('sw-auto-mute').checked = pendingSettings.auto_mute;
     document.getElementById('sw-silent').checked = pendingSettings.silent_notifications;
 
-    // Считываем настоящий мут-лист из базы
     const mutesRaw = urlParams.get('mutes') || '';
     let mutedList = mutesRaw ? mutesRaw.split(',').filter(x => x.length > 0) : [];
 
@@ -489,12 +487,26 @@
       document.getElementById('grant-dur').value = "";
     }
 
+    function shareRef() {
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
+      const bot = tg.initDataUnsafe?.bot?.username || "fgram_dox_bot";
+      const link = `https://t.me/${bot}?start=ref_${user.id}`;
+      const promoText = "FGram Platform Suite — приватный модуль мониторинга и безопасности Telegram.\n\n" +
+                        "• Фиксация удалённых и изменённых сообщений\n" +
+                        "• Сохранение фото/видео с таймером просмотра\n" +
+                        "• Защита от спама и моментальный авто-мут\n\n" +
+                        "Активировать доступ:";
+      
+      const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(promoText)}`;
+      tg.openTelegramLink(shareUrl);
+    }
+
     function copyRef() {
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
       const bot = tg.initDataUnsafe?.bot?.username || "fgram_dox_bot";
       const link = `https://t.me/${bot}?start=ref_${user.id}`;
       navigator.clipboard.writeText(link);
-      tg.showAlert("Реферальная ссылка скопирована:\n" + link);
+      tg.showAlert("Ссылка скопирована:\n" + link);
     }
   </script>
 </body>
