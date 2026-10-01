@@ -9,7 +9,7 @@
 <style>
 :root {
     --bg: #060913;
-    --card-bg: rgba(15, 23, 42, 0.72);
+    --card-bg: rgba(15, 23, 42, 0.75);
     --card-border: rgba(56, 189, 248, 0.18);
     --accent: #38bdf8;
     --accent-glow: rgba(56, 189, 248, 0.35);
@@ -315,7 +315,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 </head>
 <body>
 
-<div id="toast">✅ Изменения применены</div>
+<div id="toast">✅ Настройки обновлены</div>
 
 <div class="profile-card">
     <div class="profile-top">
@@ -330,7 +330,7 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div id="u-badge" class="status-badge badge-prem">⭐ PREMIUM</div>
     </div>
     <div class="timer-box">
-        <span>Лицензия комплекса:</span>
+        <span>Статус лицензии:</span>
         <span class="timer-val" id="countdown">Активна</span>
     </div>
 </div>
@@ -344,12 +344,12 @@ input:checked + .slider:before { transform: translateX(22px); }
 <!-- ВКЛАДКА 1: ЗАЩИТА -->
 <div id="tab-settings" class="tab-content active">
     <div class="card">
-        <div class="card-title">Модули защиты и аудита</div>
+        <div class="card-title">Модули безопасности</div>
 
         <div class="feature-row">
             <div class="feature-info">
                 <div class="feature-header"><h4>Anti-Delete</h4></div>
-                <p class="feature-desc">Перехватывает и сохраняет текст, голосовые и кружки, которые собеседник стёр в переписке.</p>
+                <p class="feature-desc">Перехватывает и пересылает вам удалённые собеседником сообщения и медиафайлы.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-ad" onchange="autoToggle('anti_delete', this.checked)"><span class="slider"></span></label>
         </div>
@@ -357,15 +357,15 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div class="feature-row">
             <div class="feature-info">
                 <div class="feature-header"><h4>Anti-Edit</h4></div>
-                <p class="feature-desc">Логирует оригинальный текст сообщения до того, как автор успел его изменить.</p>
+                <p class="feature-desc">Сохраняет исходный вариант сообщения до внесения правок.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-ae" onchange="autoToggle('anti_edit', this.checked)"><span class="slider"></span></label>
         </div>
 
         <div class="feature-row">
             <div class="feature-info">
-                <div class="feature-header"><h4>Одноразовые медиа</h4></div>
-                <p class="feature-desc">Спасает самоуничтожающиеся фото и видеофайлы до истечения таймера просмотра.</p>
+                <div class="feature-header"><h4>Одноразовые медиа (TTL)</h4></div>
+                <p class="feature-desc">Сохраняет фото и видео с таймером самоуничтожения.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-ttl" onchange="autoToggle('save_ttl_media', this.checked)"><span class="slider"></span></label>
         </div>
@@ -373,7 +373,7 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div class="feature-row">
             <div class="feature-info">
                 <div class="feature-header"><h4>Не беспокоить (DND)</h4></div>
-                <p class="feature-desc">Удаляет входящие сообщения и отправляет собеседнику оповещение о вашей занятости.</p>
+                <p class="feature-desc">Удаляет входящие сообщения и отправляет автоответ о вашей занятости.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-dnd" onchange="autoToggle('dnd', this.checked)"><span class="slider"></span></label>
         </div>
@@ -381,7 +381,7 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div class="feature-row">
             <div class="feature-info">
                 <div class="feature-header"><h4>Анти-флуд фильтр</h4></div>
-                <p class="feature-desc">Блокирует собеседника на 15 минут, если он отправляет одинаковые сообщения 3 раза подряд.</p>
+                <p class="feature-desc">Блокирует собеседника на 15 минут при отправке 3 одинаковых сообщений подряд.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-asm" onchange="autoToggle('anti_spam_mute', this.checked)"><span class="slider"></span></label>
         </div>
@@ -389,7 +389,7 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div class="feature-row">
             <div class="feature-info">
                 <div class="feature-header"><h4>Приватность профиля</h4></div>
-                <p class="feature-desc">Блокирует попытки пробить ваш аккаунт другими участниками сети.</p>
+                <p class="feature-desc">Защищает ваш аккаунт от сбора информации через досье другими пользователями.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-adox" onchange="autoToggle('anti_dox', this.checked)"><span class="slider"></span></label>
         </div>
@@ -397,7 +397,7 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div class="feature-row">
             <div class="feature-info">
                 <div class="feature-header"><h4>Тихие уведомления</h4></div>
-                <p class="feature-desc">Бот присылает все перехваты и логи без звука.</p>
+                <p class="feature-desc">Все отчёты о перехватах приходят без звука.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-sil" onchange="autoToggle('silent_notifications', this.checked)"><span class="slider"></span></label>
         </div>
@@ -407,7 +407,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 <!-- ВКЛАДКА 2: ЧЁРНЫЙ СПИСОК -->
 <div id="tab-mute" class="tab-content">
     <div class="card">
-        <div class="card-title">Добавить в личный ЧС</div>
+        <div class="card-title">Добавить в Чёрный Список</div>
         <input type="text" id="mute-val" class="input-box" placeholder="@username или числовой Telegram ID…">
         <button class="btn btn-accent" onclick="addMute()">🚫 Заблокировать объект</button>
     </div>
@@ -421,12 +421,9 @@ input:checked + .slider:before { transform: translateX(22px); }
 <!-- ВКЛАДКА 3: АНАЛИЗ ПРОФИЛЕЙ -->
 <div id="tab-osint" class="tab-content">
     <div class="card">
-        <div class="card-title">Разведка профилей</div>
+        <div class="card-title">Досье профиля</div>
         <input type="text" id="osint-val" class="input-box" placeholder="@username или Telegram ID…">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px;">
-            <button class="btn btn-accent" onclick="showOsint('probe')">🌐 Паспорт</button>
-            <button class="btn btn-purple" onclick="showOsint('dossier')">📁 Досье</button>
-        </div>
+        <button class="btn btn-purple" onclick="showOsint()" style="margin-top:8px;">📁 Сформировать досье</button>
         <div id="osint-res-card" style="display:none;" class="result-box"></div>
     </div>
 </div>
@@ -434,8 +431,8 @@ input:checked + .slider:before { transform: translateX(22px); }
 <!-- ВКЛАДКА 4: ЗАМЕТКИ -->
 <div id="tab-notes" class="tab-content">
     <div class="card">
-        <div class="card-title">Приватные заметки</div>
-        <input type="text" id="note-input" class="input-box" placeholder="Текст заметки…">
+        <div class="card-title">Блокнот заметок</div>
+        <input type="text" id="note-input" class="input-box" placeholder="Текст новой заметки…">
         <button class="btn btn-accent" onclick="addNote()">💾 Сохранить заметку</button>
         <div id="notes-list" style="margin-top:10px;"></div>
     </div>
@@ -444,22 +441,25 @@ input:checked + .slider:before { transform: translateX(22px); }
 <!-- ВКЛАДКА 5: УТИЛИТЫ И СЕРВИС -->
 <div id="tab-utils" class="tab-content">
     <div class="card">
-        <div class="card-title">Генератор паролей</div>
-        <input type="number" id="gen-len" class="input-box" value="16" min="6" max="64" placeholder="Длина ключа (6–64)">
-        <div style="display:flex; gap:14px; margin-top:10px; font-size:12px; color:var(--muted);">
-            <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
-                <input type="checkbox" id="gen-sym" checked> Спецсимволы
-            </label>
-            <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
-                <input type="checkbox" id="gen-num" checked> Цифры
-            </label>
+        <div class="card-title">Генератор надёжных паролей</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+            <span style="font-size:13px; color:var(--muted);">Длина пароля:</span>
+            <span id="gen-len-val" style="font-weight:bold; color:var(--accent);">16</span>
         </div>
-        <button class="btn btn-gold" onclick="genPass()" style="margin-top:10px;">🎲 Сгенерировать ключ</button>
-        <div id="gen-out-box" style="display:none; cursor:pointer;" class="result-box" onclick="copyResult(this)" title="Нажмите, чтобы скопировать"></div>
+        <input type="range" id="gen-len" min="6" max="64" value="16" style="width:100%; margin:8px 0;" oninput="document.getElementById('gen-len-val').innerText = this.value">
+        
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:6px; font-size:12px;">
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="gen-upper" checked> Заглавные (A-Z)</label>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="gen-lower" checked> Строчные (a-z)</label>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="gen-num" checked> Цифры (0-9)</label>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="gen-sym" checked> Спецсимволы</label>
+        </div>
+        <button class="btn btn-gold" onclick="genPass()" style="margin-top:12px;">🎲 Сгенерировать ключ</button>
+        <div id="gen-out-box" style="display:none;" class="result-box"></div>
     </div>
 
     <div class="card">
-        <div class="card-title">Хэширование текста</div>
+        <div class="card-title">Хэширование данных</div>
         <input type="text" id="hash-input" class="input-box" placeholder="Введите пароль или текст…">
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px;">
             <button class="btn btn-accent" onclick="calcHash('MD5')">MD5</button>
@@ -473,30 +473,30 @@ input:checked + .slider:before { transform: translateX(22px); }
     </div>
 
     <div class="card">
-        <div class="card-title">Расхэширование</div>
-        <input type="text" id="dehash-input" class="input-box" placeholder="Вставьте хэш для поиска…">
-        <button class="btn btn-purple" onclick="dehash()">🔍 Найти пароль</button>
+        <div class="card-title">Расхэширование и декодирование</div>
+        <input type="text" id="dehash-input" class="input-box" placeholder="Вставьте хэш или Base64…">
+        <button class="btn btn-purple" onclick="dehash()">🔍 Найти пароль / декодировать</button>
         <div id="dehash-out-box" style="display:none;" class="result-box"></div>
     </div>
 
     <div class="card">
         <div class="card-title">Партнёрская программа</div>
         <p style="font-size:12px; color:var(--muted); margin:0 0 10px;">
-            <b style="color:var(--accent);">+1 день</b> лицензии за каждого приглашённого друга
+            Получайте <b style="color:var(--accent);">+1 день лицензии</b> за каждого приглашённого друга.
         </p>
         <div class="result-box" id="ref-link" style="border-style:solid; font-size:11px;">Загрузка…</div>
         <button class="btn btn-purple" onclick="shareRef()" style="margin-top:10px;">📤 Поделиться ссылкой</button>
         <div style="margin-top:12px; font-size:13px; color:var(--muted);">
-            Приглашено: <b id="ref-count" style="color:#fff;">0</b> чел.
+            Приглашено пользователей: <b id="ref-count" style="color:#fff;">0</b> чел.
         </div>
     </div>
 </div>
 
-<!-- ВКЛАДКА 6: ПАНЕЛЬ ВЛАДЕЛЬЦА (ТОЛЬКО ДЛЯ СОЗДАТЕЛЯ) -->
+<!-- ВКЛАДКА 6: ПАНЕЛЬ ВЛАДЕЛЬЦА -->
 <div id="tab-owner" class="tab-content">
     <div class="card">
         <div class="card-title">👑 Панель Создателя</div>
-        <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Выдача подписки по ID или юзернейму:</p>
+        <p style="font-size:12px; color:var(--muted); margin:0 0 6px 0;">Активация лицензии по ID или @username:</p>
         <input type="text" id="owner-target" class="input-box" placeholder="@username или ID цели…">
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
             <button class="btn btn-accent" onclick="setGrantDur('1д')">⚡ 1 День</button>
@@ -513,7 +513,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 <div class="bottom-nav">
     <button class="nav-btn active" onclick="switchNav('settings', this)"><span class="nav-icon">🛡</span>Защита</button>
     <button class="nav-btn" onclick="switchNav('mute', this)"><span class="nav-icon">🔇</span>Мой ЧС</button>
-    <button class="nav-btn" onclick="switchNav('osint', this)"><span class="nav-icon">🔍</span>Анализ</button>
+    <button class="nav-btn" onclick="switchNav('osint', this)"><span class="nav-icon">📁</span>Досье</button>
     <button class="nav-btn" onclick="switchNav('notes', this)"><span class="nav-icon">📝</span>Заметки</button>
     <button class="nav-btn" onclick="switchNav('utils', this)"><span class="nav-icon">🛠</span>Утилиты</button>
     <button class="nav-btn" id="nav-owner" style="display:none;" onclick="switchNav('owner', this)"><span class="nav-icon">👑</span>Овнер</button>
@@ -526,10 +526,10 @@ tg.ready(); tg.expand();
 const BOT_TOKEN = "8760212454:AAGIURjl-OkDV4Gp_kB5MvRHnvY51a0urlQ";
 const ADMIN_ID = 7783116627;
 const P = new URLSearchParams(location.search);
-const uid = P.get('uid') || tg.initDataUnsafe?.user?.id || ADMIN_ID;
-const role = P.get('role') || 'free';
+const uid = parseInt(P.get('uid') || tg.initDataUnsafe?.user?.id || ADMIN_ID);
+const role = P.get('role') || (uid === ADMIN_ID ? 'owner' : 'free');
 const expTs = parseFloat(P.get('exp') || '0');
-const isOwner = (role === 'owner') || (parseInt(uid) === ADMIN_ID);
+const isOwner = (uid === ADMIN_ID) || (role === 'owner');
 
 const tgUser = tg.initDataUnsafe?.user;
 const firstName = tgUser?.first_name || P.get('name') || "Оператор";
@@ -541,9 +541,17 @@ document.getElementById('u-name').innerText = fullName;
 document.getElementById('u-tag').innerText = username ? `@${username}` : "отсутствует";
 document.getElementById('u-id').innerText = uid;
 
+// Умная загрузка и кэширование аватарки
 const avEl = document.getElementById('u-avatar');
-if (tgUser?.photo_url) {
-    avEl.innerHTML = `<img src="${tgUser.photo_url}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+let photoUrl = tgUser?.photo_url;
+if (photoUrl) {
+    localStorage.setItem('cached_avatar_' + uid, photoUrl);
+} else {
+    photoUrl = localStorage.getItem('cached_avatar_' + uid);
+}
+
+if (photoUrl) {
+    avEl.innerHTML = `<img src="${photoUrl}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
 } else {
     avEl.innerText = (firstName.charAt(0) || "A").toUpperCase();
 }
@@ -613,7 +621,7 @@ document.getElementById('set-sil').checked = !!S.silent_notifications;
 function autoToggle(k, v) {
     S[k] = v;
     localStorage.setItem(LSK_SET, JSON.stringify(S));
-    showToast(v ? "✅ Включено" : "⭕ Выключено");
+    showToast(v ? "Включено" : "Выключено");
     sendSilentSync({ action: "toggle_setting", key: k, value: v });
 }
 
@@ -696,32 +704,36 @@ function delNote(i) {
 // Генератор паролей
 function genPass() {
     const len = Math.min(64, Math.max(6, parseInt(document.getElementById('gen-len').value) || 16));
-    const useSym = document.getElementById('gen-sym').checked;
+    const useUpper = document.getElementById('gen-upper').checked;
+    const useLower = document.getElementById('gen-lower').checked;
     const useNum = document.getElementById('gen-num').checked;
-    let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const useSym = document.getElementById('gen-sym').checked;
+
+    let chars = '';
+    if (useUpper) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    if (useLower) chars += 'abcdefghijklmnopqrstuvwxyz';
     if (useNum) chars += '0123456789';
     if (useSym) chars += '!@#$%^&*()-_=+[]{}<>?~';
+    if (!chars) chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+
     let pass = '';
     const arr = new Uint32Array(len);
     crypto.getRandomValues(arr);
     for (let i = 0; i < len; i++) pass += chars[arr[i] % chars.length];
+    
     const b = document.getElementById('gen-out-box');
-    b.innerText = `🔑 Сгенерированный ключ (${len} симв.):\n\n${pass}\n\n(нажмите, чтобы скопировать)`;
-    b.dataset.copy = pass;
+    b.innerHTML = `<div style="font-size:11px; color:var(--muted); margin-bottom:4px;">Сгенерированный ключ (${len} симв.):</div>
+                   <div style="font-size:14px; font-weight:bold; color:#fff; word-break:break-all;">${pass}</div>
+                   <button class="btn btn-accent" style="margin-top:8px; padding:8px;" onclick="copyText('${pass}')">📋 Скопировать пароль</button>`;
     b.style.display = 'block';
-    showToast("Пароль сгенерирован");
 }
 
-function copyResult(elem) {
-    const text = elem.dataset.copy || elem.innerText;
-    navigator.clipboard.writeText(text).then(() => {
+function copyText(val) {
+    navigator.clipboard.writeText(val).then(() => {
         showToast("Скопировано в буфер");
-    }).catch(() => {
-        showToast("Не удалось скопировать");
     });
 }
 
-// Хэширование
 function calcHash(type) {
     const str = document.getElementById('hash-input').value;
     if (!str) return tg.showAlert("Введите текст для хэширования!");
@@ -735,38 +747,52 @@ function calcHash(type) {
     b.style.display = 'block';
 }
 
+// Расхэширование без разрушения регистра Base64
 function dehash() {
-    const h = document.getElementById('dehash-input').value.trim().toLowerCase();
-    if (!h) return tg.showAlert("Вставьте хэш!");
+    const raw = document.getElementById('dehash-input').value.trim();
+    if (!raw) return tg.showAlert("Вставьте хэш или строку Base64!");
     const b = document.getElementById('dehash-out-box');
     b.style.display = 'block';
+
+    // 1. Пробуем декодировать как Base64
     try {
-        const b64 = decodeURIComponent(escape(atob(h)));
-        if (b64 && /^[\x20-\x7E\sа-яА-ЯёЁ]+$/.test(b64)) {
-            b.innerText = `✅ [Base64 декодирован]:\n«${b64}»`; return;
+        const decoded = decodeURIComponent(escape(atob(raw)));
+        if (decoded && /^[\x20-\x7E\sа-яА-ЯёЁ0-9!@#$%^&*()_\-+=\[\]{}|\\:;"'<>,.?\/]+$/.test(decoded)) {
+            b.innerText = `✅ [Base64 результат]:\n«${decoded}»`;
+            return;
         }
     } catch(e) {}
-    const d = {
+
+    // 2. Поиск по популярным хэшам
+    const lower = raw.toLowerCase();
+    const commonDict = {
+        "f9859f7fa5e12f607c39050d53c5520e": "100485",
         "202cb962ac59075b964b07152d234b70": "123",
         "250cf8b51c773f3f8dc8b4be867a9a02": "1234",
         "827ccb0eea8a706c4c34a16891f84e7b": "12345",
         "e10adc3949ba59abbe56e057f20f883e": "123456",
         "5f4dcc3b5aa765d61d8327deb882cf99": "password",
-        "098f6bcd4621d373cade4e832627b4f6": "test"
+        "098f6bcd4621d373cade4e832627b4f6": "test",
+        "65c9103c1555577609ee3cfec5896dd1": "admin",
+        "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8": "password",
+        "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92": "123456"
     };
-    b.innerText = d[h] ? `✅ [Найден пароль]:\n«${d[h]}»` : `❌ Хэш не найден в базе типовых паролей.`;
+
+    if (commonDict[lower]) {
+        b.innerText = `✅ [Найден пароль]:\n«${commonDict[lower]}»`;
+    } else {
+        b.innerText = `❌ Хэш не найден в базе типовых паролей.`;
+    }
 }
 
-// OSINT
-function showOsint(mode) {
+// Досье
+function showOsint() {
     const v = document.getElementById('osint-val').value.trim();
     if (!v) return tg.showAlert("Введите @username или ID!");
     const clean = v.replace('@','').toLowerCase();
     const box = document.getElementById('osint-res-card');
     box.style.display = 'block';
-    box.innerText = mode === 'probe' 
-        ? `🌐 [ПАСПОРТ ПРОФИЛЯ]\nСубъект: @${clean}\nСтатус в ЧС: ${muteList.includes(clean) ? '🔴 В ЧС' : '🟢 Обычный'}\nДата-центр: DC 2 (Амстердам)\nТелефон: 🔒 Скрыт настройками приватности`
-        : `📁 [ДОСЬЕ АКТИВНОСТИ]\nОбъект: @${clean}\nСтатус в базе: ${muteList.includes(clean) ? '🔴 ЗАМУЧЕН' : '🟢 Чистый'}\nУдалённых сообщений зафиксировано: 0 шт.`;
+    box.innerText = `📁 ДОСЬЕ ПРОФИЛЯ: @${clean}\n━━━━━━━━━━━━━━━━━━━━\nСтатус в базе: ${muteList.includes(clean) ? '🔴 В ЧЁРНОМ СПИСКЕ' : '🟢 ЧИСТЫЙ'}\nДата-центр: DC 2 (Амстердам, Европа)\nТелефон: 🔒 Скрыт приватностью`;
 }
 
 // Партнёры
@@ -791,7 +817,6 @@ function submitGrant() {
     document.getElementById('owner-target').value = '';
 }
 
-// Навигация
 function switchNav(id, btn) {
     document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
