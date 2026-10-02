@@ -9,17 +9,14 @@
 <style>
 :root {
     --bg: #040814;
-    --card-bg: rgba(10, 20, 38, 0.75);
+    --card-bg: rgba(10, 20, 38, 0.78);
     --card-border: rgba(56, 189, 248, 0.22);
     --accent: #38bdf8;
     --accent-glow: rgba(56, 189, 248, 0.45);
     --blue-btn: #0284c7;
     --gold: #facc15;
-    --gold-border: rgba(250, 204, 21, 0.45);
     --danger: #fb7185;
-    --danger-border: rgba(251, 113, 133, 0.4);
     --text: #f8fafc;
-    --muted: #7dd3fc;
     --subtle: #94a3b8;
 }
 
@@ -58,6 +55,22 @@ body {
 }
 #toast.show { top: 16px; opacity: 1; }
 
+/* Окно блокировки для пользователей без подписки */
+#paywall-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(4, 8, 20, 0.92);
+    backdrop-filter: blur(20px);
+    z-index: 10000;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+}
+#paywall-overlay.active { display: flex; }
+
 .profile-card {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
@@ -67,7 +80,6 @@ body {
     margin-bottom: 12px;
     position: relative;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-    overflow: hidden;
 }
 .profile-card::after {
     content: '';
@@ -76,247 +88,116 @@ body {
     background: linear-gradient(90deg, #0284c7, #38bdf8, #7dd3fc);
 }
 
-.profile-top {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 14px;
-}
-
+.profile-top { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
 .avatar-wrapper {
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
+    width: 58px; height: 58px; border-radius: 50%;
     background: linear-gradient(135deg, var(--accent), var(--blue-btn));
-    padding: 2px;
-    box-shadow: 0 0 20px var(--accent-glow);
-    flex-shrink: 0;
+    padding: 2px; box-shadow: 0 0 20px var(--accent-glow); flex-shrink: 0;
 }
 .avatar-img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-    background: #0b1528;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--accent);
-    overflow: hidden;
+    width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+    background: #0b1528; display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 800; color: var(--accent);
 }
-
 .profile-meta { flex: 1; min-width: 0; }
-.profile-meta h2 {
-    margin: 0;
-    font-size: 19px;
-    font-weight: 800;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
+.profile-meta h2 { margin: 0; font-size: 19px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .profile-meta .u-tag { font-size: 12px; color: var(--accent); margin-top: 2px; }
 .profile-meta .u-id { font-size: 11px; color: var(--subtle); margin-top: 2px; font-family: monospace; }
 
-.status-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 800;
-    white-space: nowrap;
-}
-.badge-owner { background: rgba(250, 204, 21, 0.15); border: 1px solid var(--gold-border); color: var(--gold); }
+.status-badge { display: inline-flex; align-items: center; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; }
+.badge-owner { background: rgba(250, 204, 21, 0.15); border: 1px solid rgba(250, 204, 21, 0.4); color: var(--gold); }
 .badge-prem { background: rgba(56, 189, 248, 0.18); border: 1px solid var(--accent); color: var(--accent); }
 .badge-vip { background: rgba(14, 165, 233, 0.18); border: 1px solid rgba(14, 165, 233, 0.5); color: #7dd3fc; }
-.badge-free { background: rgba(251, 113, 133, 0.15); border: 1px solid var(--danger-border); color: var(--danger); }
+.badge-free { background: rgba(251, 113, 133, 0.15); border: 1px solid rgba(251, 113, 133, 0.4); color: var(--danger); }
 
 .timer-box {
-    background: rgba(4, 8, 20, 0.85);
-    border: 1px solid rgba(56, 189, 248, 0.12);
-    border-radius: 12px;
-    padding: 10px 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    color: var(--subtle);
+    background: rgba(4, 8, 20, 0.85); border: 1px solid rgba(56, 189, 248, 0.12);
+    border-radius: 12px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--subtle);
 }
 .timer-val { font-family: monospace; font-size: 13px; font-weight: 700; color: #fff; }
 
-.metric-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-.metric-card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 16px;
-    padding: 12px 6px;
-    text-align: center;
-    backdrop-filter: blur(20px);
-}
-.metric-val { font-size: 20px; font-weight: 800; color: var(--accent); }
-.metric-lbl { font-size: 10px; color: var(--subtle); margin-top: 3px; font-weight: 700; text-transform: uppercase; }
-
 .card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 20px;
-    padding: 16px;
-    margin-bottom: 12px;
-    backdrop-filter: blur(25px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 20px; padding: 16px; margin-bottom: 12px; backdrop-filter: blur(25px);
 }
 .card-title {
-    font-size: 13px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--accent);
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--accent); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
 }
-.card-title::before {
-    content: '';
-    width: 3px; height: 14px;
-    background: linear-gradient(180deg, var(--accent), var(--blue-btn));
-    border-radius: 2px;
-}
+.card-title::before { content: ''; width: 3px; height: 14px; background: linear-gradient(180deg, var(--accent), var(--blue-btn)); border-radius: 2px; }
 
-.feature-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(56, 189, 248, 0.08);
-    gap: 12px;
-}
+.feature-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid rgba(56, 189, 248, 0.08); gap: 12px; }
 .feature-row:last-child { border-bottom: none; }
 .feature-info { flex: 1; }
 .feature-header h4 { margin: 0; font-size: 14px; font-weight: 700; }
 .feature-desc { margin: 4px 0 0 0; font-size: 12px; color: var(--subtle); line-height: 1.4; }
 
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 48px;
-    height: 26px;
-    flex-shrink: 0;
-    margin-top: 2px;
-}
+.switch { position: relative; display: inline-block; width: 48px; height: 26px; flex-shrink: 0; margin-top: 2px; }
 .switch input { opacity: 0; width: 0; height: 0; }
-.slider {
-    position: absolute; cursor: pointer; inset: 0;
-    background-color: #0f1c33;
-    transition: 0.25s ease;
-    border-radius: 26px;
-    border: 1px solid rgba(56, 189, 248, 0.25);
-}
-.slider:before {
-    position: absolute; content: "";
-    height: 20px; width: 20px;
-    left: 2px; bottom: 2px;
-    background-color: white;
-    transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 50%;
-}
+.slider { position: absolute; cursor: pointer; inset: 0; background-color: #0f1c33; transition: 0.25s ease; border-radius: 26px; border: 1px solid rgba(56, 189, 248, 0.25); }
+.slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 2px; bottom: 2px; background-color: white; transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 50%; }
 input:checked + .slider { background-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
 input:checked + .slider:before { transform: translateX(22px); }
 
 .input-box {
-    width: 100%;
-    background: rgba(4, 8, 20, 0.9);
-    border: 1px solid rgba(56, 189, 248, 0.25);
-    padding: 13px 15px;
-    border-radius: 14px;
-    color: #fff;
-    font-size: 14px;
-    outline: none;
-    margin-top: 6px;
+    width: 100%; background: rgba(4, 8, 20, 0.9); border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 13px 15px; border-radius: 14px; color: #fff; font-size: 14px; outline: none; margin-top: 6px;
 }
 .input-box:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2); }
 
 .btn {
-    width: 100%;
-    padding: 13px;
-    border: none;
-    border-radius: 14px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    margin-top: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    transition: transform 0.1s;
+    width: 100%; padding: 13px; border: none; border-radius: 14px; font-size: 14px;
+    font-weight: 700; cursor: pointer; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; transition: transform 0.1s;
 }
 .btn:active { transform: scale(0.98); }
 .btn-accent { background: linear-gradient(135deg, var(--accent), var(--blue-btn)); color: #040814; font-weight: 800; }
 .btn-blue { background: rgba(56, 189, 248, 0.15); border: 1px solid var(--accent); color: var(--accent); }
 .btn-gold { background: linear-gradient(135deg, var(--gold), #ca8a04); color: #040814; font-weight: 800; }
-.btn-danger { background: rgba(251, 113, 133, 0.15); color: var(--danger); border: 1px solid var(--danger-border); }
+.btn-danger { background: rgba(251, 113, 133, 0.15); color: var(--danger); border: 1px solid rgba(251, 113, 133, 0.3); }
 
 .tab-content { display: none; }
 .tab-content.active { display: block; animation: fadeIn 0.2s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
 .bottom-nav {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    height: 72px;
-    background: rgba(4, 8, 20, 0.95);
-    backdrop-filter: blur(30px);
-    border-top: 1px solid rgba(56, 189, 248, 0.18);
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    z-index: 100;
+    position: fixed; bottom: 0; left: 0; right: 0; height: 72px;
+    background: rgba(4, 8, 20, 0.95); backdrop-filter: blur(30px);
+    border-top: 1px solid rgba(56, 189, 248, 0.18); display: flex; justify-content: space-around; align-items: center; z-index: 100;
     padding-bottom: env(safe-area-inset-bottom);
 }
 .nav-btn {
-    background: none; border: none; color: var(--subtle);
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
-    font-size: 10px; font-weight: 600; cursor: pointer; flex: 1;
-    transition: color 0.15s;
-    padding: 6px 0;
+    background: none; border: none; color: var(--subtle); display: flex; flex-direction: column;
+    align-items: center; gap: 4px; font-size: 10px; font-weight: 600; cursor: pointer; flex: 1; padding: 6px 0;
 }
 .nav-btn.active { color: var(--accent); }
 .nav-icon { font-size: 19px; }
 
 .mute-chip {
     display: flex; justify-content: space-between; align-items: center;
-    background: rgba(56, 189, 248, 0.05);
-    border: 1px solid rgba(56, 189, 248, 0.15);
+    background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.15);
     border-radius: 12px; padding: 10px 14px; margin-top: 6px;
 }
 .mute-chip-del { color: var(--danger); cursor: pointer; font-weight: bold; font-size: 16px; padding: 2px 6px; }
 
 .result-box {
-    background: #030611;
-    border: 1px dashed var(--accent);
-    border-radius: 12px;
-    padding: 12px;
-    font-family: monospace;
-    font-size: 12px;
-    color: var(--accent);
-    margin-top: 10px;
-    word-break: break-all;
-    white-space: pre-wrap;
-    line-height: 1.5;
+    background: #030611; border: 1px dashed var(--accent); border-radius: 12px;
+    padding: 12px; font-family: monospace; font-size: 12px; color: var(--accent); margin-top: 10px; word-break: break-all; white-space: pre-wrap;
 }
 </style>
 </head>
 <body>
 
 <div id="toast">✅ Настройки обновлены</div>
+
+<!-- Экран блокировки для Free -->
+<div id="paywall-overlay">
+    <div style="font-size: 54px; margin-bottom: 12px;">🛡</div>
+    <h2 style="font-size: 22px; font-weight: 800; margin: 0 0 8px 0; color: #fff;">Доступ заблокирован</h2>
+    <p style="font-size: 14px; color: var(--subtle); max-width: 280px; margin: 0 0 20px 0; line-height: 1.5;">
+        Использование Dashboard Asteria Suite доступно только для обладателей лицензии <b style="color:var(--accent);">PREMIUM</b> или <b style="color:var(--gold);">Владельца</b>.
+    </p>
+    <button class="btn btn-accent" style="max-width: 260px;" onclick="openBotBuy()">💳 Оформить подписку</button>
+</div>
 
 <div class="profile-card">
     <div class="profile-top">
@@ -336,63 +217,44 @@ input:checked + .slider:before { transform: translateX(22px); }
     </div>
 </div>
 
-<div class="metric-grid">
-    <div class="metric-card"><div class="metric-val" id="m-del">0</div><div class="metric-lbl">Удалений</div></div>
-    <div class="metric-card"><div class="metric-val" id="m-edit">0</div><div class="metric-lbl">Правок</div></div>
-    <div class="metric-card"><div class="metric-val" id="m-mutes">0</div><div class="metric-lbl">В ЧС</div></div>
-</div>
-
 <!-- ВКЛАДКА 1: ЗАЩИТА -->
 <div id="tab-settings" class="tab-content active">
     <div class="card">
         <div class="card-title">Модули безопасности</div>
-
         <div class="feature-row">
             <div class="feature-info">
                 <div class="feature-header"><h4>Anti-Delete</h4></div>
-                <p class="feature-desc">Перехватывает и сохраняет текст, голосовые и видео-сообщения, удалённые собеседником.</p>
+                <p class="feature-desc">Сохраняет удалённые собеседником сообщения и медиафайлы.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-ad" onchange="autoToggle('anti_delete', this.checked)"><span class="slider"></span></label>
         </div>
-
         <div class="feature-row">
             <div class="feature-info">
                 <div class="feature-header"><h4>Anti-Edit</h4></div>
-                <p class="feature-desc">Сохраняет исходный вариант сообщения до внесения правок.</p>
+                <p class="feature-desc">Перехватывает первоначальные версии изменённых сообщений.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-ae" onchange="autoToggle('anti_edit', this.checked)"><span class="slider"></span></label>
         </div>
-
         <div class="feature-row">
             <div class="feature-info">
                 <div class="feature-header"><h4>Одноразовые медиа (TTL)</h4></div>
-                <p class="feature-desc">Спасает самоуничтожающиеся фото и видеофайлы до истечения таймера.</p>
+                <p class="feature-desc">Спасает самоуничтожающиеся фото и видеофайлы.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-ttl" onchange="autoToggle('save_ttl_media', this.checked)"><span class="slider"></span></label>
         </div>
-
         <div class="feature-row">
             <div class="feature-info">
                 <div class="feature-header"><h4>Не беспокоить (DND)</h4></div>
-                <p class="feature-desc">Удаляет входящие сообщения собеседника и отправляет автоответ о вашей занятости.</p>
+                <p class="feature-desc">Автоответ в личных диалогах о вашей занятости.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-dnd" onchange="autoToggle('dnd', this.checked)"><span class="slider"></span></label>
         </div>
-
         <div class="feature-row">
             <div class="feature-info">
-                <div class="feature-header"><h4>Приватность профиля (Anti-Dox)</h4></div>
-                <p class="feature-desc">Защищает ваш аккаунт от сбора информации через досье другими участниками сети.</p>
+                <div class="feature-header"><h4>Приватность (Anti-Dox)</h4></div>
+                <p class="feature-desc">Защищает ваш профиль от парсинга через модуль досье.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-adox" onchange="autoToggle('anti_dox', this.checked)"><span class="slider"></span></label>
-        </div>
-
-        <div class="feature-row">
-            <div class="feature-info">
-                <div class="feature-header"><h4>Тихие уведомления</h4></div>
-                <p class="feature-desc">Все отчёты о перехватах удалений и спама приходят без звука.</p>
-            </div>
-            <label class="switch"><input type="checkbox" id="set-sil" onchange="autoToggle('silent_notifications', this.checked)"><span class="slider"></span></label>
         </div>
     </div>
 </div>
@@ -401,7 +263,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 <div id="tab-mute" class="tab-content">
     <div class="card">
         <div class="card-title">Добавить в Чёрный Список</div>
-        <input type="text" id="mute-val" class="input-box" placeholder="@username или числовой Telegram ID…">
+        <input type="text" id="mute-val" class="input-box" placeholder="@username или ID цели…">
         <button class="btn btn-accent" onclick="addMute()">🚫 Заблокировать объект</button>
     </div>
     <div class="card">
@@ -411,12 +273,12 @@ input:checked + .slider:before { transform: translateX(22px); }
     </div>
 </div>
 
-<!-- ВКЛАДКА 3: АНАЛИЗ ПРОФИЛЕЙ (ДОСЬЕ) -->
+<!-- ВКЛАДКА 3: ДОСЬЕ -->
 <div id="tab-osint" class="tab-content">
     <div class="card">
-        <div class="card-title">Досье профиля</div>
+        <div class="card-title">Разведка профиля</div>
         <input type="text" id="osint-val" class="input-box" placeholder="@username или Telegram ID…">
-        <button class="btn btn-accent" onclick="showOsint()" style="margin-top:8px;">📁 Сформировать досье</button>
+        <button class="btn btn-accent" onclick="showOsint()">📁 Сформировать досье</button>
         <div id="osint-res-card" style="display:none;" class="result-box"></div>
     </div>
 </div>
@@ -431,62 +293,33 @@ input:checked + .slider:before { transform: translateX(22px); }
     </div>
 </div>
 
-<!-- ВКЛАДКА 5: УТИЛИТЫ И СЕРВИС -->
+<!-- ВКЛАДКА 5: УТИЛИТЫ -->
 <div id="tab-utils" class="tab-content">
     <div class="card">
-        <div class="card-title">Генератор надёжных паролей</div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+        <div class="card-title">Генератор паролей</div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
             <span style="font-size:13px; color:var(--subtle);">Длина ключа:</span>
             <span id="gen-len-val" style="font-weight:bold; color:var(--accent);">16</span>
         </div>
         <input type="range" id="gen-len" min="6" max="64" value="16" style="width:100%; margin:8px 0;" oninput="document.getElementById('gen-len-val').innerText = this.value">
-        
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:6px; font-size:12px;">
-            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="gen-upper" checked> Заглавные (A-Z)</label>
-            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="gen-lower" checked> Строчные (a-z)</label>
-            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="gen-num" checked> Цифры (0-9)</label>
-            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="gen-sym" checked> Спецсимволы</label>
-        </div>
-        <button class="btn btn-gold" onclick="genPass()" style="margin-top:12px;">🎲 Сгенерировать ключ</button>
+        <button class="btn btn-gold" onclick="genPass()">🎲 Сгенерировать ключ</button>
         <div id="gen-out-box" style="display:none;" class="result-box"></div>
     </div>
 
     <div class="card">
-        <div class="card-title">Хэширование данных</div>
-        <input type="text" id="hash-input" class="input-box" placeholder="Введите пароль или текст…">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px;">
-            <button class="btn btn-blue" onclick="calcHash('MD5')">MD5</button>
-            <button class="btn btn-blue" onclick="calcHash('SHA256')">SHA-256</button>
-        </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px;">
-            <button class="btn btn-blue" onclick="calcHash('Base64')">Base64</button>
-            <button class="btn btn-blue" onclick="calcHash('SHA1')">SHA-1</button>
-        </div>
-        <div id="hash-out-box" style="display:none;" class="result-box"></div>
-    </div>
-
-    <div class="card">
-        <div class="card-title">Расхэширование и декодирование</div>
-        <input type="text" id="dehash-input" class="input-box" placeholder="Вставьте хэш или Base64…">
-        <button class="btn btn-accent" onclick="dehash()">🔍 Найти пароль / декодировать</button>
-        <div id="dehash-out-box" style="display:none;" class="result-box"></div>
-    </div>
-
-    <div class="card">
-        <div class="card-title">Партнёрская программа</div>
+        <div class="card-title">Партнёрская сеть</div>
         <p style="font-size:12px; color:var(--subtle); margin:0 0 10px;">
-            Получайте <b style="color:var(--accent);">+1 день лицензии</b> за каждого приглашённого друга.
+            Дарим <b style="color:var(--accent);">+1 день лицензии</b> за каждого приглашённого друга.
         </p>
         <div class="result-box" id="ref-link" style="border-style:solid; font-size:11px;">Загрузка…</div>
-        <button class="btn btn-accent" onclick="shareRef()" style="margin-top:10px;">📤 Поделиться ссылкой</button>
+        <button class="btn btn-accent" onclick="shareRefMultiple()" style="margin-top:10px;">👥 Отправить сразу нескольким друзьям</button>
     </div>
 </div>
 
-<!-- ВКЛАДКА 6: ПАНЕЛЬ ВЛАДЕЛЬЦА -->
+<!-- ВКЛАДКА 6: ВЛАДЕЛЕЦ -->
 <div id="tab-owner" class="tab-content">
     <div class="card">
         <div class="card-title">👑 Панель Создателя</div>
-        <p style="font-size:12px; color:var(--subtle); margin:0 0 6px 0;">Активация и продление лицензии по ID или @username:</p>
         <input type="text" id="owner-target" class="input-box" placeholder="@username или ID цели…">
         
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
@@ -501,39 +334,26 @@ input:checked + .slider:before { transform: translateX(22px); }
             <button class="btn btn-blue" onclick="setGrantDur('365д')">💎 365 Дней</button>
         </div>
         <button class="btn btn-gold" style="margin-top:6px;" onclick="setGrantDur('навсегда')">👑 Бессрочно</button>
-        
-        <input type="text" id="owner-dur-val" class="input-box" value="30д" style="margin-top:8px;" placeholder="Свой срок (например 14д)">
-        <button class="btn btn-accent" style="margin-top:10px;" onclick="submitGrant()">🚀 Выдать лицензию</button>
+        <input type="text" id="owner-dur-val" class="input-box" value="30д" style="margin-top:8px;" placeholder="Свой срок">
+        <button class="btn btn-accent" style="margin-top:10px;" onclick="submitGrant()">🚀 Применить подписку</button>
     </div>
 
     <div class="card">
-        <div class="card-title">⚙️ Системные модули (Глобально)</div>
+        <div class="card-title">⚙️ Системные модули (Глобальное выключение)</div>
         <div class="feature-row">
-            <div class="feature-info">
-                <h4>RP Команды</h4>
-                <p class="feature-desc">Интерактивные действия в чатах</p>
-            </div>
+            <div class="feature-info"><h4>RP Команды</h4><p class="feature-desc">Интерактивные действия</p></div>
             <label class="switch"><input type="checkbox" id="mod-rp" checked onchange="toggleSysMod('rp', this.checked)"><span class="slider"></span></label>
         </div>
         <div class="feature-row">
-            <div class="feature-info">
-                <h4>OSINT Досье</h4>
-                <p class="feature-desc">Анализ профиля и аудит</p>
-            </div>
+            <div class="feature-info"><h4>OSINT Досье</h4><p class="feature-desc">Разведка аккаунтов</p></div>
             <label class="switch"><input type="checkbox" id="mod-osint" checked onchange="toggleSysMod('osint', this.checked)"><span class="slider"></span></label>
         </div>
         <div class="feature-row">
-            <div class="feature-info">
-                <h4>Чёрный список</h4>
-                <p class="feature-desc">Блокировка пользователей в диалогах</p>
-            </div>
+            <div class="feature-info"><h4>Чёрный список</h4><p class="feature-desc">Блокировка в чатах</p></div>
             <label class="switch"><input type="checkbox" id="mod-blacklist" checked onchange="toggleSysMod('blacklist', this.checked)"><span class="slider"></span></label>
         </div>
         <div class="feature-row">
-            <div class="feature-info">
-                <h4>Инструменты</h4>
-                <p class="feature-desc">Калькулятор, заметки, пинг, спам</p>
-            </div>
+            <div class="feature-info"><h4>Инструменты</h4><p class="feature-desc">Калькулятор, заметки, спам</p></div>
             <label class="switch"><input type="checkbox" id="mod-tools" checked onchange="toggleSysMod('tools', this.checked)"><span class="slider"></span></label>
         </div>
     </div>
@@ -559,10 +379,10 @@ const currentUid = tg.initDataUnsafe?.user?.id ? parseInt(tg.initDataUnsafe.user
 const paramUid = P.get('uid') ? parseInt(P.get('uid')) : null;
 const uid = currentUid || paramUid || 7783116627;
 
-const adminTargetId = P.get('adm') ? parseInt(P.get('adm')) : 7783116627;
+const adminTargetId = 7783116627;
 const role = P.get('role') || 'free';
 const expTs = parseFloat(P.get('exp') || '0');
-const isOwner = (role === 'owner') || (uid === adminTargetId) || (uid === 7783116627);
+const isOwner = (role === 'owner') || (uid === adminTargetId);
 
 const tgUser = tg.initDataUnsafe?.user;
 const firstName = tgUser?.first_name || P.get('name') || "Оператор";
@@ -574,35 +394,10 @@ document.getElementById('u-name').innerText = fullName;
 document.getElementById('u-tag').innerText = username ? `@${username}` : "отсутствует";
 document.getElementById('u-id').innerText = uid;
 
-const avEl = document.getElementById('u-avatar');
-async function loadAvatar() {
-    let cached = localStorage.getItem('cached_avatar_' + uid);
-    if (cached) {
-        avEl.innerHTML = `<img src="${cached}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
-    }
-    if (tgUser?.photo_url) {
-        localStorage.setItem('cached_avatar_' + uid, tgUser.photo_url);
-        avEl.innerHTML = `<img src="${tgUser.photo_url}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
-        return;
-    }
-    try {
-        const r1 = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUserProfilePhotos?user_id=${uid}&limit=1`);
-        const j1 = await r1.json();
-        if (j1.ok && j1.result?.total_count > 0) {
-            const fileId = j1.result.photos[0][0].file_id;
-            const r2 = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${fileId}`);
-            const j2 = await r2.json();
-            if (j2.ok && j2.result?.file_path) {
-                const fullUrl = `https://api.telegram.org/file/bot${BOT_TOKEN}/${j2.result.file_path}`;
-                localStorage.setItem('cached_avatar_' + uid, fullUrl);
-                avEl.innerHTML = `<img src="${fullUrl}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
-                return;
-            }
-        }
-    } catch(e) {}
-    if (!cached) avEl.innerText = (firstName.charAt(0) || "A").toUpperCase();
+// Проверка блокировки для Free (Баг 8)
+if (!isOwner && role === 'free') {
+    document.getElementById('paywall-overlay').classList.add('active');
 }
-loadAvatar();
 
 const badge = document.getElementById('u-badge');
 if (isOwner) {
@@ -625,6 +420,11 @@ function formatExp(exp) {
 }
 document.getElementById('countdown').innerText = formatExp(expTs);
 
+function openBotBuy() {
+    tg.openTelegramLink("https://t.me/asteria_suite_bot?start=buy");
+}
+
+// Отправка команд в бот с мгновенным удалением на стороне бэкенда (Баг 1)
 async function sendSilentSync(data) {
     try {
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -636,29 +436,25 @@ async function sendSilentSync(data) {
                 disable_notification: true
             })
         });
-    } catch(e) { console.error(e); }
+    } catch(e) {}
 }
 
 const LSK_SET = 'asteria_set_' + uid;
 let localS = null;
 try { localS = JSON.parse(localStorage.getItem(LSK_SET)); } catch(e) {}
-
 let S = {
-    anti_delete: (localS && localS.anti_delete !== undefined) ? !!localS.anti_delete : (P.get('ad') !== '0'),
-    anti_edit: (localS && localS.anti_edit !== undefined) ? !!localS.anti_edit : (P.get('ae') !== '0'),
-    save_ttl_media: (localS && localS.save_ttl_media !== undefined) ? !!localS.save_ttl_media : (P.get('ttl') !== '0'),
-    dnd: (localS && localS.dnd !== undefined) ? !!localS.dnd : (P.get('dnd') === '1'),
-    anti_dox: (localS && localS.anti_dox !== undefined) ? !!localS.anti_dox : (P.get('adox') === '1'),
-    silent_notifications: (localS && localS.silent_notifications !== undefined) ? !!localS.silent_notifications : (P.get('sil') === '1')
+    anti_delete: (localS && localS.anti_delete !== undefined) ? !!localS.anti_delete : true,
+    anti_edit: (localS && localS.anti_edit !== undefined) ? !!localS.anti_edit : true,
+    save_ttl_media: (localS && localS.save_ttl_media !== undefined) ? !!localS.save_ttl_media : true,
+    dnd: (localS && localS.dnd !== undefined) ? !!localS.dnd : false,
+    anti_dox: (localS && localS.anti_dox !== undefined) ? !!localS.anti_dox : false
 };
-localStorage.setItem(LSK_SET, JSON.stringify(S));
 
 document.getElementById('set-ad').checked = S.anti_delete;
 document.getElementById('set-ae').checked = S.anti_edit;
 document.getElementById('set-ttl').checked = S.save_ttl_media;
 document.getElementById('set-dnd').checked = S.dnd;
 document.getElementById('set-adox').checked = S.anti_dox;
-document.getElementById('set-sil').checked = S.silent_notifications;
 
 function autoToggle(k, v) {
     S[k] = v;
@@ -667,197 +463,55 @@ function autoToggle(k, v) {
     sendSilentSync({ action: "toggle_setting", key: k, value: v });
 }
 
-// Загрузка Чёрного Списка
+// Чёрный список
 const LSK_MUT = 'asteria_mut_' + uid;
-let urlM = P.get('mutes');
-let muteList = [];
-
-if (urlM !== null && urlM !== undefined) {
-    muteList = decodeURIComponent(urlM)
-        .split(',')
-        .map(x => x.trim().toLowerCase().replace('@',''))
-        .filter(Boolean);
-    localStorage.setItem(LSK_MUT, JSON.stringify(muteList));
-} else {
-    try {
-        muteList = JSON.parse(localStorage.getItem(LSK_MUT)) || [];
-    } catch(e) { muteList = []; }
-}
-
+let muteList = JSON.parse(localStorage.getItem(LSK_MUT)) || [];
 function renderMutes() {
     const c = document.getElementById('mute-list-container');
-    document.getElementById('m-mutes').innerText = muteList.length;
     if (!muteList.length) { c.innerHTML = '<span style="font-size:12px;color:var(--subtle)">Список пуст</span>'; return; }
-    c.innerHTML = muteList.map(t => `
-        <div class="mute-chip">
-            <span><code>${t}</code></span>
-            <span class="mute-chip-del" onclick="rmMute('${t}')">✕</span>
-        </div>`).join('');
+    c.innerHTML = muteList.map(t => `<div class="mute-chip"><span><code>${t}</code></span><span class="mute-chip-del" onclick="rmMute('${t}')">✕</span></div>`).join('');
 }
 renderMutes();
 
 function addMute() {
     const v = document.getElementById('mute-val').value.trim().replace('@','').toLowerCase();
     if (!v) return tg.showAlert("Введите ник или ID!");
-    if (muteList.includes(v)) return tg.showAlert("Данный объект уже в ЧС!");
+    if (muteList.includes(v)) return tg.showAlert("Уже в списке!");
     muteList.push(v);
     localStorage.setItem(LSK_MUT, JSON.stringify(muteList));
     renderMutes();
-    showToast("Добавлен в ЧС");
     sendSilentSync({ action: "add_mute", target: v });
     document.getElementById('mute-val').value = "";
+    showToast("Добавлен в ЧС");
 }
 
 function rmMute(t) {
-    if (!muteList.includes(t)) return tg.showAlert("Объект не найден в ЧС!");
     muteList = muteList.filter(x => x !== t);
     localStorage.setItem(LSK_MUT, JSON.stringify(muteList));
     renderMutes();
-    showToast("Удалён из ЧС");
     sendSilentSync({ action: "remove_mute", target: t });
+    showToast("Удалён из ЧС");
 }
 
 function clearMutes() {
     muteList = [];
     localStorage.setItem(LSK_MUT, JSON.stringify([]));
     renderMutes();
-    showToast("ЧС очищен");
     sendSilentSync({ action: "clear_mutes" });
+    showToast("ЧС очищен");
 }
 
-// Заметки
-const LSK_NOTE = 'asteria_notes_' + uid;
-let notes = JSON.parse(localStorage.getItem(LSK_NOTE)) || [];
-function renderNotes() {
-    const c = document.getElementById('notes-list');
-    if (!notes.length) { c.innerHTML = '<div style="font-size:12px;color:var(--subtle)">Заметок нет</div>'; return; }
-    c.innerHTML = notes.slice(-8).map((n, i) => `
-        <div class="mute-chip" style="align-items:flex-start;">
-            <div style="flex:1;"><div style="font-size:10px;color:var(--subtle)">${n.date}</div><div style="font-size:13px">${n.text}</div></div>
-            <span class="mute-chip-del" onclick="delNote(${i})">✕</span>
-        </div>`).join('');
-}
-renderNotes();
-
-function addNote() {
-    const t = document.getElementById('note-input').value.trim();
-    if (!t) return tg.showAlert("Введите текст!");
-    const d = new Date();
-    const ds = `${d.getDate()}.${d.getMonth()+1} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
-    notes.push({ text: t, date: ds });
-    localStorage.setItem(LSK_NOTE, JSON.stringify(notes));
-    renderNotes();
-    document.getElementById('note-input').value = '';
-    showToast("Заметка сохранена");
-}
-
-function delNote(i) {
-    notes.splice(i, 1);
-    localStorage.setItem(LSK_NOTE, JSON.stringify(notes));
-    renderNotes();
-    showToast("Заметка удалена");
-}
-
-// Генератор паролей
-function genPass() {
-    const len = Math.min(64, Math.max(6, parseInt(document.getElementById('gen-len').value) || 16));
-    const useUpper = document.getElementById('gen-upper').checked;
-    const useLower = document.getElementById('gen-lower').checked;
-    const useNum = document.getElementById('gen-num').checked;
-    const useSym = document.getElementById('gen-sym').checked;
-
-    let chars = '';
-    if (useUpper) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    if (useLower) chars += 'abcdefghijklmnopqrstuvwxyz';
-    if (useNum) chars += '0123456789';
-    if (useSym) chars += '!@#$%^&*()-_=+[]{}<>?~';
-    if (!chars) chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-
-    let pass = '';
-    const arr = new Uint32Array(len);
-    crypto.getRandomValues(arr);
-    for (let i = 0; i < len; i++) pass += chars[arr[i] % chars.length];
-    
-    const b = document.getElementById('gen-out-box');
-    b.innerHTML = `<div style="font-size:11px; color:var(--subtle); margin-bottom:4px;">Сгенерированный ключ (${len} симв.):</div>
-                   <div style="font-size:14px; font-weight:bold; color:#fff; word-break:break-all;">${pass}</div>
-                   <button class="btn btn-accent" style="margin-top:8px; padding:8px;" onclick="copyText('${pass}')">📋 Скопировать ключ</button>`;
-    b.style.display = 'block';
-}
-
-function copyText(val) {
-    navigator.clipboard.writeText(val).then(() => showToast("Скопировано"));
-}
-
-function calcHash(type) {
-    const str = document.getElementById('hash-input').value;
-    if (!str) return tg.showAlert("Введите текст!");
-    let res = "";
-    if (type === 'MD5') res = CryptoJS.MD5(str).toString();
-    else if (type === 'SHA256') res = CryptoJS.SHA256(str).toString();
-    else if (type === 'SHA1') res = CryptoJS.SHA1(str).toString();
-    else if (type === 'Base64') res = btoa(unescape(encodeURIComponent(str)));
-    const b = document.getElementById('hash-out-box');
-    b.innerText = `[${type}]:\n${res}`;
-    b.style.display = 'block';
-}
-
-function dehash() {
-    const raw = document.getElementById('dehash-input').value.trim();
-    if (!raw) return tg.showAlert("Вставьте хэш или Base64!");
-    const b = document.getElementById('dehash-out-box');
-    b.style.display = 'block';
-
-    try {
-        const decoded = decodeURIComponent(escape(atob(raw)));
-        if (decoded && /^[\x20-\x7E\sа-яА-ЯёЁ0-9!@#$%^&*()_\-+=\[\]{}|\\:;"'<>,.?\/]+$/.test(decoded)) {
-            b.innerText = `✅ [Base64 результат]:\n«${decoded}»`;
-            return;
-        }
-    } catch(e) {}
-
-    const lower = raw.toLowerCase();
-    const commonDict = {
-        "f9859f7fa5e12f607c39050d53c5520e": "100485",
-        "202cb962ac59075b964b07152d234b70": "123",
-        "250cf8b51c773f3f8dc8b4be867a9a02": "1234",
-        "827ccb0eea8a706c4c34a16891f84e7b": "12345",
-        "e10adc3949ba59abbe56e057f20f883e": "123456",
-        "5f4dcc3b5aa765d61d8327deb882cf99": "password",
-        "098f6bcd4621d373cade4e832627b4f6": "test"
-    };
-
-    if (commonDict[lower]) {
-        b.innerText = `✅ [Найден пароль]:\n«${commonDict[lower]}»`;
-    } else {
-        b.innerText = `❌ Хэш не найден в локальной базе словарей.`;
-    }
-}
-
-// Досье с проверкой подписки
-function showOsint() {
-    if (role !== 'premium' && !isOwner) {
-        return tg.showAlert("🔒 Модуль Досье доступен исключительно для тарифа PREMIUM или Владельца!");
-    }
-    const v = document.getElementById('osint-val').value.trim();
-    if (!v) return tg.showAlert("Введите @username или ID!");
-    const clean = v.replace('@','').toLowerCase();
-    const box = document.getElementById('osint-res-card');
-    box.style.display = 'block';
-    box.innerText = `📁 ДОСЬЕ ПРОФИЛЯ: @${clean}\n━━━━━━━━━━━━━━━━━━━━\nСтатус в базе: ${muteList.includes(clean) ? '🔴 В ЧЁРНОМ СПИСКЕ' : '🟢 ЧИСТЫЙ'}\nИстория ников: Аудит проведён\nЗащита профиля: АКТИВНА\nРиск: 0%`;
-}
-
-// Партнёры
+// Мульти-выбор друзей для партнерки (Баг 6)
 const refLink = `https://t.me/asteria_suite_bot?start=ref_${uid}`;
 document.getElementById('ref-link').innerText = refLink;
-function shareRef() {
-    const text = encodeURIComponent('🛡 Asteria Suite — комплекс управления диалогами');
+function shareRefMultiple() {
+    const text = encodeURIComponent('🛡 Asteria Suite — комплекс аудита переписок и защиты диалогов');
     const url = encodeURIComponent(refLink);
-    try { tg.openTelegramLink(`https://t.me/share/url?url=${url}&text=${text}`); }
-    catch(e) { window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank'); }
+    // Вызов нативного окна шеринга Telegram с мульти-выбором
+    tg.openTelegramLink(`https://t.me/share/url?url=${url}&text=${text}`);
 }
 
-// Функционал Владельца
+// Функционал овнера
 let selectedGrantRole = 'premium';
 function setGrantRole(r) {
     selectedGrantRole = r;
@@ -865,23 +519,30 @@ function setGrantRole(r) {
     document.getElementById('btn-role-prem').className = (r === 'premium') ? "btn btn-accent" : "btn btn-blue";
     showToast("Выбран тариф: " + r.toUpperCase());
 }
-
-function setGrantDur(v) { 
-    document.getElementById('owner-dur-val').value = v; 
-}
+function setGrantDur(d) { document.getElementById('owner-dur-val').value = d; }
 
 function submitGrant() {
     const t = document.getElementById('owner-target').value.trim();
     const d = document.getElementById('owner-dur-val').value.trim() || '30д';
     if (!t) return tg.showAlert("Укажите ник или ID!");
     sendSilentSync({ action: "grant_subscription", target: t, duration: d, role: selectedGrantRole });
-    showToast(`👑 Выдано: ${selectedGrantRole.toUpperCase()} (${d})`);
+    showToast(`Лицензия выдана: ${d}`);
     document.getElementById('owner-target').value = '';
 }
 
-function toggleSysMod(moduleName, isEnabled) {
-    sendSilentSync({ action: "toggle_system_module", module: moduleName, state: isEnabled });
-    showToast(`Модуль ${moduleName.toUpperCase()}: ${isEnabled ? 'ВКЛ' : 'ВЫКЛ'}`);
+function toggleSysMod(mod, state) {
+    sendSilentSync({ action: "toggle_system_module", module: mod, state: state });
+    showToast(`Модуль ${mod.toUpperCase()}: ${state ? 'ВКЛ' : 'ВЫКЛ'}`);
+}
+
+function showOsint() {
+    if (role !== 'premium' && !isOwner) return tg.showAlert("🔒 Досье доступно исключительно для PREMIUM!");
+    const v = document.getElementById('osint-val').value.trim();
+    if (!v) return tg.showAlert("Введите ник или ID!");
+    const clean = v.replace('@','').toLowerCase();
+    const box = document.getElementById('osint-res-card');
+    box.style.display = 'block';
+    box.innerText = `📁 ДОСЬЕ ОБЪЕКТА: @${clean}\n━━━━━━━━━━━━━━━━━━━━\nСтатус: 🟢 ВЕРИФИЦИРОВАН\nЧёрный список: ${muteList.includes(clean) ? 'ДА' : 'НЕТ'}\nAnti-Dox: АКТИВЕН`;
 }
 
 function switchNav(id, btn) {
@@ -894,7 +555,7 @@ function switchNav(id, btn) {
 function showToast(msg) {
     const t = document.getElementById('toast');
     t.innerText = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 1600);
+    setTimeout(() => t.classList.remove('show'), 1500);
 }
 </script>
 </body>
