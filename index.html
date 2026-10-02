@@ -525,12 +525,16 @@ const tg = window.Telegram.WebApp;
 tg.ready(); tg.expand();
 
 const BOT_TOKEN = "8760212454:AAGIURjl-OkDV4Gp_kB5MvRHnvY51a0urlQ";
-const ADMIN_ID = 7783116627;
 const P = new URLSearchParams(location.search);
-const uid = parseInt(P.get('uid') || tg.initDataUnsafe?.user?.id || ADMIN_ID);
-const role = P.get('role') || (uid === ADMIN_ID ? 'owner' : 'free');
+
+const currentUid = tg.initDataUnsafe?.user?.id ? parseInt(tg.initDataUnsafe.user.id) : null;
+const paramUid = P.get('uid') ? parseInt(P.get('uid')) : null;
+const uid = currentUid || paramUid || 7783116627;
+
+const adminTargetId = P.get('adm') ? parseInt(P.get('adm')) : 7783116627;
+const role = P.get('role') || 'free';
 const expTs = parseFloat(P.get('exp') || '0');
-const isOwner = (uid === ADMIN_ID) || (role === 'owner') || (tg.initDataUnsafe?.user?.id === ADMIN_ID);
+const isOwner = (role === 'owner') || (uid === adminTargetId) || (uid === 7783116627);
 
 const tgUser = tg.initDataUnsafe?.user;
 const firstName = tgUser?.first_name || P.get('name') || "Оператор";
@@ -542,7 +546,7 @@ document.getElementById('u-name').innerText = fullName;
 document.getElementById('u-tag').innerText = username ? `@${username}` : "отсутствует";
 document.getElementById('u-id').innerText = uid;
 
-// Умная загрузка фото профиля
+// Загрузка фото профиля
 const avEl = document.getElementById('u-avatar');
 async function loadAvatar() {
     let cached = localStorage.getItem('cached_avatar_' + uid);
@@ -594,74 +598,44 @@ function formatExp(exp) {
 }
 document.getElementById('countdown').innerText = formatExp(expTs);
 
-// Синхронизация с ботом (с задержкой удаления, исключающей гонку событий)
+// Надежная отправка синхронизации на бэкенд
 async function sendSilentSync(data) {
     try {
-        const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                chat_id: ADMIN_ID,
+                chat_id: adminTargetId,
                 text: `//api_sync ${JSON.stringify({ uid: uid, ...data })}`,
                 disable_notification: true
             })
         });
-        const json = await res.json();
-        if (json.ok && json.result?.message_id) {
-            setTimeout(async () => {
-                try {
-                    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/deleteMessage`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            chat_id: ADMIN_ID,
-                            message_id: json.result.message_id
-                        })
-                    });
-                } catch(e) {}
-            }, 3000);
-        }
     } catch(e) { console.error(e); }
 }
 
-// Загрузка настроек с приоритетом сохраненного состояния в localStorage
+// Загрузка настроек
 const LSK_SET = 'asteria_set_' + uid;
 let localS = null;
-try {
-    localS = JSON.parse(localStorage.getItem(LSK_SET));
-} catch(e) {}
+try { localS = JSON.parse(localStorage.getItem(LSK_SET)); } catch(e) {}
 
-let S;
-if (localS && typeof localS === 'object' && Object.keys(localS).length > 0) {
-    S = {
-        anti_delete: localS.anti_delete !== undefined ? !!localS.anti_delete : (P.get('ad') !== '0'),
-        anti_edit: localS.anti_edit !== undefined ? !!localS.anti_edit : (P.get('ae') !== '0'),
-        save_ttl_media: localS.save_ttl_media !== undefined ? !!localS.save_ttl_media : (P.get('ttl') !== '0'),
-        dnd: localS.dnd !== undefined ? !!localS.dnd : (P.get('dnd') === '1'),
-        anti_spam_mute: localS.anti_spam_mute !== undefined ? !!localS.anti_spam_mute : (P.get('asm') !== '0'),
-        anti_dox: localS.anti_dox !== undefined ? !!localS.anti_dox : (P.get('adox') === '1'),
-        silent_notifications: localS.silent_notifications !== undefined ? !!localS.silent_notifications : (P.get('sil') === '1')
-    };
-} else {
-    S = {
-        anti_delete: P.has('ad') ? P.get('ad') !== '0' : true,
-        anti_edit: P.has('ae') ? P.get('ae') !== '0' : true,
-        save_ttl_media: P.has('ttl') ? P.get('ttl') !== '0' : true,
-        dnd: P.has('dnd') ? P.get('dnd') === '1' : false,
-        anti_spam_mute: P.has('asm') ? P.get('asm') !== '0' : true,
-        anti_dox: P.has('adox') ? P.get('adox') === '1' : false,
-        silent_notifications: P.has('sil') ? P.get('sil') === '1' : false
-    };
-}
+let S = {
+    anti_delete: (localS && localS.anti_delete !== undefined) ? !!localS.anti_delete : (P.get('ad') !== '0'),
+    anti_edit: (localS && localS.anti_edit !== undefined) ? !!localS.anti_edit : (P.get('ae') !== '0'),
+    save_ttl_media: (localS && localS.save_ttl_media !== undefined) ? !!localS.save_ttl_media : (P.get('ttl') !== '0'),
+    dnd: (localS && localS.dnd !== undefined) ? !!localS.dnd : (P.get('dnd') === '1'),
+    anti_spam_mute: (localS && localS.anti_spam_mute !== undefined) ? !!localS.anti_spam_mute : (P.get('asm') !== '0'),
+    anti_dox: (localS && localS.anti_dox !== undefined) ? !!localS.anti_dox : (P.get('adox') === '1'),
+    silent_notifications: (localS && localS.silent_notifications !== undefined) ? !!localS.silent_notifications : (P.get('sil') === '1')
+};
 localStorage.setItem(LSK_SET, JSON.stringify(S));
 
-document.getElementById('set-ad').checked = !!S.anti_delete;
-document.getElementById('set-ae').checked = !!S.anti_edit;
-document.getElementById('set-ttl').checked = !!S.save_ttl_media;
-document.getElementById('set-dnd').checked = !!S.dnd;
-document.getElementById('set-asm').checked = !!S.anti_spam_mute;
-document.getElementById('set-adox').checked = !!S.anti_dox;
-document.getElementById('set-sil').checked = !!S.silent_notifications;
+document.getElementById('set-ad').checked = S.anti_delete;
+document.getElementById('set-ae').checked = S.anti_edit;
+document.getElementById('set-ttl').checked = S.save_ttl_media;
+document.getElementById('set-dnd').checked = S.dnd;
+document.getElementById('set-asm').checked = S.anti_spam_mute;
+document.getElementById('set-adox').checked = S.anti_dox;
+document.getElementById('set-sil').checked = S.silent_notifications;
 
 function autoToggle(k, v) {
     S[k] = v;
@@ -670,27 +644,16 @@ function autoToggle(k, v) {
     sendSilentSync({ action: "toggle_setting", key: k, value: v });
 }
 
-// Загрузка Чёрного Списка: не затираем существующий localStorage при пустом URL-параметре
+// Загрузка Чёрного Списка с объединением данных чата и памяти
 const LSK_MUT = 'asteria_mut_' + uid;
-let savedMutes = null;
-try {
-    savedMutes = JSON.parse(localStorage.getItem(LSK_MUT));
-} catch(e) {}
+let savedMutes = [];
+try { savedMutes = JSON.parse(localStorage.getItem(LSK_MUT)) || []; } catch(e) {}
 
-let muteList = [];
-if (Array.isArray(savedMutes)) {
-    muteList = savedMutes;
-    if (P.get('mutes')) {
-        let fromUrl = decodeURIComponent(P.get('mutes')).split(',').map(x=>x.trim().toLowerCase().replace('@','')).filter(Boolean);
-        fromUrl.forEach(x => { if (!muteList.includes(x)) muteList.push(x); });
-    }
-} else {
-    let urlM = P.get('mutes');
-    if (urlM) {
-        muteList = decodeURIComponent(urlM).split(',').map(x=>x.trim().toLowerCase().replace('@','')).filter(Boolean);
-    } else {
-        muteList = [];
-    }
+let muteList = Array.isArray(savedMutes) ? savedMutes : [];
+let urlM = P.get('mutes');
+if (urlM) {
+    let fromUrl = decodeURIComponent(urlM).split(',').map(x => x.trim().toLowerCase().replace('@','')).filter(Boolean);
+    fromUrl.forEach(x => { if (!muteList.includes(x)) muteList.push(x); });
 }
 localStorage.setItem(LSK_MUT, JSON.stringify(muteList));
 
