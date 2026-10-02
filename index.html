@@ -31,11 +31,7 @@ body.tg-theme-light {
     --text-subtle: #a0aec0;
 }
 
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
 
 body {
     margin: 0;
@@ -54,7 +50,7 @@ body {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(4, 8, 20, 0.95);
+    background: rgba(4, 8, 20, 0.96);
     backdrop-filter: blur(25px);
     z-index: 100000;
     flex-direction: column;
@@ -63,461 +59,153 @@ body {
     padding: 24px;
     text-align: center;
 }
-.lock-screen.active {
-    display: flex;
-    animation: fadeIn 0.25s ease;
-}
+.lock-screen.active { display: flex; animation: fadeIn 0.25s ease; }
+
 .lock-icon-wrap {
-    width: 86px;
-    height: 86px;
-    border-radius: 50%;
-    background: rgba(56, 189, 248, 0.12);
-    border: 1px solid var(--accent);
-    box-shadow: 0 0 35px var(--accent-glow);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 38px;
-    margin-bottom: 20px;
+    width: 86px; height: 86px; border-radius: 50%;
+    background: rgba(56, 189, 248, 0.12); border: 1px solid var(--accent);
+    box-shadow: 0 0 35px var(--accent-glow); display: flex; align-items: center;
+    justify-content: center; font-size: 38px; margin-bottom: 20px;
 }
-.lock-title {
-    font-size: 22px;
-    font-weight: 800;
-    margin: 0 0 10px 0;
-    color: #fff;
-    letter-spacing: -0.02em;
-}
-.lock-desc {
-    font-size: 14px;
-    color: var(--text-subtle);
-    max-width: 310px;
-    margin: 0 0 24px 0;
-    line-height: 1.5;
-}
+.lock-title { font-size: 22px; font-weight: 800; margin: 0 0 10px 0; color: #fff; }
+.lock-desc { font-size: 14px; color: var(--text-subtle); max-width: 310px; margin: 0 0 24px 0; line-height: 1.5; }
 
 #toast {
-    position: fixed;
-    top: -100px;
-    left: 50%;
-    transform: translateX(-50%);
+    position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
     background: linear-gradient(135deg, rgba(56, 189, 248, 0.95), rgba(2, 132, 199, 0.95));
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    color: #040814;
-    padding: 10px 24px;
-    border-radius: 40px;
-    font-size: 13px;
-    font-weight: 800;
-    box-shadow: 0 10px 30px var(--accent-glow);
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.15);
-    z-index: 999999;
-    white-space: nowrap;
+    border: 1px solid rgba(255, 255, 255, 0.35); color: #040814; padding: 10px 24px;
+    border-radius: 40px; font-size: 13px; font-weight: 800; box-shadow: 0 10px 30px var(--accent-glow);
+    opacity: 0; pointer-events: none; transition: all 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.15);
+    z-index: 999999; white-space: nowrap;
 }
-#toast.show {
-    top: 16px;
-    opacity: 1;
-}
+#toast.show { top: 16px; opacity: 1; }
 
 .profile-card {
-    background: var(--card-base);
-    border: 1px solid var(--card-border);
-    border-radius: 22px;
-    padding: 16px;
-    backdrop-filter: blur(30px);
-    margin-bottom: 12px;
-    position: relative;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
-    overflow: hidden;
+    background: var(--card-base); border: 1px solid var(--card-border); border-radius: 22px;
+    padding: 16px; backdrop-filter: blur(30px); margin-bottom: 12px; position: relative;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55); overflow: hidden;
 }
 .profile-card::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; height: 3px;
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
     background: linear-gradient(90deg, #0284c7, #38bdf8, #7dd3fc);
 }
 
-.profile-top {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 14px;
-}
-
+.profile-top { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
 .avatar-wrapper {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), var(--blue-btn));
-    padding: 2px;
-    box-shadow: 0 0 20px var(--accent-glow);
-    flex-shrink: 0;
-    position: relative;
+    width: 60px; height: 60px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--blue-btn)); padding: 2px;
+    box-shadow: 0 0 20px var(--accent-glow); flex-shrink: 0; position: relative;
 }
 .avatar-img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-    background: #0b1528;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--accent);
-    overflow: hidden;
+    width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #0b1528;
+    display: flex; align-items: center; justify-content: center; font-size: 22px;
+    font-weight: 800; color: var(--accent); overflow: hidden;
 }
-.avatar-img img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+.avatar-img img { width: 100%; height: 100%; object-fit: cover; }
 
-.profile-meta {
-    flex: 1;
-    min-width: 0;
-}
-.profile-meta h2 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 800;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.profile-meta .u-tag {
-    font-size: 12px;
-    color: var(--accent);
-    margin-top: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.profile-meta .u-id {
-    font-size: 11px;
-    color: var(--text-subtle);
-    margin-top: 2px;
-    font-family: monospace;
-}
+.profile-meta { flex: 1; min-width: 0; }
+.profile-meta h2 { margin: 0; font-size: 18px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.profile-meta .u-tag { font-size: 12px; color: var(--accent); margin-top: 2px; }
+.profile-meta .u-id { font-size: 11px; color: var(--text-subtle); margin-top: 2px; font-family: monospace; }
 
-.status-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.02em;
-    white-space: nowrap;
-}
-.badge-owner {
-    background: rgba(250, 204, 21, 0.16);
-    border: 1px solid rgba(250, 204, 21, 0.5);
-    color: var(--gold);
-    box-shadow: 0 0 16px var(--gold-glow);
-}
-.badge-prem {
-    background: rgba(56, 189, 248, 0.18);
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    box-shadow: 0 0 16px var(--accent-glow);
-}
-.badge-vip {
-    background: rgba(14, 165, 233, 0.18);
-    border: 1px solid rgba(14, 165, 233, 0.5);
-    color: #7dd3fc;
-}
-.badge-free {
-    background: rgba(251, 113, 133, 0.15);
-    border: 1px solid var(--danger-border);
-    color: var(--danger);
-}
+.status-badge { display: inline-flex; align-items: center; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; }
+.badge-owner { background: rgba(250, 204, 21, 0.16); border: 1px solid rgba(250, 204, 21, 0.5); color: var(--gold); }
+.badge-prem { background: rgba(56, 189, 248, 0.18); border: 1px solid var(--accent); color: var(--accent); }
+.badge-vip { background: rgba(14, 165, 233, 0.18); border: 1px solid rgba(14, 165, 233, 0.5); color: #7dd3fc; }
+.badge-free { background: rgba(251, 113, 133, 0.15); border: 1px solid var(--danger-border); color: var(--danger); }
 
 .timer-box {
-    background: rgba(4, 8, 20, 0.85);
-    border: 1px solid rgba(56, 189, 248, 0.16);
-    border-radius: 14px;
-    padding: 10px 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    color: var(--text-subtle);
+    background: rgba(4, 8, 20, 0.85); border: 1px solid rgba(56, 189, 248, 0.16);
+    border-radius: 14px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; color: var(--text-subtle);
 }
 .timer-val {
-    font-family: monospace;
-    font-size: 13px;
-    font-weight: 800;
-    color: #fff;
-    background: rgba(56, 189, 248, 0.15);
-    padding: 3px 8px;
-    border-radius: 8px;
+    font-family: monospace; font-size: 13px; font-weight: 800; color: #fff;
+    background: rgba(56, 189, 248, 0.15); padding: 3px 8px; border-radius: 8px;
     border: 1px solid rgba(56, 189, 248, 0.25);
 }
 
-.metric-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 12px;
-}
+.metric-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
 .metric-card {
-    background: var(--card-base);
-    border: 1px solid var(--card-border);
-    border-radius: 16px;
-    padding: 12px 6px;
-    text-align: center;
-    backdrop-filter: blur(20px);
+    background: var(--card-base); border: 1px solid var(--card-border); border-radius: 16px;
+    padding: 12px 6px; text-align: center; backdrop-filter: blur(20px);
 }
-.metric-val {
-    font-size: 20px;
-    font-weight: 800;
-    color: var(--accent);
-}
-.metric-lbl {
-    font-size: 10px;
-    color: var(--text-subtle);
-    margin-top: 3px;
-    font-weight: 700;
-    text-transform: uppercase;
-}
+.metric-val { font-size: 20px; font-weight: 800; color: var(--accent); }
+.metric-lbl { font-size: 10px; color: var(--text-subtle); margin-top: 3px; font-weight: 700; text-transform: uppercase; }
 
 .card {
-    background: var(--card-base);
-    border: 1px solid var(--card-border);
-    border-radius: 20px;
-    padding: 16px;
-    margin-bottom: 12px;
-    backdrop-filter: blur(25px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.28);
+    background: var(--card-base); border: 1px solid var(--card-border); border-radius: 20px;
+    padding: 16px; margin-bottom: 12px; backdrop-filter: blur(25px); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.28);
 }
 .card-title {
-    font-size: 13px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--accent);
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--accent); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
 }
-.card-title::before {
-    content: '';
-    width: 3px;
-    height: 14px;
-    background: linear-gradient(180deg, var(--accent), var(--blue-btn));
-    border-radius: 2px;
-}
+.card-title::before { content: ''; width: 3px; height: 14px; background: linear-gradient(180deg, var(--accent), var(--blue-btn)); border-radius: 2px; }
 
-.feature-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(56, 189, 248, 0.08);
-    gap: 12px;
-}
-.feature-row:last-child {
-    border-bottom: none;
-}
-.feature-info {
-    flex: 1;
-}
-.feature-header h4 {
-    margin: 0;
-    font-size: 14px;
-    font-weight: 700;
-}
-.feature-desc {
-    margin: 4px 0 0 0;
-    font-size: 12px;
-    color: var(--text-subtle);
-    line-height: 1.4;
-}
+.feature-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid rgba(56, 189, 248, 0.08); gap: 12px; }
+.feature-row:last-child { border-bottom: none; }
+.feature-info { flex: 1; }
+.feature-header h4 { margin: 0; font-size: 14px; font-weight: 700; }
+.feature-desc { margin: 4px 0 0 0; font-size: 12px; color: var(--text-subtle); line-height: 1.4; }
 
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 48px;
-    height: 26px;
-    flex-shrink: 0;
-    margin-top: 2px;
-}
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
+.switch { position: relative; display: inline-block; width: 48px; height: 26px; flex-shrink: 0; margin-top: 2px; }
+.switch input { opacity: 0; width: 0; height: 0; }
 .slider {
-    position: absolute;
-    cursor: pointer;
-    inset: 0;
-    background-color: #0f1c33;
-    transition: 0.25s ease;
-    border-radius: 26px;
-    border: 1px solid rgba(56, 189, 248, 0.25);
+    position: absolute; cursor: pointer; inset: 0; background-color: #0f1c33;
+    transition: 0.25s ease; border-radius: 26px; border: 1px solid rgba(56, 189, 248, 0.25);
 }
 .slider:before {
-    position: absolute;
-    content: "";
-    height: 20px;
-    width: 20px;
-    left: 2px;
-    bottom: 2px;
-    background-color: white;
-    transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 50%;
+    position: absolute; content: ""; height: 20px; width: 20px; left: 2px; bottom: 2px;
+    background-color: white; transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 50%;
 }
-input:checked + .slider {
-    background-color: var(--accent);
-    box-shadow: 0 0 15px var(--accent-glow);
-}
-input:checked + .slider:before {
-    transform: translateX(22px);
-}
+input:checked + .slider { background-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+input:checked + .slider:before { transform: translateX(22px); }
 
 .input-box {
-    width: 100%;
-    background: rgba(4, 8, 20, 0.9);
-    border: 1px solid rgba(56, 189, 248, 0.25);
-    padding: 13px 15px;
-    border-radius: 14px;
-    color: #fff;
-    font-size: 14px;
-    outline: none;
-    margin-top: 6px;
-    box-sizing: border-box;
+    width: 100%; background: rgba(4, 8, 20, 0.9); border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 13px 15px; border-radius: 14px; color: #fff; font-size: 14px; outline: none; margin-top: 6px; box-sizing: border-box;
 }
-.input-box:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
-}
+.input-box:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2); }
 
 .btn {
-    width: 100%;
-    padding: 13px;
-    border: none;
-    border-radius: 14px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    margin-top: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    transition: transform 0.1s, filter 0.15s;
+    width: 100%; padding: 13px; border: none; border-radius: 14px; font-size: 14px;
+    font-weight: 700; cursor: pointer; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: transform 0.1s;
 }
-.btn:active {
-    transform: scale(0.98);
-}
-.btn-accent {
-    background: linear-gradient(135deg, var(--accent), var(--blue-btn));
-    color: #040814;
-    font-weight: 800;
-}
-.btn-blue {
-    background: rgba(56, 189, 248, 0.15);
-    border: 1px solid var(--accent);
-    color: var(--accent);
-}
-.btn-blue.selected {
-    background: var(--accent);
-    color: #040814;
-    font-weight: 800;
-}
-.btn-gold {
-    background: linear-gradient(135deg, var(--gold), #ca8a04);
-    color: #040814;
-    font-weight: 800;
-}
-.btn-danger {
-    background: rgba(251, 113, 133, 0.15);
-    color: var(--danger);
-    border: 1px solid var(--danger-border);
-}
+.btn:active { transform: scale(0.98); }
+.btn-accent { background: linear-gradient(135deg, var(--accent), var(--blue-btn)); color: #040814; font-weight: 800; }
+.btn-blue { background: rgba(56, 189, 248, 0.15); border: 1px solid var(--accent); color: var(--accent); }
+.btn-gold { background: linear-gradient(135deg, var(--gold), #ca8a04); color: #040814; font-weight: 800; }
+.btn-danger { background: rgba(251, 113, 133, 0.15); color: var(--danger); border: 1px solid var(--danger-border); }
 
-.tab-content {
-    display: none;
-}
-.tab-content.active {
-    display: block;
-    animation: fadeIn 0.2s ease;
-}
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
 .bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 72px;
-    background: rgba(4, 8, 20, 0.95);
-    backdrop-filter: blur(30px);
-    border-top: 1px solid rgba(56, 189, 248, 0.18);
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    z-index: 100;
+    position: fixed; bottom: 0; left: 0; right: 0; height: 72px;
+    background: rgba(4, 8, 20, 0.95); backdrop-filter: blur(30px); border-top: 1px solid rgba(56, 189, 248, 0.18);
+    display: flex; justify-content: space-around; align-items: center; z-index: 100;
     padding-bottom: env(safe-area-inset-bottom);
 }
 .nav-btn {
-    background: none;
-    border: none;
-    color: var(--text-subtle);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    font-size: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    flex: 1;
-    padding: 6px 0;
-    transition: color 0.15s;
+    background: none; border: none; color: var(--text-subtle); display: flex; flex-direction: column;
+    align-items: center; gap: 4px; font-size: 10px; font-weight: 600; cursor: pointer; flex: 1; padding: 6px 0;
 }
-.nav-btn.active {
-    color: var(--accent);
-}
-.nav-icon {
-    font-size: 19px;
-}
+.nav-btn.active { color: var(--accent); }
+.nav-icon { font-size: 19px; }
 
 .item-chip {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(56, 189, 248, 0.05);
-    border: 1px solid rgba(56, 189, 248, 0.15);
-    border-radius: 12px;
-    padding: 10px 14px;
-    margin-top: 6px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.15);
+    border-radius: 12px; padding: 10px 14px; margin-top: 6px;
 }
-.item-chip-del {
-    color: var(--danger);
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 16px;
-    padding: 2px 6px;
-}
+.item-chip-del { color: var(--danger); cursor: pointer; font-weight: bold; font-size: 16px; padding: 2px 6px; }
 
 .result-box {
-    background: #030611;
-    border: 1px dashed var(--accent);
-    border-radius: 12px;
-    padding: 12px;
-    font-family: monospace;
-    font-size: 12px;
-    color: var(--accent);
-    margin-top: 10px;
-    word-break: break-all;
-    white-space: pre-wrap;
-    line-height: 1.5;
+    background: #030611; border: 1px dashed var(--accent); border-radius: 12px;
+    padding: 12px; font-family: monospace; font-size: 12px; color: var(--accent); margin-top: 10px; word-break: break-all; white-space: pre-wrap;
 }
 </style>
 </head>
@@ -525,17 +213,17 @@ input:checked + .slider:before {
 
 <div id="toast">✅ Настройки обновлены</div>
 
-<!-- Блокировка: Без подписки -->
+<!-- БЛОКИРОВКА: Без подписки или ВИП -->
 <div id="paywall-overlay" class="lock-screen">
     <div class="lock-icon-wrap">🛡</div>
     <h2 class="lock-title">Доступ ограничен</h2>
     <p class="lock-desc">
         Использование панели управления <b>Asteria Suite</b> доступно исключительно для пользователей тарифа <b style="color:var(--accent);">Премиум</b> или <b style="color:var(--gold);">Создателя</b>.
     </p>
-    <button class="btn btn-accent" style="max-width: 260px;" onclick="openBotBuy()">💳 Оформить доступ</button>
+    <button class="btn btn-accent" style="max-width: 260px;" onclick="openBotBuy()">💳 Оформить Премиум</button>
 </div>
 
-<!-- Блокировка: Dashboard отключен владельцем -->
+<!-- БЛОКИРОВКА: Dashboard отключен владельцем -->
 <div id="modlock-overlay" class="lock-screen">
     <div class="lock-icon-wrap" style="border-color:var(--gold); box-shadow:0 0 30px var(--gold-glow);">⚙️</div>
     <h2 class="lock-title">Модуль отключен</h2>
@@ -544,7 +232,7 @@ input:checked + .slider:before {
     </p>
 </div>
 
-<!-- Карточка профиля -->
+<!-- ПРОФИЛЬ -->
 <div class="profile-card">
     <div class="profile-top">
         <div class="avatar-wrapper">
@@ -675,7 +363,7 @@ input:checked + .slider:before {
             <span id="gen-len-val" style="font-weight:bold; color:var(--accent);">16</span>
         </div>
         <input type="range" id="gen-len" min="6" max="64" value="16" style="width:100%; margin:8px 0;" oninput="document.getElementById('gen-len-val').innerText = this.value">
-        
+
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:6px; font-size:12px;">
             <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="gen-upper" checked> Заглавные (A-Z)</label>
             <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="gen-lower" checked> Строчные (a-z)</label>
@@ -706,50 +394,14 @@ input:checked + .slider:before {
         <button class="btn btn-accent" onclick="dehash()">🔍 Найти пароль / декодировать</button>
         <div id="dehash-out-box" style="display:none;" class="result-box"></div>
     </div>
-
-    <div class="card">
-        <div class="card-title">Партнёрская сеть</div>
-        <p style="font-size:12px; color:var(--text-subtle); margin:0 0 10px;">
-            Приглашайте друзей: друг получает <b style="color:var(--accent);">+2 дня ВИП</b>, а вы — <b style="color:var(--accent);">+1 день</b> к вашей лицензии.
-        </p>
-        <div class="result-box" id="ref-link" style="border-style:solid; font-size:11px;">Загрузка…</div>
-        <button class="btn btn-accent" onclick="shareRefMultiple()" style="margin-top:10px;">👥 Отправить сразу нескольким друзьям</button>
-    </div>
 </div>
 
-<!-- ВКЛАДКА 6: ПАНЕЛЬ ВЛАДЕЛЬЦА -->
-<div id="tab-owner" class="tab-content">
-    <div class="card">
-        <div class="card-title">👑 Панель Создателя</div>
-        <p style="font-size:12px; color:var(--text-subtle); margin:0 0 6px 0;">Выдача и продление доступа по ID или @username:</p>
-        <input type="text" id="owner-target" class="input-box" placeholder="@username или ID цели…">
-        
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
-            <button class="btn btn-blue" id="btn-role-vip" onclick="setGrantRole('vip')">⚡ Тариф ВИП</button>
-            <button class="btn btn-accent" id="btn-role-prem" onclick="setGrantRole('premium')">⭐ Тариф Премиум</button>
-        </div>
-
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px;">
-            <button class="btn btn-blue" onclick="setGrantDur('1д')">⚡ 1 День</button>
-            <button class="btn btn-blue" onclick="setGrantDur('7д')">🔥 7 Дней</button>
-            <button class="btn btn-blue" onclick="setGrantDur('30д')">⭐ 30 Дней</button>
-            <button class="btn btn-blue" onclick="setGrantDur('365д')">💎 365 Дней</button>
-        </div>
-        <button class="btn btn-gold" style="margin-top:6px;" onclick="setGrantDur('навсегда')">👑 Бессрочно</button>
-        
-        <input type="text" id="owner-dur-val" class="input-box" value="30д" style="margin-top:8px;" placeholder="Свой срок (например 14д)">
-        <button class="btn btn-accent" style="margin-top:10px;" onclick="submitGrant()">🚀 Применить лицензию</button>
-    </div>
-</div>
-
-<!-- НАВИГАЦИОННАЯ ПАНЕЛЬ -->
 <div class="bottom-nav">
     <button class="nav-btn active" onclick="switchNav('settings', this)"><span class="nav-icon">🛡</span>Защита</button>
     <button class="nav-btn" onclick="switchNav('mute', this)"><span class="nav-icon">🔇</span>Мой ЧС</button>
     <button class="nav-btn" onclick="switchNav('osint', this)"><span class="nav-icon">📁</span>Досье</button>
     <button class="nav-btn" onclick="switchNav('notes', this)"><span class="nav-icon">📝</span>Заметки</button>
     <button class="nav-btn" onclick="switchNav('utils', this)"><span class="nav-icon">🛠</span>Утилиты</button>
-    <button class="nav-btn" id="nav-owner" style="display:none;" onclick="switchNav('owner', this)"><span class="nav-icon">👑</span>Создатель</button>
 </div>
 
 <script>
@@ -772,10 +424,11 @@ const expTs = parseFloat(P.get('exp') || '0');
 const isOwner = (role === 'owner') || (uid === adminTargetId);
 const isDashboardBlocked = (P.get('dash_off') === '1');
 
+// Доступ к панели управления разрешен только Премиум и Создателю
 if (!isOwner) {
     if (isDashboardBlocked) {
         document.getElementById('modlock-overlay').classList.add('active');
-    } else if (role === 'free') {
+    } else if (role !== 'premium') {
         document.getElementById('paywall-overlay').classList.add('active');
     }
 }
@@ -790,7 +443,7 @@ document.getElementById('u-name').innerText = fullName;
 document.getElementById('u-tag').innerText = username ? `@${username}` : "диалог";
 document.getElementById('u-id').innerText = uid;
 
-// Надежная загрузка и кэширование аватара
+// Надежная загрузка аватара с сохранением в локальный кэш
 const avEl = document.getElementById('u-avatar');
 function renderUserAvatar() {
     const LSK_AVATAR = 'asteria_avatar_' + uid;
@@ -814,7 +467,6 @@ function renderUserAvatar() {
         return;
     }
 
-    // Отрисовка векторного аватара
     const letter = (firstName.charAt(0) || "A").toUpperCase();
     const canvas = document.createElement('canvas');
     canvas.width = 120;
@@ -843,7 +495,6 @@ const badge = document.getElementById('u-badge');
 if (isOwner) {
     badge.className = "status-badge badge-owner";
     badge.innerText = "👑 СОЗДАТЕЛЬ";
-    document.getElementById('nav-owner').style.display = "flex";
 } else if (role === 'premium') {
     badge.className = "status-badge badge-prem";
     badge.innerText = "⭐ ПРЕМИУМ";
@@ -868,7 +519,7 @@ function openBotBuy() {
     tg.openTelegramLink("https://t.me/asteria_suite_bot?start=buy");
 }
 
-// Приоритетная загрузка настроек из LocalStorage
+// Загрузка и локальное сохранение настроек
 const LSK_SET = 'asteria_set_' + uid;
 let S = {
     anti_delete: true,
@@ -899,7 +550,7 @@ function autoToggle(k, v) {
     showToast(v ? "Включено" : "Выключено");
 }
 
-// Надежное слияние и сохранение ЧС
+// Загрузка и надежное сохранение ЧС
 const LSK_MUT = 'asteria_mut_' + uid;
 let localMutes = [];
 try { localMutes = JSON.parse(localStorage.getItem(LSK_MUT)) || []; } catch(e) {}
@@ -1073,43 +724,6 @@ function showOsint() {
     const box = document.getElementById('osint-res-card');
     box.style.display = 'block';
     box.innerText = `📁 ДОСЬЕ ОБЪЕКТА: @${clean}\n━━━━━━━━━━━━━━━━━━━━\nСтатус в сети: 🟢 ВЕРИФИЦИРОВАН\nВ чёрных списках: ${muteList.includes(clean) ? '🔴 ДА' : '🟢 НЕТ'}\nAnti-Dox защита: АКТИВНА\nУровень сетевого риска: 0%`;
-}
-
-const refLink = `https://t.me/asteria_suite_bot?start=ref_${uid}`;
-document.getElementById('ref-link').innerText = refLink;
-function shareRefMultiple() {
-    const text = encodeURIComponent('🛡 Защити свои диалоги и отслеживай активность профилей с Asteria Suite! Получи +2 дня ВИП:');
-    const url = encodeURIComponent(refLink);
-    tg.openTelegramLink(`https://t.me/share/url?url=${url}&text=${text}`);
-}
-
-// Панель Создателя
-let selectedGrantRole = 'premium';
-function setGrantRole(r) {
-    selectedGrantRole = r;
-    const btnVip = document.getElementById('btn-role-vip');
-    const btnPrem = document.getElementById('btn-role-prem');
-    if (r === 'vip') {
-        btnVip.className = "btn btn-accent";
-        btnPrem.className = "btn btn-blue";
-    } else {
-        btnVip.className = "btn btn-blue";
-        btnPrem.className = "btn btn-accent";
-    }
-    showToast("Выбран тариф: " + (r === 'vip' ? "ВИП" : "ПРЕМИУМ"));
-}
-
-function setGrantDur(d) {
-    document.getElementById('owner-dur-val').value = d;
-}
-
-function submitGrant() {
-    const t = document.getElementById('owner-target').value.trim().replace('@', '');
-    const d = document.getElementById('owner-dur-val').value.trim() || '30д';
-    if (!t) return tg.showAlert("Укажите @username или числовой ID!");
-    // Выдача через защищённый deep-link бота
-    tg.openTelegramLink(`https://t.me/asteria_suite_bot?start=grant_${t}_${selectedGrantRole}_${d}`);
-    document.getElementById('owner-target').value = '';
 }
 
 function switchNav(id, btn) {
