@@ -493,7 +493,7 @@ input:checked + .slider:before { transform: translateX(22px); }
     </div>
 </div>
 
-<!-- ВКЛАДКА 6: ПАНЕЛЬ ВЛАДЕЛЬЦА (ДЛЯ СОЗДАТЕЛЯ) -->
+<!-- ВКЛАДКА 6: ПАНЕЛЬ ВЛАДЕЛЬЦА -->
 <div id="tab-owner" class="tab-content">
     <div class="card">
         <div class="card-title">👑 Панель Создателя</div>
@@ -546,7 +546,6 @@ document.getElementById('u-name').innerText = fullName;
 document.getElementById('u-tag').innerText = username ? `@${username}` : "отсутствует";
 document.getElementById('u-id').innerText = uid;
 
-// Загрузка фото профиля
 const avEl = document.getElementById('u-avatar');
 async function loadAvatar() {
     let cached = localStorage.getItem('cached_avatar_' + uid);
@@ -573,9 +572,7 @@ async function loadAvatar() {
             }
         }
     } catch(e) {}
-    if (!cached) {
-        avEl.innerText = (firstName.charAt(0) || "A").toUpperCase();
-    }
+    if (!cached) avEl.innerText = (firstName.charAt(0) || "A").toUpperCase();
 }
 loadAvatar();
 
@@ -598,7 +595,6 @@ function formatExp(exp) {
 }
 document.getElementById('countdown').innerText = formatExp(expTs);
 
-// Надежная отправка синхронизации на бэкенд
 async function sendSilentSync(data) {
     try {
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -613,7 +609,6 @@ async function sendSilentSync(data) {
     } catch(e) { console.error(e); }
 }
 
-// Загрузка настроек
 const LSK_SET = 'asteria_set_' + uid;
 let localS = null;
 try { localS = JSON.parse(localStorage.getItem(LSK_SET)); } catch(e) {}
@@ -644,18 +639,22 @@ function autoToggle(k, v) {
     sendSilentSync({ action: "toggle_setting", key: k, value: v });
 }
 
-// Загрузка Чёрного Списка с объединением данных чата и памяти
+// Загрузка ЧС: актуальный список от сервера всегда имеет абсолютный приоритет
 const LSK_MUT = 'asteria_mut_' + uid;
-let savedMutes = [];
-try { savedMutes = JSON.parse(localStorage.getItem(LSK_MUT)) || []; } catch(e) {}
-
-let muteList = Array.isArray(savedMutes) ? savedMutes : [];
 let urlM = P.get('mutes');
-if (urlM) {
-    let fromUrl = decodeURIComponent(urlM).split(',').map(x => x.trim().toLowerCase().replace('@','')).filter(Boolean);
-    fromUrl.forEach(x => { if (!muteList.includes(x)) muteList.push(x); });
+let muteList = [];
+
+if (urlM !== null && urlM !== undefined) {
+    muteList = decodeURIComponent(urlM)
+        .split(',')
+        .map(x => x.trim().toLowerCase().replace('@',''))
+        .filter(Boolean);
+    localStorage.setItem(LSK_MUT, JSON.stringify(muteList));
+} else {
+    try {
+        muteList = JSON.parse(localStorage.getItem(LSK_MUT)) || [];
+    } catch(e) { muteList = []; }
 }
-localStorage.setItem(LSK_MUT, JSON.stringify(muteList));
 
 function renderMutes() {
     const c = document.getElementById('mute-list-container');
@@ -672,9 +671,7 @@ renderMutes();
 function addMute() {
     const v = document.getElementById('mute-val').value.trim().replace('@','').toLowerCase();
     if (!v) return tg.showAlert("Введите ник или ID!");
-    if (muteList.includes(v)) {
-        return tg.showAlert("Данный объект уже находится в вашем чёрном списке!");
-    }
+    if (muteList.includes(v)) return tg.showAlert("Данный объект уже в ЧС!");
     muteList.push(v);
     localStorage.setItem(LSK_MUT, JSON.stringify(muteList));
     renderMutes();
@@ -684,9 +681,7 @@ function addMute() {
 }
 
 function rmMute(t) {
-    if (!muteList.includes(t)) {
-        return tg.showAlert("Объект не найден в ЧС!");
-    }
+    if (!muteList.includes(t)) return tg.showAlert("Объект не найден в ЧС!");
     muteList = muteList.filter(x => x !== t);
     localStorage.setItem(LSK_MUT, JSON.stringify(muteList));
     renderMutes();
@@ -763,14 +758,12 @@ function genPass() {
 }
 
 function copyText(val) {
-    navigator.clipboard.writeText(val).then(() => {
-        showToast("Скопировано в буфер");
-    });
+    navigator.clipboard.writeText(val).then(() => showToast("Скопировано"));
 }
 
 function calcHash(type) {
     const str = document.getElementById('hash-input').value;
-    if (!str) return tg.showAlert("Введите текст для хэширования!");
+    if (!str) return tg.showAlert("Введите текст!");
     let res = "";
     if (type === 'MD5') res = CryptoJS.MD5(str).toString();
     else if (type === 'SHA256') res = CryptoJS.SHA256(str).toString();
@@ -783,7 +776,7 @@ function calcHash(type) {
 
 function dehash() {
     const raw = document.getElementById('dehash-input').value.trim();
-    if (!raw) return tg.showAlert("Вставьте хэш или строку Base64!");
+    if (!raw) return tg.showAlert("Вставьте хэш или Base64!");
     const b = document.getElementById('dehash-out-box');
     b.style.display = 'block';
 
@@ -803,16 +796,13 @@ function dehash() {
         "827ccb0eea8a706c4c34a16891f84e7b": "12345",
         "e10adc3949ba59abbe56e057f20f883e": "123456",
         "5f4dcc3b5aa765d61d8327deb882cf99": "password",
-        "098f6bcd4621d373cade4e832627b4f6": "test",
-        "65c9103c1555577609ee3cfec5896dd1": "admin",
-        "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8": "password",
-        "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92": "123456"
+        "098f6bcd4621d373cade4e832627b4f6": "test"
     };
 
     if (commonDict[lower]) {
         b.innerText = `✅ [Найден пароль]:\n«${commonDict[lower]}»`;
     } else {
-        b.innerText = `❌ Хэш не найден в базе типовых паролей.`;
+        b.innerText = `❌ Хэш не найден в локальной базе.`;
     }
 }
 
@@ -822,7 +812,7 @@ function showOsint() {
     const clean = v.replace('@','').toLowerCase();
     const box = document.getElementById('osint-res-card');
     box.style.display = 'block';
-    box.innerText = `📁 ДОСЬЕ ПРОФИЛЯ: @${clean}\n━━━━━━━━━━━━━━━━━━━━\nСтатус в базе: ${muteList.includes(clean) ? '🔴 В ЧЁРНОМ СПИСКЕ' : '🟢 ЧИСТЫЙ'}\nДата-центр: DC 2 (Амстердам, Европа)\nТелефон: 🔒 Скрыт приватностью`;
+    box.innerText = `📁 ДОСЬЕ ПРОФИЛЯ: @${clean}\n━━━━━━━━━━━━━━━━━━━━\nСтатус в базе: ${muteList.includes(clean) ? '🔴 В ЧЁРНОМ СПИСКЕ' : '🟢 ЧИСТЫЙ'}\nТелефон: 🔒 Скрыт приватностью`;
 }
 
 // Партнёры
@@ -830,13 +820,12 @@ const refLink = `https://t.me/asteria_suite_bot?start=ref_${uid}`;
 document.getElementById('ref-link').innerText = refLink;
 document.getElementById('ref-count').innerText = P.get('refs') || '0';
 function shareRef() {
-    const text = encodeURIComponent('🛡 Asteria Suite — интеллектуальный комплекс управления диалогами');
+    const text = encodeURIComponent('🛡 Asteria Suite — комплекс управления диалогами');
     const url = encodeURIComponent(refLink);
     try { tg.openTelegramLink(`https://t.me/share/url?url=${url}&text=${text}`); }
     catch(e) { window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank'); }
 }
 
-// Выдача подписки Создателем
 function setGrantDur(v) { document.getElementById('owner-dur-val').value = v; }
 function submitGrant() {
     const t = document.getElementById('owner-target').value.trim();
