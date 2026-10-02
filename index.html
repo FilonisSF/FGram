@@ -779,14 +779,14 @@ function calcHash(type) {
     b.style.display = 'block';
 }
 
-// Расхэширование без разрушения регистра Base64[cite: 5]
+// Расхэширование без разрушения регистра Base64[cite: 1]
 function dehash() {
     const raw = document.getElementById('dehash-input').value.trim();
     if (!raw) return tg.showAlert("Вставьте хэш или строку Base64!");
     const b = document.getElementById('dehash-out-box');
     b.style.display = 'block';
 
-    // 1. Проверяем декодирование как Base64 с сохранением регистра[cite: 5]
+    // 1. Проверяем декодирование как Base64 с сохранением регистра[cite: 1]
     try {
         const decoded = decodeURIComponent(escape(atob(raw)));
         if (decoded && /^[\x20-\x7E\sа-яА-ЯёЁ0-9!@#$%^&*()_\-+=\[\]{}|\\:;"'<>,.?\/]+$/.test(decoded)) {
