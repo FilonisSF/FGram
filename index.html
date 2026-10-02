@@ -9,24 +9,24 @@
 <style>
 :root {
     --bg-base: #040814;
-    --card-base: rgba(10, 20, 38, 0.82);
+    --card-base: rgba(10, 20, 38, 0.85);
     --card-border: rgba(56, 189, 248, 0.22);
     --accent: #38bdf8;
     --accent-glow: rgba(56, 189, 248, 0.45);
     --blue-btn: #0284c7;
     --gold: #facc15;
-    --gold-glow: rgba(250, 204, 21, 0.35);
+    --gold-glow: rgba(250, 204, 21, 0.4);
     --danger: #fb7185;
+    --danger-border: rgba(251, 113, 133, 0.4);
     --text-main: #f8fafc;
     --text-muted: #7dd3fc;
     --text-subtle: #94a3b8;
 }
 
-/* Адаптация под системные темы Telegram */
 body.tg-theme-light {
-    --bg-base: #0a1124;
-    --card-base: rgba(15, 29, 56, 0.85);
-    --card-border: rgba(56, 189, 248, 0.28);
+    --bg-base: #081026;
+    --card-base: rgba(14, 26, 52, 0.9);
+    --card-border: rgba(56, 189, 248, 0.3);
     --text-main: #ffffff;
     --text-subtle: #a0aec0;
 }
@@ -43,19 +43,19 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     background-color: var(--bg-base);
     background-image:
-        radial-gradient(circle at 10% 0%, rgba(56, 189, 248, 0.22) 0%, transparent 45%),
-        radial-gradient(circle at 90% 100%, rgba(14, 165, 233, 0.16) 0%, transparent 50%);
+        radial-gradient(circle at 10% 0%, rgba(56, 189, 248, 0.24) 0%, transparent 45%),
+        radial-gradient(circle at 90% 100%, rgba(14, 165, 233, 0.18) 0%, transparent 50%);
     color: var(--text-main);
     min-height: 100vh;
     overflow-x: hidden;
 }
 
-/* Экран блокировки (Paywall / Отключение модуля) */
+/* Экраны блокировки */
 .lock-screen {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(4, 8, 20, 0.94);
+    background: rgba(4, 8, 20, 0.95);
     backdrop-filter: blur(25px);
     z-index: 100000;
     flex-direction: column;
@@ -66,32 +66,32 @@ body {
 }
 .lock-screen.active {
     display: flex;
-    animation: fadeIn 0.3s ease;
+    animation: fadeIn 0.25s ease;
 }
 .lock-icon-wrap {
-    width: 84px;
-    height: 84px;
+    width: 86px;
+    height: 86px;
     border-radius: 50%;
-    background: rgba(56, 189, 248, 0.1);
+    background: rgba(56, 189, 248, 0.12);
     border: 1px solid var(--accent);
-    box-shadow: 0 0 30px var(--accent-glow);
+    box-shadow: 0 0 35px var(--accent-glow);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 38px;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
 }
 .lock-title {
     font-size: 22px;
     font-weight: 800;
-    margin: 0 0 8px 0;
+    margin: 0 0 10px 0;
     color: #fff;
     letter-spacing: -0.02em;
 }
 .lock-desc {
     font-size: 14px;
     color: var(--text-subtle);
-    max-width: 300px;
+    max-width: 310px;
     margin: 0 0 24px 0;
     line-height: 1.5;
 }
@@ -121,7 +121,7 @@ body {
     opacity: 1;
 }
 
-/* Профиль */
+/* Карточка профиля */
 .profile-card {
     background: var(--card-base);
     border: 1px solid var(--card-border);
@@ -130,7 +130,7 @@ body {
     backdrop-filter: blur(30px);
     margin-bottom: 12px;
     position: relative;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
     overflow: hidden;
 }
 .profile-card::after {
@@ -215,16 +215,16 @@ body {
     white-space: nowrap;
 }
 .badge-owner {
-    background: rgba(250, 204, 21, 0.15);
-    border: 1px solid rgba(250, 204, 21, 0.45);
+    background: rgba(250, 204, 21, 0.16);
+    border: 1px solid rgba(250, 204, 21, 0.5);
     color: var(--gold);
-    box-shadow: 0 0 15px var(--gold-glow);
+    box-shadow: 0 0 16px var(--gold-glow);
 }
 .badge-prem {
     background: rgba(56, 189, 248, 0.18);
     border: 1px solid var(--accent);
     color: var(--accent);
-    box-shadow: 0 0 15px var(--accent-glow);
+    box-shadow: 0 0 16px var(--accent-glow);
 }
 .badge-vip {
     background: rgba(14, 165, 233, 0.18);
@@ -233,14 +233,14 @@ body {
 }
 .badge-free {
     background: rgba(251, 113, 133, 0.15);
-    border: 1px solid rgba(251, 113, 133, 0.4);
+    border: 1px solid var(--danger-border);
     color: var(--danger);
 }
 
 .timer-box {
     background: rgba(4, 8, 20, 0.85);
-    border: 1px solid rgba(56, 189, 248, 0.14);
-    border-radius: 12px;
+    border: 1px solid rgba(56, 189, 248, 0.16);
+    border-radius: 14px;
     padding: 10px 14px;
     display: flex;
     justify-content: space-between;
@@ -251,8 +251,12 @@ body {
 .timer-val {
     font-family: monospace;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 800;
     color: #fff;
+    background: rgba(56, 189, 248, 0.15);
+    padding: 3px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(56, 189, 248, 0.25);
 }
 
 /* Статистика */
@@ -291,7 +295,7 @@ body {
     padding: 16px;
     margin-bottom: 12px;
     backdrop-filter: blur(25px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.28);
 }
 .card-title {
     font-size: 13px;
@@ -411,7 +415,7 @@ input:checked + .slider:before {
     align-items: center;
     justify-content: center;
     gap: 6px;
-    transition: transform 0.1s;
+    transition: transform 0.1s, filter 0.15s;
 }
 .btn:active {
     transform: scale(0.98);
@@ -426,6 +430,11 @@ input:checked + .slider:before {
     border: 1px solid var(--accent);
     color: var(--accent);
 }
+.btn-blue.selected {
+    background: var(--accent);
+    color: #040814;
+    font-weight: 800;
+}
 .btn-gold {
     background: linear-gradient(135deg, var(--gold), #ca8a04);
     color: #040814;
@@ -434,7 +443,7 @@ input:checked + .slider:before {
 .btn-danger {
     background: rgba(251, 113, 133, 0.15);
     color: var(--danger);
-    border: 1px solid rgba(251, 113, 133, 0.35);
+    border: 1px solid var(--danger-border);
 }
 
 /* Вкладки */
@@ -488,7 +497,6 @@ input:checked + .slider:before {
     font-size: 19px;
 }
 
-/* Элементы ЧС и Заметок */
 .item-chip {
     display: flex;
     justify-content: space-between;
@@ -526,7 +534,7 @@ input:checked + .slider:before {
 
 <div id="toast">✅ Настройки обновлены</div>
 
-<!-- БЛОКИРОВКА 1: Отсутствие подписки -->
+<!-- БЛОКИРОВКА: Без подписки -->
 <div id="paywall-overlay" class="lock-screen">
     <div class="lock-icon-wrap">🛡</div>
     <h2 class="lock-title">Доступ ограничен</h2>
@@ -536,7 +544,7 @@ input:checked + .slider:before {
     <button class="btn btn-accent" style="max-width: 260px;" onclick="openBotBuy()">💳 Оформить доступ</button>
 </div>
 
-<!-- БЛОКИРОВКА 2: Dashboard отключен владельцем -->
+<!-- БЛОКИРОВКА: Dashboard отключен владельцем -->
 <div id="modlock-overlay" class="lock-screen">
     <div class="lock-icon-wrap" style="border-color:var(--gold); box-shadow:0 0 30px var(--gold-glow);">⚙️</div>
     <h2 class="lock-title">Модуль отключен</h2>
@@ -545,7 +553,7 @@ input:checked + .slider:before {
     </p>
 </div>
 
-<!-- КАРТОЧКА ПРОФИЛЯ -->
+<!-- ПРОФИЛЬ -->
 <div class="profile-card">
     <div class="profile-top">
         <div class="avatar-wrapper">
@@ -618,7 +626,7 @@ input:checked + .slider:before {
         <div class="feature-row">
             <div class="feature-info">
                 <div class="feature-header"><h4>Приватность профиля (Anti-Dox)</h4></div>
-                <p class="feature-desc">Защищает ваш профиль от парсинга данных через модуль досье.</p>
+                <p class="feature-desc">Защищает ваш профиль от сбора информации через модуль досье.</p>
             </div>
             <label class="switch"><input type="checkbox" id="set-adox" onchange="autoToggle('anti_dox', this.checked)"><span class="slider"></span></label>
         </div>
@@ -835,9 +843,14 @@ document.getElementById('u-name').innerText = fullName;
 document.getElementById('u-tag').innerText = username ? `@${username}` : "диалог";
 document.getElementById('u-id').innerText = uid;
 
-// Надежная генерация аватара: Photo URL или цветной Canvas/SVG
+// Надежная загрузка аватара
 const avEl = document.getElementById('u-avatar');
 function renderUserAvatar() {
+    const passedAvatar = P.get('avatar');
+    if (passedAvatar && passedAvatar.startsWith('http')) {
+        avEl.innerHTML = `<img src="${passedAvatar}" alt="Avatar">`;
+        return;
+    }
     if (tgUser?.photo_url) {
         avEl.innerHTML = `<img src="${tgUser.photo_url}" alt="Avatar">`;
         return;
@@ -864,7 +877,7 @@ function renderUserAvatar() {
 }
 renderUserAvatar();
 
-// Статус-бейдж на русском языке
+// Статус-бейдж
 const badge = document.getElementById('u-badge');
 if (isOwner) {
     badge.className = "status-badge badge-owner";
@@ -894,7 +907,6 @@ function openBotBuy() {
     tg.openTelegramLink("https://t.me/asteria_suite_bot?start=buy");
 }
 
-// Отправка команд боту с мгновенным удалением сервисных сообщений
 async function sendSilentSync(data) {
     try {
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -909,20 +921,21 @@ async function sendSilentSync(data) {
     } catch(e) {}
 }
 
-// Модули защиты
+// Загрузка настроек с сохранением состояния
 const LSK_SET = 'asteria_set_' + uid;
 let localS = null;
 try { localS = JSON.parse(localStorage.getItem(LSK_SET)); } catch(e) {}
 
 let S = {
-    anti_delete: (localS && localS.anti_delete !== undefined) ? !!localS.anti_delete : true,
-    anti_edit: (localS && localS.anti_edit !== undefined) ? !!localS.anti_edit : true,
-    save_ttl_media: (localS && localS.save_ttl_media !== undefined) ? !!localS.save_ttl_media : true,
-    dnd: (localS && localS.dnd !== undefined) ? !!localS.dnd : false,
-    anti_spam_mute: (localS && localS.anti_spam_mute !== undefined) ? !!localS.anti_spam_mute : true,
-    anti_dox: (localS && localS.anti_dox !== undefined) ? !!localS.anti_dox : false,
-    silent_notifications: (localS && localS.silent_notifications !== undefined) ? !!localS.silent_notifications : false
+    anti_delete: (localS && localS.anti_delete !== undefined) ? !!localS.anti_delete : (P.get('ad') !== '0'),
+    anti_edit: (localS && localS.anti_edit !== undefined) ? !!localS.anti_edit : (P.get('ae') !== '0'),
+    save_ttl_media: (localS && localS.save_ttl_media !== undefined) ? !!localS.save_ttl_media : (P.get('ttl') !== '0'),
+    dnd: (localS && localS.dnd !== undefined) ? !!localS.dnd : (P.get('dnd') === '1'),
+    anti_spam_mute: (localS && localS.anti_spam_mute !== undefined) ? !!localS.anti_spam_mute : (P.get('asm') !== '0'),
+    anti_dox: (localS && localS.anti_dox !== undefined) ? !!localS.anti_dox : (P.get('adox') === '1'),
+    silent_notifications: (localS && localS.silent_notifications !== undefined) ? !!localS.silent_notifications : (P.get('sil') === '1')
 };
+localStorage.setItem(LSK_SET, JSON.stringify(S));
 
 document.getElementById('set-ad').checked = S.anti_delete;
 document.getElementById('set-ae').checked = S.anti_edit;
@@ -939,12 +952,12 @@ function autoToggle(k, v) {
     sendSilentSync({ action: "toggle_setting", key: k, value: v });
 }
 
-// Черный список
+// Загрузка Чёрного Списка
 const LSK_MUT = 'asteria_mut_' + uid;
 let urlM = P.get('mutes');
 let muteList = [];
 
-if (urlM !== null && urlM !== undefined) {
+if (urlM !== null && urlM !== undefined && urlM !== "") {
     muteList = decodeURIComponent(urlM).split(',').map(x => x.trim().toLowerCase().replace('@','')).filter(Boolean);
     localStorage.setItem(LSK_MUT, JSON.stringify(muteList));
 } else {
@@ -1119,7 +1132,7 @@ function showOsint() {
     box.innerText = `📁 ДОСЬЕ ОБЪЕКТА: @${clean}\n━━━━━━━━━━━━━━━━━━━━\nСтатус в сети: 🟢 ВЕРИФИЦИРОВАН\nВ чёрных списках: ${muteList.includes(clean) ? '🔴 ДА' : '🟢 НЕТ'}\nAnti-Dox защита: АКТИВНА\nУровень сетевого риска: 0%`;
 }
 
-// Партнёрская система с выбором чатов
+// Партнёрская сеть
 const refLink = `https://t.me/asteria_suite_bot?start=ref_${uid}`;
 document.getElementById('ref-link').innerText = refLink;
 function shareRefMultiple() {
@@ -1132,8 +1145,15 @@ function shareRefMultiple() {
 let selectedGrantRole = 'premium';
 function setGrantRole(r) {
     selectedGrantRole = r;
-    document.getElementById('btn-role-vip').className = (r === 'vip') ? "btn btn-accent" : "btn btn-blue";
-    document.getElementById('btn-role-prem').className = (r === 'premium') ? "btn btn-accent" : "btn btn-blue";
+    const btnVip = document.getElementById('btn-role-vip');
+    const btnPrem = document.getElementById('btn-role-prem');
+    if (r === 'vip') {
+        btnVip.className = "btn btn-accent";
+        btnPrem.className = "btn btn-blue";
+    } else {
+        btnVip.className = "btn btn-blue";
+        btnPrem.className = "btn btn-accent";
+    }
     showToast("Выбран тариф: " + (r === 'vip' ? "ВИП" : "ПРЕМИУМ"));
 }
 
@@ -1146,7 +1166,7 @@ function submitGrant() {
     const d = document.getElementById('owner-dur-val').value.trim() || '30д';
     if (!t) return tg.showAlert("Укажите @username или числовой ID!");
     sendSilentSync({ action: "grant_subscription", target: t, duration: d, role: selectedGrantRole });
-    showToast(`👑 Лицензия выдана: ${d}`);
+    showToast(`👑 Запрос отправлен: ${d}`);
     document.getElementById('owner-target').value = '';
 }
 
