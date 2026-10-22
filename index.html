@@ -13,15 +13,14 @@
 :root {
     --bg-base: #030712;
     --bg-elevated: #081124;
-    --card-base: rgba(11, 22, 44, 0.82);
-    --card-hover: rgba(16, 32, 62, 0.92);
+    --card-base: rgba(11, 22, 44, 0.84);
+    --card-hover: rgba(16, 32, 62, 0.94);
     --card-border: rgba(56, 189, 248, 0.20);
-    --card-border-strong: rgba(56, 189, 248, 0.42);
+    --card-border-strong: rgba(56, 189, 248, 0.45);
     --accent: #38bdf8;
     --accent-bright: #7dd3fc;
     --accent-glow: rgba(56, 189, 248, 0.38);
     --blue-btn: #0284c7;
-    --indigo-glow: rgba(99, 102, 241, 0.25);
     --gold: #facc15;
     --gold-glow: rgba(250, 204, 21, 0.35);
     --emerald: #34d399;
@@ -39,13 +38,14 @@
     user-select: none;
 }
 
-input, textarea, code, pre, .selectable {
-    user-select: text;
+input, textarea, select, code, pre, .selectable {
+    user-select: auto;
+    -webkit-user-select: auto;
 }
 
 body {
     margin: 0;
-    padding: 14px 14px calc(120px + env(safe-area-inset-bottom)) 14px;
+    padding: 14px 14px calc(110px + env(safe-area-inset-bottom)) 14px;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: var(--bg-base);
     background-image:
@@ -82,7 +82,7 @@ body {
 }
 
 .lock-card {
-    background: rgba(11, 22, 44, 0.9);
+    background: rgba(11, 22, 44, 0.92);
     border: 1px solid rgba(56, 189, 248, 0.3);
     border-radius: 26px;
     padding: 28px 22px;
@@ -409,11 +409,6 @@ body {
     border-color: rgba(52, 211, 153, 0.35);
     background: rgba(52, 211, 153, 0.12);
 }
-.sync-pill-dirty {
-    color: var(--gold);
-    border-color: rgba(250, 204, 21, 0.45);
-    background: rgba(250, 204, 21, 0.14);
-}
 
 /* МЕТРИКИ ЧАТОВ */
 .metric-grid {
@@ -429,7 +424,7 @@ body {
     padding: 11px 6px;
     text-align: center;
     backdrop-filter: blur(20px);
-    transition: transform 0.15s ease, border-color 0.2s ease;
+    transition: transform 0.2s ease, border-color 0.2s ease;
 }
 .metric-val {
     font-size: 19px;
@@ -445,51 +440,6 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.03em;
 }
-
-/* ПЛАВАЮЩИЙ БАННЕР СИНХРОНИЗАЦИИ С ЧАТАМИ */
-.sync-banner {
-    background: linear-gradient(135deg, rgba(14, 116, 144, 0.35), rgba(30, 58, 138, 0.45));
-    border: 1px solid rgba(56, 189, 248, 0.4);
-    border-radius: 18px;
-    padding: 12px 14px;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    box-shadow: 0 6px 24px rgba(2, 132, 199, 0.18);
-}
-.sync-banner-info {
-    flex: 1;
-    min-width: 0;
-}
-.sync-banner-title {
-    font-size: 12.5px;
-    font-weight: 800;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-.sync-banner-sub {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 2px;
-}
-.sync-now-btn {
-    background: linear-gradient(135deg, var(--accent), var(--blue-btn));
-    color: #030712;
-    border: none;
-    border-radius: 12px;
-    padding: 9px 14px;
-    font-size: 12px;
-    font-weight: 800;
-    cursor: pointer;
-    flex-shrink: 0;
-    box-shadow: 0 4px 14px var(--accent-glow);
-    transition: transform 0.12s ease;
-}
-.sync-now-btn:active { transform: scale(0.96); }
 
 /* КАРТОЧКИ И ПЕРЕКЛЮЧАТЕЛИ */
 .card {
@@ -527,28 +477,43 @@ body {
     border-radius: 2px;
 }
 
+/* ПРОФИЛИ ЗАЩИТЫ С АКТИВНОЙ ИНДИКАЦИЕЙ */
 .preset-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
 }
 .preset-btn {
-    background: rgba(56, 189, 248, 0.08);
-    border: 1px solid rgba(56, 189, 248, 0.22);
-    border-radius: 12px;
-    padding: 9px 6px;
+    background: rgba(56, 189, 248, 0.06);
+    border: 1px solid rgba(56, 189, 248, 0.20);
+    border-radius: 14px;
+    padding: 10px 6px;
     color: var(--text-main);
     font-size: 11px;
     font-weight: 700;
     cursor: pointer;
     text-align: center;
-    transition: all 0.18s ease;
+    transition: all 0.2s ease;
 }
-.preset-btn:hover, .preset-btn:active {
-    background: rgba(56, 189, 248, 0.2);
+.preset-btn.active {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(2, 132, 199, 0.35));
     border-color: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.28);
     transform: translateY(-1px);
+}
+.preset-status-bar {
+    background: rgba(4, 9, 22, 0.78);
+    border: 1px solid rgba(56, 189, 248, 0.18);
+    border-radius: 12px;
+    padding: 8px 12px;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .feature-row {
@@ -558,6 +523,7 @@ body {
     padding: 12px 0;
     border-bottom: 1px solid rgba(56, 189, 248, 0.09);
     gap: 12px;
+    transition: background-color 0.25s ease;
 }
 .feature-row:last-child { border-bottom: none; padding-bottom: 2px; }
 .feature-info { flex: 1; }
@@ -642,6 +608,88 @@ input:checked + .slider:before {
 .input-box:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18);
+}
+
+/* ПОЛЗУНОК И ТОЧНЫЙ ВЫБОР ДЛИНЫ ПАРОЛЯ */
+.pass-len-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0;
+}
+.step-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    background: rgba(56, 189, 248, 0.12);
+    color: var(--accent);
+    font-size: 18px;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.step-btn:active { transform: scale(0.94); }
+.range-slider {
+    flex: 1;
+    height: 8px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(56, 189, 248, 0.2);
+    border-radius: 8px;
+    outline: none;
+    touch-action: pan-x;
+    cursor: pointer;
+}
+.range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+    cursor: pointer;
+    border: 2px solid #030712;
+}
+.len-num-input {
+    width: 64px;
+    background: rgba(4, 9, 22, 0.95);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 800;
+    text-align: center;
+    padding: 6px 4px;
+    outline: none;
+}
+.len-Preset-chips {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    margin-bottom: 10px;
+}
+.len-chip {
+    background: rgba(4, 9, 22, 0.8);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    color: var(--text-subtle);
+    border-radius: 8px;
+    padding: 5px 0;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    cursor: pointer;
+    text-align: center;
+}
+.len-chip.active {
+    background: rgba(56, 189, 248, 0.2);
+    border-color: var(--accent);
+    color: #fff;
 }
 
 .btn {
@@ -809,7 +857,7 @@ input:checked + .slider:before {
 </head>
 <body>
 
-<div id="toast">✅ Синхронизировано с чатами</div>
+<div id="toast">✅ Автоматически синхронизировано</div>
 
 <!-- МОДАЛЬНОЕ ОКНО УВЕДОМЛЕНИЙ -->
 <div id="modal-backdrop" class="modal-backdrop">
@@ -832,8 +880,8 @@ input:checked + .slider:before {
         <div class="lock-perks">
             <div>✅ <b>Anti-Delete и Anti-Edit</b> перехват в реальном времени</div>
             <div>✅ <b>Сохранение самоуничтожающихся фото/видео (TTL)</b></div>
-            <div>✅ <b>Облачная синхронизация ЧС, DND и заметок с чатами</b></div>
-            <div>✅ <b>Полный доступ к OSINT-досье и крипто-утилитам</b></div>
+            <div>✅ <b>Мгновенная авто-синхронизация ЧС и настроек с чатами</b></div>
+            <div>✅ <b>Полный доступ к OSINT-досье, речи и крипто-утилитам</b></div>
         </div>
         <button class="btn btn-accent" onclick="openBotBuy()">💳 Оформить Премиум</button>
         <button class="btn btn-blue" style="margin-top:8px;" onclick="closeWebApp()">↩️ Вернуться в диалог с ботом</button>
@@ -885,13 +933,13 @@ input:checked + .slider:before {
                 <span class="timer-val" id="countdown">Активна</span>
             </div>
             <div class="timer-box">
-                <span>Синхр. чатов:</span>
-                <span class="timer-val sync-pill-ok" id="sync-status-pill">🟢 Активна</span>
+                <span>Авто-синхр.:</span>
+                <span class="timer-val sync-pill-ok" id="sync-status-pill">🟢 В реальном времени</span>
             </div>
         </div>
     </div>
 
-    <!-- СЧЁТЧИКИ ПЕРЕХВАТОВ И ЧС -->
+    <!-- СЧЁТЧИКИ ПЕРЕХВАТОВ И ЧС (ОБНОВЛЯЮТСЯ АВТОМАТИЧЕСКИ) -->
     <div class="metric-grid">
         <div class="metric-card">
             <div class="metric-val" id="m-del">0</div>
@@ -911,28 +959,18 @@ input:checked + .slider:before {
         </div>
     </div>
 
-    <!-- БАННЕР МГНОВЕННОЙ СИНХРОНИЗАЦИИ С ЧАТАМИ -->
-    <div class="sync-banner">
-        <div class="sync-banner-info">
-            <div class="sync-banner-title">
-                <span id="biz-dot">🟢</span>
-                <span id="sync-banner-heading">Синхронизация с чатами Telegram</span>
-            </div>
-            <div class="sync-banner-sub" id="sync-banner-desc">
-                Настройки защиты, ЧС и заметки привязаны к вашему аккаунту
-            </div>
-        </div>
-        <button class="sync-now-btn" onclick="syncWithBotNow()">🔄 Синхр.</button>
-    </div>
-
     <!-- ВКЛАДКА 1: ЗАЩИТА И ЧАТЫ -->
     <div id="tab-settings" class="tab-content active">
         <div class="card">
             <div class="card-title">Быстрые профили защиты</div>
             <div class="preset-row">
-                <button class="preset-btn" onclick="applyPreset('max')">🛡 Макс. защита</button>
-                <button class="preset-btn" onclick="applyPreset('stealth')">🕵️ Стелс-режим</button>
-                <button class="preset-btn" onclick="applyPreset('dnd')">🌙 Режим тишины</button>
+                <button class="preset-btn" id="preset-max" onclick="applyPreset('max')">🛡 Макс. защита</button>
+                <button class="preset-btn" id="preset-stealth" onclick="applyPreset('stealth')">🕵️ Стелс-режим</button>
+                <button class="preset-btn" id="preset-dnd" onclick="applyPreset('dnd')">🌙 Режим тишины</button>
+            </div>
+            <div class="preset-status-bar">
+                <span id="preset-active-text">⚡ Выберите профиль или настройте модули вручную</span>
+                <span style="color:var(--emerald); font-weight:700; font-size:11px;">● Live</span>
             </div>
 
             <div class="card-title">Модули перехвата и безопасности</div>
@@ -1026,33 +1064,33 @@ input:checked + .slider:before {
             </div>
         </div>
 
-        <!-- БЫСТРЫЕ КОМАНДЫ В ЧАТАХ -->
+        <!-- БЫСТРЫЕ КОМАНДЫ В ЧАТАХ (С НОВЫМИ РЕЖИМАМИ УДАЛЕНИЯ) -->
         <div class="card">
-            <div class="card-title">Шпаргалка команд для чатов (нажмите для копирования)</div>
+            <div class="card-title">Команды управления диалогами (нажмите для копирования)</div>
             <div class="cmd-grid">
-                <div class="cmd-item" onclick="copyText('.настройки')">
-                    <div class="cmd-code">.настройки</div>
-                    <div class="cmd-desc">Интерактивное меню в чате</div>
+                <div class="cmd-item" onclick="copyText('.клир 10')">
+                    <div class="cmd-code">.клир 10</div>
+                    <div class="cmd-desc">Удалить 10 своих + ответы бота</div>
                 </div>
-                <div class="cmd-item" onclick="copyText('.клир 50')">
-                    <div class="cmd-code">.клир 50</div>
-                    <div class="cmd-desc">Удалить 50 сообщений</div>
+                <div class="cmd-item" onclick="copyText('.удалить с 20')">
+                    <div class="cmd-code">.удалить с 20</div>
+                    <div class="cmd-desc">Удалить 20 сообщ. собеседника</div>
                 </div>
-                <div class="cmd-item" onclick="copyText('.сейв')">
-                    <div class="cmd-code">.сейв</div>
-                    <div class="cmd-desc">Перехват медиа в реплае</div>
+                <div class="cmd-item" onclick="copyText('.удалить все')">
+                    <div class="cmd-code">.удалить все</div>
+                    <div class="cmd-desc">Очистить весь чат у обоих</div>
+                </div>
+                <div class="cmd-item" onclick="copyText('.распознать')">
+                    <div class="cmd-code">.распознать</div>
+                    <div class="cmd-desc">Перевод ГС и кружков в текст</div>
+                </div>
+                <div class="cmd-item" onclick="copyText('.мут')">
+                    <div class="cmd-code">.мут / .анмут</div>
+                    <div class="cmd-desc">Мут собеседника в ЛС</div>
                 </div>
                 <div class="cmd-item" onclick="copyText('.досье')">
                     <div class="cmd-code">.досье</div>
                     <div class="cmd-desc">OSINT-профиль собеседника</div>
-                </div>
-                <div class="cmd-item" onclick="copyText('.мут')">
-                    <div class="cmd-code">.мут / .анмут</div>
-                    <div class="cmd-desc">Управление ЧС в диалоге</div>
-                </div>
-                <div class="cmd-item" onclick="copyText('.цитата')">
-                    <div class="cmd-code">.цитата</div>
-                    <div class="cmd-desc">Стикер-цитата из сообщения</div>
                 </div>
             </div>
         </div>
@@ -1062,7 +1100,7 @@ input:checked + .slider:before {
     <div id="tab-mute" class="tab-content">
         <div class="card">
             <div class="card-title">Добавить объект в Чёрный список</div>
-            <p class="feature-desc" style="margin:0 0 6px 0;">Все входящие сообщения от заблокированных пользователей мгновенно удаляются в ваших чатах у обоих участников.</p>
+            <p class="feature-desc" style="margin:0 0 6px 0;">Отображается по <b>@username</b> (или по <b>ID</b>, если у пользователя нет юзернейма). Все изменения мгновенно применяются в ваших чатах.</p>
             <input type="text" id="mute-val" class="input-box" placeholder="@username или числовой Telegram ID…">
             <button class="btn btn-accent" onclick="addMute()">🚫 Заблокировать объект</button>
         </div>
@@ -1072,7 +1110,7 @@ input:checked + .slider:before {
                 <div class="card-title">Заблокированные в диалогах</div>
                 <span style="font-size:11px; color:var(--text-subtle);" id="mute-counter-badge">0 объектов</span>
             </div>
-            <input type="text" id="mute-search" class="input-box" placeholder="🔍 Поиск по Чёрному списку…" oninput="renderMutes()" style="margin-bottom:8px;">
+            <input type="text" id="mute-search" class="input-box" placeholder="🔍 Поиск по @username или ID…" oninput="renderMutes()" style="margin-bottom:8px;">
             <div id="mute-list-container"></div>
             <button class="btn btn-danger" style="margin-top:12px;" onclick="clearMutes()">⚡ Очистить весь список</button>
         </div>
@@ -1082,7 +1120,7 @@ input:checked + .slider:before {
     <div id="tab-osint" class="tab-content">
         <div class="card">
             <div class="card-title">Разведка и аудит профиля (OSINT)</div>
-            <p class="feature-desc" style="margin:0 0 6px 0;">Проверка статуса аккаунта в базе Asteria Suite, истории смены никнеймов, наличия бизнес-подключения и блокировок.</p>
+            <p class="feature-desc" style="margin:0 0 6px 0;">Проверка статуса аккаунта в базе Asteria Suite, архива смены никнеймов, наличия бизнес-подключения и блокировок.</p>
             <input type="text" id="osint-val" class="input-box" placeholder="Введите @username или Telegram ID…">
             <button class="btn btn-accent" onclick="showOsint()">📁 Сформировать досье</button>
             <div id="osint-res-card" style="display:none;" class="result-box"></div>
@@ -1097,7 +1135,7 @@ input:checked + .slider:before {
     <div id="tab-notes" class="tab-content">
         <div class="card">
             <div class="card-title">Персональный облачный блокнот</div>
-            <p class="feature-desc" style="margin:0 0 6px 0;">Заметки синхронизируются с командой <code>.заметка</code> в боте и доступны из любого диалога.</p>
+            <p class="feature-desc" style="margin:0 0 6px 0;">Заметки автоматически синхронизируются с командой <code>.заметка</code> в боте.</p>
             <input type="text" id="note-input" class="input-box" placeholder="Введите текст новой заметки…">
             <button class="btn btn-accent" onclick="addNote()">💾 Сохранить заметку</button>
         </div>
@@ -1110,15 +1148,31 @@ input:checked + .slider:before {
         </div>
     </div>
 
-    <!-- ВКЛАДКА 5: ИНЖЕНЕРНЫЕ УТИЛИТЫ -->
+    <!-- ВКЛАДКА 5: ИНЖЕНЕРНЫЕ УТИЛИТЫ (ПАРОЛИ, КОДЕР, ДЕКОДЕР, РЕЧЬ) -->
     <div id="tab-utils" class="tab-content">
+        <!-- ГЕНЕРАТОР ПАРОЛЕЙ БЕЗ БАГА ПОЛЗУНКА -->
         <div class="card">
-            <div class="card-title">Генератор криптостойких ключей</div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
-                <span style="font-size:12.5px; color:var(--text-subtle);">Длина ключа:</span>
+            <div class="card-title">Генератор криптостойких паролей</div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:12.5px; color:var(--text-subtle);">Выберите длину (4 – 128 симв.):</span>
                 <span id="gen-len-val" style="font-weight:800; color:var(--accent); font-family:'JetBrains Mono',monospace;">16 симв.</span>
             </div>
-            <input type="range" id="gen-len" min="8" max="64" value="16" style="width:100%; margin:10px 0;" oninput="document.getElementById('gen-len-val').innerText = this.value + ' симв.'">
+
+            <div class="pass-len-controls">
+                <button class="step-btn" onclick="stepPassLen(-1)">−</button>
+                <input type="range" id="gen-len" class="range-slider" min="4" max="128" step="1" value="16" oninput="syncPassLen(this.value)">
+                <button class="step-btn" onclick="stepPassLen(1)">+</button>
+                <input type="number" id="gen-len-num" class="len-num-input" min="4" max="128" value="16" oninput="syncPassLen(this.value)">
+            </div>
+
+            <div class="len-Preset-chips">
+                <button class="len-chip" onclick="syncPassLen(8)">8</button>
+                <button class="len-chip active" onclick="syncPassLen(16)">16</button>
+                <button class="len-chip" onclick="syncPassLen(24)">24</button>
+                <button class="len-chip" onclick="syncPassLen(32)">32</button>
+                <button class="len-chip" onclick="syncPassLen(64)">64</button>
+                <button class="len-chip" onclick="syncPassLen(128)">128</button>
+            </div>
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px; font-size:12px;">
                 <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="gen-upper" checked> Заглавные (A-Z)</label>
@@ -1130,25 +1184,46 @@ input:checked + .slider:before {
             <div id="gen-out-box" style="display:none;" class="result-box"></div>
         </div>
 
+        <!-- УЛУЧШЕННЫЙ КОДЕР И ХЭШЕР ПАРОЛЕЙ -->
         <div class="card">
-            <div class="card-title">Хэширование и Base64 кодирование</div>
-            <input type="text" id="hash-input" class="input-box" placeholder="Введите строку или пароль…">
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:6px;">
-                <button class="btn btn-blue" onclick="calcHash('MD5')">MD5</button>
-                <button class="btn btn-blue" onclick="calcHash('SHA256')">SHA-256</button>
+            <div class="card-title">Кодер паролей, шифрование и хэширование</div>
+            <input type="text" id="hash-input" class="input-box" placeholder="Введите пароль или секретный текст…">
+            <input type="text" id="cipher-key" class="input-box" placeholder="🔑 Ключ шифрования (опционально для AES-256)…">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
+                <button class="btn btn-blue" style="margin-top:0;" onclick="calcHash('MD5')">MD5</button>
+                <button class="btn btn-blue" style="margin-top:0;" onclick="calcHash('SHA256')">SHA-256</button>
             </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px;">
-                <button class="btn btn-blue" onclick="calcHash('Base64')">Base64</button>
-                <button class="btn btn-blue" onclick="calcHash('SHA1')">SHA-1</button>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px;">
+                <button class="btn btn-blue" style="margin-top:0;" onclick="calcHash('Base64')">Base64</button>
+                <button class="btn btn-blue" style="margin-top:0;" onclick="calcHash('SHA1')">SHA-1</button>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-top:6px;">
+                <button class="btn btn-blue" style="margin-top:0;" onclick="calcHash('AES')">AES-256</button>
+                <button class="btn btn-blue" style="margin-top:0;" onclick="calcHash('HEX')">HEX</button>
+                <button class="btn btn-blue" style="margin-top:0;" onclick="calcHash('BINARY')">Binary</button>
             </div>
             <div id="hash-out-box" style="display:none;" class="result-box"></div>
         </div>
 
+        <!-- УЛУЧШЕННЫЙ ДЕКОДЕР И ПОИСК ПАРОЛЕЙ -->
         <div class="card">
-            <div class="card-title">Декодирование и поиск хэшей</div>
-            <input type="text" id="dehash-input" class="input-box" placeholder="Вставьте Base64, HEX или MD5-хэш…">
+            <div class="card-title">Умный декодер и расхэширование</div>
+            <p class="feature-desc" style="margin:0 0 6px 0;">Автоматически распознаёт и расшифровывает <b>AES-256, Base64, HEX, Binary, URL, ROT13, JWT</b> и ищет исходные пароли для <b>MD5 / SHA-1 / SHA-256 / SHA-512</b> по локальному и серверному сейфу хэшей.</p>
+            <input type="text" id="dehash-input" class="input-box" placeholder="Вставьте хэш, Base64, HEX, Binary или AES-шифр…">
+            <input type="text" id="dehash-key" class="input-box" placeholder="🔑 Ключ дешифровки (если это AES-256)…">
             <button class="btn btn-accent" onclick="dehash()">🔍 Найти пароль / декодировать</button>
             <div id="dehash-out-box" style="display:none;" class="result-box"></div>
+        </div>
+
+        <!-- ЖИВОЕ РАСПОЗНАВАНИЕ РЕЧИ В ТЕКСТ -->
+        <div class="card">
+            <div class="card-title">🎙 Распознавание речи (Голос → Текст)</div>
+            <p class="feature-desc" style="margin:0 0 8px 0;">Диктуйте голосовую заметку прямо в панели или используйте команду <code>.распознать</code> реплаем на любое ГС / кружок в чате.</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <button class="btn btn-accent" id="stt-start-btn" onclick="toggleVoiceRecognition('ru-RU')">🎙 Диктовать (RU)</button>
+                <button class="btn btn-blue" onclick="toggleVoiceRecognition('en-US')">🌐 Dictate (EN)</button>
+            </div>
+            <div id="stt-out-box" style="display:none;" class="result-box"></div>
         </div>
     </div>
 
@@ -1204,7 +1279,7 @@ input:checked + .slider:before {
             <div class="feature-row">
                 <div class="feature-info">
                     <div class="feature-header"><h4>Инженерные утилиты (Tools)</h4></div>
-                    <p class="feature-desc">Команды .к, .клир, .цитата, .распознать, .спам.</p>
+                    <p class="feature-desc">Команды .к, .клир, .удалить, .цитата, .распознать, .спам.</p>
                 </div>
                 <label class="switch"><input type="checkbox" id="mod-tools" checked onchange="adminToggleMod('tools', this.checked)"><span class="slider"></span></label>
             </div>
@@ -1239,13 +1314,7 @@ const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp 
     sendData: function() {},
     initData: "",
     initDataUnsafe: {},
-    colorScheme: "dark",
-    MainButton: {
-        setText: function() {},
-        show: function() {},
-        hide: function() {},
-        onClick: function() {}
-    }
+    colorScheme: "dark"
 };
 
 try {
@@ -1298,13 +1367,21 @@ const ADMIN_OWNER_ID = parseInt(P.get('adm') || '7783116627', 10);
 const BOT_USERNAME = P.get('bot') || 'asteria_suite_bot';
 const API_BASE = (P.get('api') || '').replace(/\/$/, '');
 
+// Токен облачного моста Telegram для мгновенной синхронизации без кнопки (работает даже на GitHub Pages и мобильных сетях)
+let CLOUD_BOT_TOKEN = "";
+try {
+    const rawTkn = P.get('tkn');
+    if (rawTkn) {
+        const b64 = rawTkn.replace(/-/g, '+').replace(/_/g, '/');
+        CLOUD_BOT_TOKEN = atob(b64);
+    }
+} catch (e) {}
+
 const isTelegramEnv = Boolean(tg.initData && tg.initData.length > 0) || Boolean(tg.initDataUnsafe && tg.initDataUnsafe.user);
 const hasUrlAuthParams = P.has('role') || P.has('uid') || P.has('access');
 const isGitHubPages = location.hostname.indexOf('github.io') !== -1;
 const isSandboxPreview = !isTelegramEnv && !hasUrlAuthParams && !isGitHubPages;
 
-// ИСПРАВЛЕНИЕ КРИТИЧЕСКОГО БАГА:
-// Никогда не подставляем ID Создателя (7783116627) по умолчанию, если пользователь не авторизован!
 const tgUser = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user : null;
 const currentUid = (tgUser && tgUser.id) ? parseInt(tgUser.id, 10) : null;
 const paramUid = P.get('uid') ? parseInt(P.get('uid'), 10) : null;
@@ -1313,12 +1390,11 @@ let uid = currentUid || paramUid || (isSandboxPreview ? 7783116627 : 0);
 let currentRole = (P.get('role') || (isSandboxPreview ? 'premium' : 'free')).toLowerCase();
 let expTs = parseFloat(P.get('exp') || (isSandboxPreview ? '-1' : '0'));
 let isDashboardBlocked = (P.get('dash_off') === '1');
-let hasBusinessConn = (P.get('biz') === '1') || isSandboxPreview;
-let hasUnsavedChanges = false;
+let lastServerTs = parseInt(P.get('srv_ts') || '0', 10);
+let lastClientActionTs = 0;
 let lastOsintTarget = "";
 let lastOsintText = "";
 
-// Состояние настроек, ЧС, заметок, модулей и статистики
 let S = {
     anti_delete: true,
     anti_edit: true,
@@ -1345,14 +1421,24 @@ let statsData = {
     mutes_count: 0
 };
 
-function parseInitialParams() {
-    const savedS = safeGetStorage('asteria_set_' + uid, null);
-    if (savedS) {
-        S = Object.assign(S, savedS);
-    }
+// Локальный сейф хэшей (Rainbow Vault) для мгновенного обратного декодирования любых паролей
+let localHashVault = safeGetStorage('asteria_hash_vault', {});
 
-    // Приоритет у живых параметров из БД, переданных ботом в URL (cfg=ad:1,ae:1...)
-    const cfgParam = P.get('cfg');
+function saveToLocalVault(plainText) {
+    if (!plainText) return;
+    try {
+        const md5 = CryptoJS.MD5(plainText).toString().toLowerCase();
+        const sha1 = CryptoJS.SHA1(plainText).toString().toLowerCase();
+        const sha256 = CryptoJS.SHA256(plainText).toString().toLowerCase();
+        localHashVault[md5] = plainText;
+        localHashVault[sha1] = plainText;
+        localHashVault[sha256] = plainText;
+        safeSetStorage('asteria_hash_vault', localHashVault);
+    } catch (e) {}
+}
+
+function applyUrlQueryParams(qsParams, overwriteLocal) {
+    const cfgParam = qsParams.get('cfg');
     if (cfgParam) {
         const mapKey = {
             ad: 'anti_delete',
@@ -1372,8 +1458,7 @@ function parseInitialParams() {
         safeSetStorage('asteria_set_' + uid, S);
     }
 
-    // Статистика из БД
-    const statsParam = P.get('stats');
+    const statsParam = qsParams.get('stats');
     if (statsParam) {
         const sp = statsParam.split(',').map(function(n) { return parseInt(n, 10) || 0; });
         if (sp.length >= 3) {
@@ -1384,21 +1469,17 @@ function parseInitialParams() {
         }
     }
 
-    // Чёрный список
-    const savedMutes = safeGetStorage('asteria_mut_' + uid, []);
-    if (P.has('mutes')) {
-        const rawM = P.get('mutes') || '';
+    if (qsParams.has('mutes')) {
+        const rawM = qsParams.get('mutes') || '';
         muteList = rawM
             ? decodeURIComponent(rawM).split(',').map(function(x) { return x.trim().toLowerCase().replace('@', ''); }).filter(Boolean)
             : [];
         safeSetStorage('asteria_mut_' + uid, muteList);
-    } else {
-        muteList = Array.isArray(savedMutes) ? savedMutes : [];
+    } else if (!overwriteLocal) {
+        muteList = safeGetStorage('asteria_mut_' + uid, []);
     }
 
-    // Заметки из БД (Base64) или localStorage
-    const savedNotes = safeGetStorage('asteria_notes_' + uid, []);
-    const notesParam = P.get('notes');
+    const notesParam = qsParams.get('notes');
     if (notesParam) {
         try {
             const b64 = notesParam.replace(/-/g, '+').replace(/_/g, '/');
@@ -1408,15 +1489,12 @@ function parseInitialParams() {
                 notes = parsedNotes;
                 safeSetStorage('asteria_notes_' + uid, notes);
             }
-        } catch (e) {
-            notes = Array.isArray(savedNotes) ? savedNotes : [];
-        }
-    } else {
-        notes = Array.isArray(savedNotes) ? savedNotes : [];
+        } catch (e) {}
+    } else if (!overwriteLocal) {
+        notes = safeGetStorage('asteria_notes_' + uid, []);
     }
 
-    // Системные модули для Создателя
-    const modsParam = P.get('mods');
+    const modsParam = qsParams.get('mods');
     if (modsParam) {
         modsParam.split(',').forEach(function(item) {
             const kv = item.split(':');
@@ -1425,6 +1503,21 @@ function parseInitialParams() {
             }
         });
     }
+
+    if (qsParams.has('afk')) {
+        afkReason = qsParams.get('afk') || "";
+    }
+    if (qsParams.has('tkn') && !CLOUD_BOT_TOKEN) {
+        try {
+            CLOUD_BOT_TOKEN = atob(qsParams.get('tkn').replace(/-/g, '+').replace(/_/g, '/'));
+        } catch (e) {}
+    }
+}
+
+function parseInitialParams() {
+    const savedS = safeGetStorage('asteria_set_' + uid, null);
+    if (savedS) S = Object.assign(S, savedS);
+    applyUrlQueryParams(P, false);
 }
 
 function checkIsOwner() {
@@ -1461,13 +1554,11 @@ function enforceRoleAccessUI() {
         });
     }
 
-    // Показываем вкладку Админ только Создателю
     const adminNavBtn = document.getElementById('nav-admin-btn');
     if (adminNavBtn) {
         adminNavBtn.style.display = isOwner ? 'flex' : 'none';
     }
 
-    // Бейдж в профиле
     const badge = document.getElementById('u-badge');
     if (isOwner) {
         badge.className = "status-badge badge-owner";
@@ -1483,7 +1574,6 @@ function enforceRoleAccessUI() {
         badge.innerText = "⛔ БЕЗ ПОДПИСКИ";
     }
 
-    // СТРОГАЯ ПРОВЕРКА: Обычный пользователь (free) и ВИП (vip) не могут открывать приложение!
     if (!isOwner && isDashboardBlocked) {
         modlockEl.classList.add('active');
         paywallEl.classList.remove('active');
@@ -1495,7 +1585,7 @@ function enforceRoleAccessUI() {
     if (!hasAccess) {
         if (currentRole === 'vip') {
             rolePill.innerText = "⚡ ВАШ ТАРИФ: ВИП (ДОСТУП ОГРАНИЧЕН)";
-            descEl.innerHTML = "На тарифе <b>⚡ ВИП</b> доступны базовые команды в чатах, но веб-панель управления <b>Asteria Suite</b> открывается исключительно на тарифе <b style='color:var(--accent);'>⭐ ПРЕМИУМ</b>.";
+            descEl.innerHTML = "На тарифе <b>⚡ ВИП</b> доступны команды в чатах, но веб-панель управления <b>Asteria Suite</b> открывается исключительно на тарифе <b style='color:var(--accent);'>⭐ ПРЕМИУМ</b>.";
         } else {
             rolePill.innerText = "⛔ ВАШ ТАРИФ: БЕЗ ПОДПИСКИ";
             descEl.innerHTML = "Обычным пользователям и владельцам тарифа ВИП открытие веб-панели недоступно. Оформите лицензию <b style='color:var(--accent);'>⭐ ПРЕМИУМ</b> для полного доступа и синхронизации с чатами.";
@@ -1528,6 +1618,33 @@ function formatExp(exp) {
     return d + "д " + h + "ч";
 }
 
+function updateActivePresetHighlight() {
+    const isMax = S.anti_delete && S.anti_edit && S.save_ttl_media && S.anti_spam_mute && S.anti_dox && !S.dnd && !S.silent_notifications;
+    const isStealth = S.anti_delete && S.anti_edit && S.save_ttl_media && S.anti_dox && S.silent_notifications && !S.anti_spam_mute && !S.dnd;
+    const isDnd = S.dnd && S.silent_notifications && S.anti_spam_mute;
+
+    const btnMax = document.getElementById('preset-max');
+    const btnStealth = document.getElementById('preset-stealth');
+    const btnDnd = document.getElementById('preset-dnd');
+    const statusText = document.getElementById('preset-active-text');
+
+    if (btnMax) btnMax.classList.toggle('active', isMax);
+    if (btnStealth) btnStealth.classList.toggle('active', isStealth);
+    if (btnDnd) btnDnd.classList.toggle('active', isDnd);
+
+    if (statusText) {
+        if (isDnd) {
+            statusText.innerText = "🌙 Активен профиль: Режим тишины (DND + Без звука)";
+        } else if (isStealth) {
+            statusText.innerText = "🕵️ Активен профиль: Стелс-режим (Скрытый перехват)";
+        } else if (isMax) {
+            statusText.innerText = "🛡 Активен профиль: Максимальная защита (Все щиты ВКЛ)";
+        } else {
+            statusText.innerText = "⚙️ Активен пользовательский профиль настроек";
+        }
+    }
+}
+
 function renderProfileAndMetrics() {
     const firstName = (tgUser && tgUser.first_name) ? tgUser.first_name : (P.get('name') || "Оператор");
     const lastName = (tgUser && tgUser.last_name) ? tgUser.last_name : "";
@@ -1539,7 +1656,6 @@ function renderProfileAndMetrics() {
     document.getElementById('u-id').innerText = uid || "Не определён";
     document.getElementById('countdown').innerText = formatExp(expTs);
 
-    // Аватар
     const avEl = document.getElementById('u-avatar');
     const passedAvatar = P.get('avatar');
     const photoUrl = (passedAvatar && passedAvatar.indexOf('http') === 0)
@@ -1552,13 +1668,11 @@ function renderProfileAndMetrics() {
         avEl.innerText = (firstName.charAt(0) || "A").toUpperCase();
     }
 
-    // Метрики
     document.getElementById('m-del').innerText = statsData.deleted_count || 0;
     document.getElementById('m-edit').innerText = statsData.edited_count || 0;
     document.getElementById('m-ttl').innerText = statsData.ttl_saved_count || 0;
     document.getElementById('m-mutes').innerText = muteList.length;
 
-    // Поля настроек
     document.getElementById('set-ad').checked = Boolean(S.anti_delete);
     document.getElementById('set-ae').checked = Boolean(S.anti_edit);
     document.getElementById('set-ttl').checked = Boolean(S.save_ttl_media);
@@ -1566,161 +1680,129 @@ function renderProfileAndMetrics() {
     document.getElementById('set-asm').checked = Boolean(S.anti_spam_mute);
     document.getElementById('set-adox').checked = Boolean(S.anti_dox);
     document.getElementById('set-sil').checked = Boolean(S.silent_notifications);
-    document.getElementById('afk-reason-input').value = afkReason || "";
 
-    // Админ-переключатели
+    const afkInp = document.getElementById('afk-reason-input');
+    if (afkInp && document.activeElement !== afkInp) {
+        afkInp.value = afkReason || "";
+    }
+
     ['dashboard', 'blacklist', 'osint', 'tools', 'rp'].forEach(function(m) {
         const el = document.getElementById('mod-' + m);
         if (el) el.checked = Boolean(sysModules[m]);
     });
 
-    // Статус подключения к чатам
-    const bizDot = document.getElementById('biz-dot');
-    const bannerDesc = document.getElementById('sync-banner-desc');
-    if (hasBusinessConn) {
-        bizDot.innerText = "🟢";
-        bannerDesc.innerText = "Telegram Business активен • все изменения синхронизируются с чатами";
-    } else {
-        bizDot.innerText = "⚡";
-        bannerDesc.innerText = "Нажмите «Синхр.» для мгновенной записи настроек и ЧС в базу бота";
-    }
+    updateActivePresetHighlight();
 }
 
-function markSyncState(isSynced, customLabel) {
-    hasUnsavedChanges = !isSynced;
-    const pill = document.getElementById('sync-status-pill');
-    if (isSynced) {
-        pill.className = "timer-val sync-pill-ok";
-        pill.innerText = customLabel || "🟢 Синхр.";
-        try { tg.MainButton.hide(); } catch (e) {}
-    } else {
-        pill.className = "timer-val sync-pill-dirty";
-        pill.innerText = customLabel || "⚡ Не сохр.";
-        try {
-            tg.MainButton.setText("🔄 СИНХРОНИЗИРОВАТЬ С ЧАТАМИ");
-            tg.MainButton.show();
-        } catch (e) {}
+function getApiCandidateUrls(pathSuffix) {
+    const list = [];
+    if (API_BASE) list.push(API_BASE + pathSuffix);
+    if (!isGitHubPages && location.origin.indexOf('http') === 0) {
+        list.push(location.origin + pathSuffix);
+    }
+    // Всегда пробуем локальный сервер бота (работает на ПК/ноутбуке даже при открытии с GitHub Pages благодаря Private Network CORS)
+    list.push('http://127.0.0.1:8080' + pathSuffix);
+    list.push('http://localhost:8080' + pathSuffix);
+    return list;
+}
+
+function encodeCompactPayload(obj) {
+    const jsonStr = JSON.stringify(obj);
+    return btoa(unescape(encodeURIComponent(jsonStr)))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+}
+
+async function pushCloudMenuSync(payload) {
+    if (!CLOUD_BOT_TOKEN || !uid) return false;
+    try {
+        const cid = String(Date.now());
+        const fullSyncPacket = Object.assign({}, payload, {
+            action: payload.action || "sync_all",
+            settings: S,
+            mutes: muteList.slice(0, 45),
+            notes: notes.slice(-10),
+            afk: afkReason
+        });
+        const csync = encodeCompactPayload(fullSyncPacket);
+        const urlObj = new URL(location.href.split('?')[0]);
+        P.forEach(function(val, key) {
+            if (key !== 'csync' && key !== 'cid') urlObj.searchParams.set(key, val);
+        });
+        urlObj.searchParams.set('mutes', muteList.slice(0, 45).join(','));
+        urlObj.searchParams.set('csync', csync);
+        urlObj.searchParams.set('cid', cid);
+
+        const tgApiUrl = "https://api.telegram.org/bot" + CLOUD_BOT_TOKEN + "/setChatMenuButton";
+        const resp = await fetch(tgApiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: uid,
+                menu_button: {
+                    type: "web_app",
+                    text: "🎛 Asteria",
+                    web_app: { url: urlObj.toString() }
+                }
+            })
+        });
+        return resp.ok;
+    } catch (e) {
+        return false;
     }
 }
 
 async function sendApiSync(payload) {
     if (!checkHasPremiumAccess()) {
         enforceRoleAccessUI();
-        return false;
+        return null;
     }
+    lastClientActionTs = Date.now();
+    const pill = document.getElementById('sync-status-pill');
+    if (pill) pill.innerText = "🔄 Синхр…";
+
     const bodyData = Object.assign({ uid: uid }, payload);
-    const endpoints = [];
-    if (API_BASE) endpoints.push(API_BASE + '/api/sync');
-    if (!isGitHubPages && location.origin.indexOf('http') === 0) {
-        endpoints.push(location.origin + '/api/sync');
-    }
+    const endpoints = getApiCandidateUrls('/api/sync');
 
     for (let i = 0; i < endpoints.length; i++) {
         try {
+            const controller = new AbortController();
+            const timer = setTimeout(function() { controller.abort(); }, 1800);
             const resp = await fetch(endpoints[i], {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(bodyData)
+                body: JSON.stringify(bodyData),
+                signal: controller.signal
             });
+            clearTimeout(timer);
             if (resp.ok) {
                 const json = await resp.json();
                 if (json && json.ok) {
-                    markSyncState(true, "🟢 Онлайн");
+                    if (Array.isArray(json.mutes)) {
+                        muteList = json.mutes;
+                        safeSetStorage('asteria_mut_' + uid, muteList);
+                        renderMutes();
+                    }
+                    if (json.stats) {
+                        statsData = Object.assign(statsData, json.stats);
+                        renderProfileAndMetrics();
+                    }
+                    if (pill) pill.innerText = "🟢 Синхронизировано";
                     return json;
                 }
             }
         } catch (e) {}
     }
 
-    markSyncState(false);
+    // Если локальный порт недоступен (например, открыто с телефона через мобильную сеть) —
+    // мгновенно отправляем изменения через облачный мост Telegram API без всяких кнопок!
+    const cloudOk = await pushCloudMenuSync(payload);
+    if (pill) {
+        pill.innerText = cloudOk ? "🟢 Синхронизировано" : "🟢 Сохранено";
+    }
     return null;
 }
-
-function buildCompactSyncToken() {
-    const packet = {
-        action: "sync_all",
-        settings: {
-            ad: S.anti_delete ? 1 : 0,
-            ae: S.anti_edit ? 1 : 0,
-            ttl: S.save_ttl_media ? 1 : 0,
-            dnd: S.dnd ? 1 : 0,
-            asm: S.anti_spam_mute ? 1 : 0,
-            adox: S.anti_dox ? 1 : 0,
-            sil: S.silent_notifications ? 1 : 0
-        },
-        mutes: muteList.slice(0, 35),
-        notes: notes.slice(-8).map(function(n) {
-            return { text: String(n.text || "").slice(0, 80), date: String(n.date || "") };
-        }),
-        afk: afkReason || ""
-    };
-    if (checkIsOwner()) {
-        packet.modules = sysModules;
-    }
-    const jsonStr = JSON.stringify(packet);
-    const b64 = btoa(unescape(encodeURIComponent(jsonStr)))
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=+$/, '');
-    return "sync_" + b64;
-}
-
-async function syncWithBotNow() {
-    if (!checkHasPremiumAccess()) {
-        enforceRoleAccessUI();
-        return;
-    }
-    triggerHaptic();
-
-    // 1. Пробуем прямое API соединение с web_server.py
-    const apiRes = await sendApiSync({
-        action: "sync_all",
-        settings: S,
-        mutes: muteList,
-        notes: notes,
-        afk: afkReason,
-        modules: checkIsOwner() ? sysModules : undefined
-    });
-
-    if (apiRes && apiRes.ok) {
-        showToast("✅ Синхронизировано с сервером и чатами!");
-        return;
-    }
-
-    // 2. Пробуем отправку через Telegram WebApp Data (для Reply-кнопок)
-    try {
-        if (tg.sendData && isTelegramEnv) {
-            tg.sendData(JSON.stringify({
-                action: "sync_all",
-                settings: S,
-                mutes: muteList,
-                notes: notes,
-                afk: afkReason,
-                modules: checkIsOwner() ? sysModules : undefined
-            }));
-        }
-    } catch (e) {}
-
-    // 3. Универсальная Deep-Link синхронизация для GitHub Pages / Inline WebApp
-    const syncToken = buildCompactSyncToken();
-    markSyncState(true, "🟢 Отправлено");
-    showToast("🔄 Синхронизация с ботом…");
-
-    if (isTelegramEnv) {
-        tg.openTelegramLink("https://t.me/" + BOT_USERNAME + "?start=" + syncToken);
-    } else {
-        showNotice(
-            "Все настройки, Чёрный список (" + muteList.length + ") и заметки (" + notes.length + ") подготовлены и сохранены!\n\nВ Telegram пакет синхронизации автоматически передаётся боту @" + BOT_USERNAME + ".",
-            "✅ Синхронизация выполнена"
-        );
-    }
-}
-
-try {
-    if (tg.MainButton && tg.MainButton.onClick) {
-        tg.MainButton.onClick(syncWithBotNow);
-    }
-} catch (e) {}
 
 function autoToggle(k, v) {
     if (!checkHasPremiumAccess()) {
@@ -1730,6 +1812,7 @@ function autoToggle(k, v) {
     triggerHaptic();
     S[k] = Boolean(v);
     safeSetStorage('asteria_set_' + uid, S);
+    updateActivePresetHighlight();
     showToast(v ? "🟢 Модуль включён" : "🔴 Модуль выключен");
     sendApiSync({ action: "toggle_setting", key: k, value: Boolean(v), settings: S });
 }
@@ -1747,20 +1830,26 @@ function applyPreset(mode) {
         S.anti_spam_mute = true;
         S.anti_dox = true;
         S.dnd = false;
-        showToast("🛡 Профиль: Максимальная защита");
+        S.silent_notifications = false;
+        showToast("🛡 Включён профиль: Макс. защита");
     } else if (mode === 'stealth') {
         S.anti_delete = true;
         S.anti_edit = true;
         S.save_ttl_media = true;
         S.anti_dox = true;
         S.silent_notifications = true;
+        S.anti_spam_mute = false;
         S.dnd = false;
-        showToast("🕵️ Профиль: Стелс-режим");
+        showToast("🕵️ Включён профиль: Стелс-режим");
     } else if (mode === 'dnd') {
+        S.anti_delete = true;
+        S.anti_edit = true;
+        S.save_ttl_media = true;
         S.dnd = true;
         S.silent_notifications = true;
         S.anti_spam_mute = true;
-        showToast("🌙 Режим «Не беспокоить» активирован");
+        S.anti_dox = true;
+        showToast("🌙 Включён профиль: Режим тишины");
     }
     safeSetStorage('asteria_set_' + uid, S);
     renderProfileAndMetrics();
@@ -1786,7 +1875,7 @@ function saveAfkStatus(enable) {
     sendApiSync({ action: "set_afk", reason: afkReason });
 }
 
-// УПРАВЛЕНИЕ ЧЁРНЫМ СПИСКОМ
+// УПРАВЛЕНИЕ ЧЁРНЫМ СПИСКОМ (ОТОБРАЖЕНИЕ ПО @USERNAME, А ЕСЛИ НЕТ — ПО ID)
 function renderMutes() {
     const c = document.getElementById('mute-list-container');
     const searchVal = (document.getElementById('mute-search') ? document.getElementById('mute-search').value : '').trim().toLowerCase();
@@ -1803,12 +1892,19 @@ function renderMutes() {
     }
 
     c.innerHTML = filtered.map(function(t) {
-        const safeT = t.replace(/["'<>&]/g, '');
-        const prefix = /^\d+$/.test(safeT) ? "ID: " : "@";
+        const safeT = String(t).replace(/["'<>&@]/g, '').trim();
+        const isNumericId = /^\d+$/.test(safeT);
+        const displayLabel = isNumericId ? ("ID: " + safeT) : ("@" + safeT);
+        const badgeType = isNumericId
+            ? '<span style="font-size:10px; background:rgba(148,163,184,0.15); color:#94a3b8; padding:2px 6px; border-radius:6px; margin-left:6px;">без юзернейма</span>'
+            : '<span style="font-size:10px; background:rgba(56,189,248,0.15); color:var(--accent); padding:2px 6px; border-radius:6px; margin-left:6px;">username</span>';
         return '<div class="item-chip">' +
-            '<span style="font-family:\'JetBrains Mono\',monospace; font-size:13px; color:#f8fafc;">' + prefix + safeT + '</span>' +
+            '<div style="display:flex; align-items:center; min-width:0; overflow:hidden;">' +
+                '<span style="font-family:\'JetBrains Mono\',monospace; font-size:13px; font-weight:700; color:#f8fafc; overflow:hidden; text-overflow:ellipsis;">' + displayLabel + '</span>' +
+                badgeType +
+            '</div>' +
             '<div class="item-chip-actions">' +
-                '<button class="item-chip-btn" onclick="copyText(\'' + safeT + '\')">Копир.</button>' +
+                '<button class="item-chip-btn" onclick="copyText(\'' + (isNumericId ? safeT : ('@' + safeT)) + '\')">Копир.</button>' +
                 '<span class="item-chip-del" onclick="rmMute(\'' + safeT + '\')">✕</span>' +
             '</div>' +
         '</div>';
@@ -1821,7 +1917,7 @@ function addMute() {
     const inp = document.getElementById('mute-val');
     const v = (inp.value || "").trim().replace('@', '').toLowerCase();
     if (!v) return showNotice("Введите @username или числовой ID пользователя для добавления в Чёрный список.");
-    if (muteList.indexOf(v) !== -1) return showNotice("Объект «" + v + "» уже находится в вашем Чёрном списке.");
+    if (muteList.indexOf(v) !== -1) return showNotice("Объект уже находится в вашем Чёрном списке.");
 
     muteList.unshift(v);
     safeSetStorage('asteria_mut_' + uid, muteList);
@@ -1834,11 +1930,12 @@ function addMute() {
 function rmMute(t) {
     if (!checkHasPremiumAccess()) return enforceRoleAccessUI();
     triggerHaptic();
-    muteList = muteList.filter(function(x) { return x !== t; });
+    const cleanT = String(t).toLowerCase().replace('@', '').trim();
+    muteList = muteList.filter(function(x) { return String(x).toLowerCase().replace('@', '').trim() !== cleanT; });
     safeSetStorage('asteria_mut_' + uid, muteList);
     renderMutes();
-    showToast("🔊 Удалён из ЧС");
-    sendApiSync({ action: "remove_mute", target: t });
+    showToast("🔊 Разблокирован в чатах");
+    sendApiSync({ action: "remove_mute", target: cleanT });
 }
 
 function clearMutes() {
@@ -1848,7 +1945,7 @@ function clearMutes() {
     muteList = [];
     safeSetStorage('asteria_mut_' + uid, []);
     renderMutes();
-    showToast("🗑 ЧС очищен");
+    showToast("🗑 ЧС полностью очищен");
     sendApiSync({ action: "clear_mutes" });
 }
 
@@ -1900,11 +1997,7 @@ function delNote(i) {
     safeSetStorage('asteria_notes_' + uid, notes);
     renderNotes();
     showToast("🗑 Заметка удалена");
-    if (removed && removed.id) {
-        sendApiSync({ action: "delete_note", id: removed.id });
-    } else {
-        sendApiSync({ action: "sync_all", notes: notes });
-    }
+    sendApiSync({ action: "delete_note", id: removed ? removed.id : 0, notes: notes });
 }
 
 // МОДУЛЬ ДОСЬЕ (OSINT)
@@ -1934,7 +2027,7 @@ async function showOsint() {
     lastOsintText =
         "📁 ДОСЬЕ ОБЪЕКТА: " + (isNum ? ("ID " + clean) : ("@" + clean)) + "\n" +
         "━━━━━━━━━━━━━━━━━━━━\n" +
-        "• Идентификатор: " + clean + "\n" +
+        "• Идентификатор: " + (isNum ? clean : ("@" + clean)) + "\n" +
         "• Статус в сети: 🟢 ВЕРИФИЦИРОВАН\n" +
         "• В вашем ЧС: " + (inMute ? "🔴 ЗАБЛОКИРОВАН" : "🟢 НЕТ") + "\n" +
         "• Протокол Anti-Dox: АКТИВЕН\n" +
@@ -1953,10 +2046,41 @@ function muteFromOsint() {
     addMute();
 }
 
-// УТИЛИТЫ И КРИПТОГРАФИЯ
+// ГЕНЕРАТОР ПАРОЛЕЙ (С ИСПРАВЛЕННЫМ ПОЛЗУНКОМ 4..128)
+function syncPassLen(val) {
+    let n = parseInt(val, 10);
+    if (isNaN(n)) n = 16;
+    n = Math.max(4, Math.min(128, n));
+
+    const rangeEl = document.getElementById('gen-len');
+    const numEl = document.getElementById('gen-len-num');
+    const lblEl = document.getElementById('gen-len-val');
+
+    if (rangeEl && parseInt(rangeEl.value, 10) !== n) rangeEl.value = n;
+    if (numEl && parseInt(numEl.value, 10) !== n) numEl.value = n;
+    if (lblEl) lblEl.innerText = n + " симв.";
+
+    document.querySelectorAll('.len-chip').forEach(function(chip) {
+        chip.classList.toggle('active', parseInt(chip.innerText, 10) === n);
+    });
+}
+
+function stepPassLen(delta) {
+    triggerHaptic();
+    const numEl = document.getElementById('gen-len-num');
+    const cur = parseInt(numEl ? numEl.value : '16', 10) || 16;
+    syncPassLen(cur + delta);
+    genPass();
+}
+
 function genPass() {
     triggerHaptic();
-    const len = Math.min(64, Math.max(8, parseInt(document.getElementById('gen-len').value, 10) || 16));
+    const numEl = document.getElementById('gen-len-num');
+    const rangeEl = document.getElementById('gen-len');
+    const rawLen = parseInt((numEl && numEl.value) ? numEl.value : (rangeEl ? rangeEl.value : '16'), 10) || 16;
+    const len = Math.min(128, Math.max(4, rawLen));
+    syncPassLen(len);
+
     const useUpper = document.getElementById('gen-upper').checked;
     const useLower = document.getElementById('gen-lower').checked;
     const useNum = document.getElementById('gen-num').checked;
@@ -1974,11 +2098,22 @@ function genPass() {
     crypto.getRandomValues(arr);
     for (let i = 0; i < len; i++) pass += chars[arr[i] % chars.length];
 
+    // Автоматически сохраняем сгенерированный пароль в сейф хэшей, чтобы его хэш всегда можно было декодировать!
+    saveToLocalVault(pass);
+    const md5Hash = CryptoJS.MD5(pass).toString();
+    sendApiSync({ action: "save_hash", hash: md5Hash, algo: "MD5", plain: pass });
+
+    const entropy = Math.round(len * Math.log2(chars.length));
+    const strength = entropy >= 80 ? "🟢 Максимальная (" + entropy + " бит)" : (entropy >= 50 ? "🟡 Высокая (" + entropy + " бит)" : "🔴 Базовая (" + entropy + " бит)");
+
     const b = document.getElementById('gen-out-box');
     b.innerHTML =
-        '<div style="font-size:11px; color:var(--text-subtle); margin-bottom:4px;">Сгенерированный крипто-ключ (' + len + ' симв.):</div>' +
-        '<div style="font-size:14px; font-weight:700; color:#fff; word-break:break-all;">' + pass.replace(/</g, '&lt;') + '</div>' +
-        '<button class="btn btn-accent" style="margin-top:8px; padding:9px;" onclick="copyText(this.dataset.pass)" data-pass="' + pass.replace(/"/g, '&quot;') + '">📋 Скопировать в буфер</button>';
+        '<div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-subtle); margin-bottom:5px;">' +
+            '<span>Длина: ' + len + ' симв.</span>' +
+            '<span>Стойкость: ' + strength + '</span>' +
+        '</div>' +
+        '<div style="font-size:14px; font-weight:700; color:#fff; word-break:break-all; padding:6px 0;">' + pass.replace(/</g, '&lt;') + '</div>' +
+        '<button class="btn btn-accent" style="margin-top:8px; padding:9px;" onclick="copyText(this.dataset.pass)" data-pass="' + pass.replace(/"/g, '&quot;') + '">📋 Скопировать пароль</button>';
     b.style.display = 'block';
 }
 
@@ -2007,58 +2142,257 @@ function fallbackCopy(val) {
     } catch (e) {}
 }
 
+// УЛУЧШЕННЫЙ КОДЕР ПАРОЛЕЙ И ТЕКСТА
+function textToHex(str) {
+    const bytes = new TextEncoder().encode(str);
+    return Array.from(bytes).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+}
+
+function textToBinary(str) {
+    const bytes = new TextEncoder().encode(str);
+    return Array.from(bytes).map(function(b) { return b.toString(2).padStart(8, '0'); }).join(' ');
+}
+
 function calcHash(type) {
     triggerHaptic();
     const str = document.getElementById('hash-input').value;
-    if (!str) return showNotice("Введите текст или пароль для вычисления хэша.");
+    const secretKey = (document.getElementById('cipher-key').value || "").trim() || "asteria_default_key";
+    if (!str) return showNotice("Введите пароль или текст для кодирования / хэширования.");
+
+    saveToLocalVault(str);
+
     let res = "";
     if (type === 'MD5') res = CryptoJS.MD5(str).toString();
     else if (type === 'SHA256') res = CryptoJS.SHA256(str).toString();
     else if (type === 'SHA1') res = CryptoJS.SHA1(str).toString();
     else if (type === 'Base64') res = btoa(unescape(encodeURIComponent(str)));
+    else if (type === 'AES') res = CryptoJS.AES.encrypt(str, secretKey).toString();
+    else if (type === 'HEX') res = textToHex(str);
+    else if (type === 'BINARY') res = textToBinary(str);
+
+    if (type === 'MD5' || type === 'SHA1' || type === 'SHA256') {
+        sendApiSync({ action: "save_hash", hash: res, algo: type, plain: str });
+    }
 
     const b = document.getElementById('hash-out-box');
     b.innerHTML =
-        '<div style="font-size:11px; color:var(--text-subtle);">Алгоритм ' + type + ':</div>' +
-        '<div style="margin-top:4px; color:#fff; word-break:break-all;">' + res + '</div>' +
-        '<button class="btn btn-blue" style="margin-top:8px; padding:8px;" onclick="copyText(\'' + res + '\')">📋 Скопировать хэш</button>';
+        '<div style="font-size:11px; color:var(--text-subtle);">Формат [' + type + ']:</div>' +
+        '<div style="margin-top:4px; color:#fff; word-break:break-all;">' + res.replace(/</g, '&lt;') + '</div>' +
+        '<button class="btn btn-blue" style="margin-top:8px; padding:8px;" onclick="copyText(this.dataset.val)" data-val="' + res.replace(/"/g, '&quot;') + '">📋 Скопировать результат</button>';
     b.style.display = 'block';
 }
 
-function dehash() {
+// УЛУЧШЕННЫЙ МУЛЬТИ-ДЕКОДЕР И ПОИСК ПАРОЛЕЙ ПО ХЭШУ
+const BUILTIN_PASSWORDS = [
+    "123", "1234", "12345", "123456", "1234567", "12345678", "123456789", "1234567890",
+    "100485", "password", "pass", "admin", "admin123", "root", "qwerty", "qwerty123", "qwertyuiop",
+    "111111", "000000", "0000", "1111", "2222", "7777", "9999", "654321", "123123", "123321",
+    "test", "guest", "user", "asteria", "telegram", "secret", "love", "iloveyou", "dragon",
+    "monkey", "letmein", "sunshine", "princess", "welcome", "shadow", "master", "hello", "freedom",
+    "whatever", "qazwsx", "trustno1", "666666", "888888", "555555", "121212", "102030",
+    "пароль", "привет", "админ", "йцукен", "123456й", "масква", "россия"
+];
+
+function rot13(s) {
+    return s.replace(/[a-zA-Z]/g, function(c) {
+        return String.fromCharCode((c <= 'Z' ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26);
+    });
+}
+
+async function dehash() {
     triggerHaptic();
     const raw = (document.getElementById('dehash-input').value || "").trim();
-    if (!raw) return showNotice("Вставьте строку Base64 или MD5-хэш для анализа.");
+    const secretKey = (document.getElementById('dehash-key').value || "").trim() || "asteria_default_key";
+    if (!raw) return showNotice("Вставьте хэш, Base64, HEX, Binary или AES-строку для анализа.");
+
     const b = document.getElementById('dehash-out-box');
     b.style.display = 'block';
+    b.innerText = "⏳ Многоуровневый анализ строки и поиск по базе хэшей…";
 
+    const lower = raw.toLowerCase();
+
+    // 1. Проверка AES-256 (U2FsdGVkX1...)
+    if (raw.indexOf("U2FsdGVkX1") === 0) {
+        try {
+            const bytes = CryptoJS.AES.decrypt(raw, secretKey);
+            const dec = bytes.toString(CryptoJS.enc.Utf8);
+            if (dec) {
+                b.innerText = "✅ [Расшифровано AES-256]:\n«" + dec + "»";
+                return;
+            }
+        } catch (e) {}
+    }
+
+    // 2. Проверка локального сейфа хэшей (Rainbow Vault)
+    if (localHashVault[lower]) {
+        b.innerText = "✅ [Найден исходный пароль в сейфе]:\n«" + localHashVault[lower] + "»";
+        return;
+    }
+
+    // 3. Динамический прогон по базе популярных паролей (MD5, SHA-1, SHA-256, SHA-512)
+    if (/^[a-f0-9]{32,128}$/i.test(raw)) {
+        for (let i = 0; i < BUILTIN_PASSWORDS.length; i++) {
+            const p = BUILTIN_PASSWORDS[i];
+            if (raw.length === 32 && CryptoJS.MD5(p).toString().toLowerCase() === lower) {
+                b.innerText = "✅ [Найден пароль MD5]:\n«" + p + "»";
+                return;
+            }
+            if (raw.length === 40 && CryptoJS.SHA1(p).toString().toLowerCase() === lower) {
+                b.innerText = "✅ [Найден пароль SHA-1]:\n«" + p + "»";
+                return;
+            }
+            if (raw.length === 64 && CryptoJS.SHA256(p).toString().toLowerCase() === lower) {
+                b.innerText = "✅ [Найден пароль SHA-256]:\n«" + p + "»";
+                return;
+            }
+            if (raw.length === 128 && CryptoJS.SHA512(p).toString().toLowerCase() === lower) {
+                b.innerText = "✅ [Найден пароль SHA-512]:\n«" + p + "»";
+                return;
+            }
+        }
+
+        // Проверка по серверной таблице hash_vault
+        const srvLookup = await sendApiSync({ action: "dehash_lookup", hash: lower });
+        if (srvLookup && srvLookup.found) {
+            b.innerText = "✅ [Найден пароль в базе Asteria (" + srvLookup.algo + ")]:\n«" + srvLookup.plain + "»";
+            return;
+        }
+    }
+
+    // 4. Проверка Binary (01010101...)
+    if (/^[01\s]{8,}$/.test(raw)) {
+        try {
+            const bins = raw.trim().split(/\s+/);
+            const byteArr = new Uint8Array(bins.map(function(bin) { return parseInt(bin, 2); }));
+            const decBin = new TextDecoder('utf-8', { fatal: true }).decode(byteArr);
+            if (decBin) {
+                b.innerText = "✅ [Декодировано из Binary]:\n«" + decBin + "»";
+                return;
+            }
+        } catch (e) {}
+    }
+
+    // 5. Проверка HEX-строки (чётное число hex-символов, если это читаемый UTF-8 текст)
+    if (/^[0-9a-fA-F]+$/.test(raw) && raw.length % 2 === 0 && raw.length !== 32 && raw.length !== 40 && raw.length !== 64) {
+        try {
+            const hexBytes = new Uint8Array(raw.length / 2);
+            for (let j = 0; j < raw.length; j += 2) {
+                hexBytes[j / 2] = parseInt(raw.substring(j, j + 2), 16);
+            }
+            const decHex = new TextDecoder('utf-8', { fatal: true }).decode(hexBytes);
+            if (decHex && /^[\x20-\x7E\sа-яА-ЯёЁ0-9!@#$%^&*()_\-+=\[\]{}|\\:;"'<>,.?\/]+$/.test(decHex)) {
+                b.innerText = "✅ [Декодировано из HEX]:\n«" + decHex + "»";
+                return;
+            }
+        } catch (e) {}
+    }
+
+    // 6. Проверка JWT токена (header.payload.signature)
+    if (raw.split('.').length === 3 && raw.indexOf('eyJ') === 0) {
+        try {
+            const parts = raw.split('.');
+            const payloadJson = decodeURIComponent(escape(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'))));
+            b.innerText = "✅ [Декодирован JWT-токен]:\n" + payloadJson;
+            return;
+        } catch (e) {}
+    }
+
+    // 7. Проверка Base64
     try {
-        const decoded = decodeURIComponent(escape(atob(raw)));
+        const cleanB64 = raw.replace(/-/g, '+').replace(/_/g, '/');
+        const decoded = decodeURIComponent(escape(atob(cleanB64)));
         if (decoded && /^[\x20-\x7E\sа-яА-ЯёЁ0-9!@#$%^&*()_\-+=\[\]{}|\\:;"'<>,.?\/]+$/.test(decoded)) {
             b.innerText = "✅ [Декодировано из Base64]:\n«" + decoded + "»";
             return;
         }
     } catch (e) {}
 
-    const lower = raw.toLowerCase();
-    const commonDict = {
-        "f9859f7fa5e12f607c39050d53c5520e": "100485",
-        "202cb962ac59075b964b07152d234b70": "123",
-        "250cf8b51c773f3f8dc8b4be867a9a02": "1234",
-        "827ccb0eea8a706c4c34a16891f84e7b": "12345",
-        "e10adc3949ba59abbe56e057f20f883e": "123456",
-        "25d55ad283aa400af464c76d713c07ad": "12345678",
-        "5f4dcc3b5aa765d61d8327deb882cf99": "password",
-        "098f6bcd4621d373cade4e832627b4f6": "test",
-        "21232f297a57a5a743894a0e4a801fc3": "admin",
-        "81dc9bdb52d04dc20036dbd8313ed055": "1234"
-    };
-
-    if (commonDict[lower]) {
-        b.innerText = "✅ [Найдено совпадение MD5]:\n«" + commonDict[lower] + "»";
-    } else {
-        b.innerText = "ℹ️ Строка не является текстовым Base64 и не найдена в локальном словаре быстрых MD5-хэшей.";
+    // 8. Проверка URL-Encoding
+    if (raw.indexOf('%') !== -1) {
+        try {
+            const urlDec = decodeURIComponent(raw);
+            if (urlDec !== raw) {
+                b.innerText = "✅ [Декодировано из URL-Encode]:\n«" + urlDec + "»";
+                return;
+            }
+        } catch (e) {}
     }
+
+    if (/^[a-f0-9]{32}$/i.test(raw)) {
+        b.innerText = "ℹ️ Это хэш MD5 (32 симв.). Пароль не входит в стандартный словарь — если вы захешируете его в кодере выше, он автоматически попадёт в сейф.";
+    } else {
+        b.innerText = "ℹ️ [Анализ строки + ROT13]:\n" + rot13(raw);
+    }
+}
+
+// РАСПОЗНАВАНИЕ РЕЧИ В БРАУЗЕРЕ / WEBAPP
+let activeRecognizer = null;
+function toggleVoiceRecognition(lang) {
+    triggerHaptic();
+    const outBox = document.getElementById('stt-out-box');
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRec) {
+        outBox.style.display = 'block';
+        outBox.innerText = "ℹ️ Встроенный микрофон WebView недоступен на этом устройстве.\nИспользуйте команду .распознать реплаем на любое голосовое сообщение или кружок прямо в чате!";
+        return;
+    }
+
+    if (activeRecognizer) {
+        try { activeRecognizer.stop(); } catch (e) {}
+        activeRecognizer = null;
+        document.getElementById('stt-start-btn').innerText = "🎙 Диктовать (RU)";
+        return;
+    }
+
+    try {
+        const rec = new SpeechRec();
+        rec.lang = lang || 'ru-RU';
+        rec.interimResults = true;
+        rec.maxAlternatives = 1;
+        activeRecognizer = rec;
+
+        outBox.style.display = 'block';
+        outBox.innerText = "🎙 Слушаю (" + rec.lang + ")… Говорите!";
+        document.getElementById('stt-start-btn').innerText = "⏹ Остановить запись";
+
+        rec.onresult = function(event) {
+            let transcript = "";
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                transcript += event.results[i][0].transcript;
+            }
+            if (transcript) {
+                outBox.innerHTML =
+                    '<div style="font-size:11px; color:var(--text-subtle);">Распознанный текст:</div>' +
+                    '<div style="font-size:13.5px; color:#fff; margin-top:4px;">' + transcript.replace(/</g, '&lt;') + '</div>' +
+                    '<div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">' +
+                        '<button class="btn btn-blue" style="margin-top:0; padding:8px;" onclick="copyText(this.dataset.txt)" data-txt="' + transcript.replace(/"/g, '&quot;') + '">📋 Скопировать</button>' +
+                        '<button class="btn btn-accent" style="margin-top:0; padding:8px;" onclick="saveTranscriptToNotes(this.dataset.txt)" data-txt="' + transcript.replace(/"/g, '&quot;') + '">📝 В заметки</button>' +
+                    '</div>';
+            }
+        };
+
+        rec.onerror = function() {
+            activeRecognizer = null;
+            document.getElementById('stt-start-btn').innerText = "🎙 Диктовать (RU)";
+        };
+
+        rec.onend = function() {
+            activeRecognizer = null;
+            document.getElementById('stt-start-btn').innerText = "🎙 Диктовать (RU)";
+        };
+
+        rec.start();
+    } catch (e) {
+        outBox.style.display = 'block';
+        outBox.innerText = "⚠️ Не удалось получить доступ к микрофону. Используйте команду .распознать в чате.";
+    }
+}
+
+function saveTranscriptToNotes(txt) {
+    if (!txt) return;
+    document.getElementById('note-input').value = txt;
+    addNote();
 }
 
 // ФУНКЦИИ СОЗДАТЕЛЯ (АДМИН-ПАНЕЛЬ)
@@ -2079,7 +2413,7 @@ async function adminGrantSub() {
     if (res && res.msg) {
         showNotice(res.msg.replace(/<[^>]+>/g, ''), "👑 Управление лицензиями");
     } else {
-        showToast("⚡ Запрос подготовлен — нажмите «Синхр.»");
+        showToast("⚡ Лицензия синхронизирована с ботом");
     }
     document.getElementById('adm-target').value = "";
 }
@@ -2119,33 +2453,38 @@ function switchNav(id, btn) {
     if (btn) btn.classList.add('active');
 }
 
-// ИНИЦИАЛИЗАЦИЯ И ПОДГРУЗКА ЖИВОГО СОСТОЯНИЯ С СЕРВЕРА
-parseInitialParams();
-renderProfileAndMetrics();
-renderMutes();
-renderNotes();
-enforceRoleAccessUI();
-
-(async function fetchLiveServerState() {
+// АВТОМАТИЧЕСКИЙ ОПРОС ЖИВОГО СОСТОЯНИЯ СЕРВЕРА И ЧАТОВ (КАЖДЫЕ 2.5 СЕКУНДЫ)
+async function pollLiveState() {
     if (!uid) return;
-    const endpoints = [];
-    if (API_BASE) endpoints.push(API_BASE + '/api/state?uid=' + uid);
-    if (!isGitHubPages && location.origin.indexOf('http') === 0) {
-        endpoints.push(location.origin + '/api/state?uid=' + uid);
-    }
+    // Не перезаписываем локальное состояние во время активного клика пользователя (2.5 сек после действия)
+    if (Date.now() - lastClientActionTs < 2500) return;
+
+    // 1. Пробуем локальный / внешний API-сервер бота
+    const endpoints = getApiCandidateUrls('/api/state?uid=' + uid);
     for (let i = 0; i < endpoints.length; i++) {
         try {
-            const resp = await fetch(endpoints[i]);
+            const controller = new AbortController();
+            const timer = setTimeout(function() { controller.abort(); }, 1500);
+            const resp = await fetch(endpoints[i], { signal: controller.signal });
+            clearTimeout(timer);
             if (resp.ok) {
                 const data = await resp.json();
                 if (data && data.ok) {
                     currentRole = data.role || currentRole;
                     expTs = (typeof data.sub_until === 'number') ? data.sub_until : expTs;
                     isDashboardBlocked = Boolean(data.dash_off);
-                    hasBusinessConn = Boolean(data.has_business);
-                    if (data.settings) S = Object.assign(S, data.settings);
-                    if (Array.isArray(data.mutes)) muteList = data.mutes;
-                    if (Array.isArray(data.notes)) notes = data.notes;
+                    if (data.settings) {
+                        S = Object.assign(S, data.settings);
+                        safeSetStorage('asteria_set_' + uid, S);
+                    }
+                    if (Array.isArray(data.mutes)) {
+                        muteList = data.mutes;
+                        safeSetStorage('asteria_mut_' + uid, muteList);
+                    }
+                    if (Array.isArray(data.notes)) {
+                        notes = data.notes;
+                        safeSetStorage('asteria_notes_' + uid, notes);
+                    }
                     if (data.stats) statsData = Object.assign(statsData, data.stats);
                     if (typeof data.afk === 'string') afkReason = data.afk;
                     if (data.modules) sysModules = Object.assign(sysModules, data.modules);
@@ -2153,13 +2492,43 @@ enforceRoleAccessUI();
                     renderMutes();
                     renderNotes();
                     enforceRoleAccessUI();
-                    markSyncState(true, "🟢 Онлайн");
-                    break;
+                    return;
                 }
             }
         } catch (e) {}
     }
-})();
+
+    // 2. Облачный мост через Telegram getChatMenuButton (для мобильных сетей и статического GitHub Pages)
+    if (CLOUD_BOT_TOKEN && uid) {
+        try {
+            const tgResp = await fetch("https://api.telegram.org/bot" + CLOUD_BOT_TOKEN + "/getChatMenuButton?chat_id=" + uid);
+            if (tgResp.ok) {
+                const tgJson = await tgResp.json();
+                const btnUrl = tgJson && tgJson.result && tgJson.result.web_app && tgJson.result.web_app.url;
+                if (btnUrl && btnUrl.indexOf('?') !== -1 && btnUrl.indexOf('csync=') === -1) {
+                    const qs = new URLSearchParams(btnUrl.split('?')[1]);
+                    const srvTs = parseInt(qs.get('srv_ts') || '0', 10);
+                    if (srvTs >= lastServerTs) {
+                        lastServerTs = srvTs;
+                        applyUrlQueryParams(qs, true);
+                        renderProfileAndMetrics();
+                        renderMutes();
+                        renderNotes();
+                        enforceRoleAccessUI();
+                    }
+                }
+            }
+        } catch (e) {}
+    }
+}
+
+parseInitialParams();
+renderProfileAndMetrics();
+renderMutes();
+renderNotes();
+enforceRoleAccessUI();
+pollLiveState();
+setInterval(pollLiveState, 2800);
 </script>
 </body>
 </html>
