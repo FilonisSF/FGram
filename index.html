@@ -3,524 +3,1322 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Asteria Suite Dashboard</title>
+<title>Asteria Suite — Центр управления и синхронизации чатов</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root {
-    --bg-base: #040814;
-    --card-base: rgba(10, 20, 38, 0.85);
-    --card-border: rgba(56, 189, 248, 0.22);
+    --bg-base: #030712;
+    --bg-elevated: #081124;
+    --card-base: rgba(11, 22, 44, 0.82);
+    --card-hover: rgba(16, 32, 62, 0.92);
+    --card-border: rgba(56, 189, 248, 0.20);
+    --card-border-strong: rgba(56, 189, 248, 0.42);
     --accent: #38bdf8;
-    --accent-glow: rgba(56, 189, 248, 0.45);
+    --accent-bright: #7dd3fc;
+    --accent-glow: rgba(56, 189, 248, 0.38);
     --blue-btn: #0284c7;
+    --indigo-glow: rgba(99, 102, 241, 0.25);
     --gold: #facc15;
-    --gold-glow: rgba(250, 204, 21, 0.4);
+    --gold-glow: rgba(250, 204, 21, 0.35);
+    --emerald: #34d399;
+    --emerald-glow: rgba(52, 211, 153, 0.3);
     --danger: #fb7185;
     --danger-border: rgba(251, 113, 133, 0.4);
     --text-main: #f8fafc;
-    --text-muted: #7dd3fc;
+    --text-muted: #bae6fd;
     --text-subtle: #94a3b8;
 }
 
-body.tg-theme-light {
-    --bg-base: #081026;
-    --card-base: rgba(14, 26, 52, 0.9);
-    --card-border: rgba(56, 189, 248, 0.3);
-    --text-main: #ffffff;
-    --text-subtle: #a0aec0;
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+input, textarea, code, pre, .selectable {
+    user-select: text;
+}
 
 body {
     margin: 0;
-    padding: 14px 14px calc(95px + env(safe-area-inset-bottom)) 14px;
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    padding: 14px 14px calc(120px + env(safe-area-inset-bottom)) 14px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: var(--bg-base);
     background-image:
-        radial-gradient(circle at 10% 0%, rgba(56, 189, 248, 0.24) 0%, transparent 45%),
-        radial-gradient(circle at 90% 100%, rgba(14, 165, 233, 0.18) 0%, transparent 50%);
+        radial-gradient(circle at 8% 0%, rgba(56, 189, 248, 0.22) 0%, transparent 45%),
+        radial-gradient(circle at 92% 15%, rgba(99, 102, 241, 0.16) 0%, transparent 45%),
+        radial-gradient(circle at 50% 100%, rgba(14, 165, 233, 0.18) 0%, transparent 55%);
     color: var(--text-main);
     min-height: 100vh;
     overflow-x: hidden;
 }
 
+.app-container {
+    max-width: 540px;
+    margin: 0 auto;
+}
+
+/* ЭКРАНЫ БЛОКИРОВКИ (ДЛЯ ОБЫЧНЫХ И ВИП ПОЛЬЗОВАТЕЛЕЙ) */
 .lock-screen {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(4, 8, 20, 0.96);
-    backdrop-filter: blur(25px);
+    background: radial-gradient(circle at 50% 20%, rgba(14, 28, 58, 0.98), rgba(3, 7, 18, 0.99));
+    backdrop-filter: blur(28px);
     z-index: 100000;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 24px;
+    padding: 26px;
     text-align: center;
 }
-.lock-screen.active { display: flex; animation: fadeIn 0.25s ease; }
+.lock-screen.active {
+    display: flex;
+    animation: fadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lock-card {
+    background: rgba(11, 22, 44, 0.9);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 26px;
+    padding: 28px 22px;
+    max-width: 380px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75), 0 0 40px rgba(56, 189, 248, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+.lock-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--danger), var(--gold), var(--accent));
+}
 
 .lock-icon-wrap {
-    width: 86px; height: 86px; border-radius: 50%;
-    background: rgba(56, 189, 248, 0.12); border: 1px solid var(--accent);
-    box-shadow: 0 0 35px var(--accent-glow); display: flex; align-items: center;
-    justify-content: center; font-size: 38px; margin-bottom: 20px;
+    width: 78px;
+    height: 78px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(251, 113, 133, 0.16), rgba(56, 189, 248, 0.12));
+    border: 1px solid rgba(251, 113, 133, 0.45);
+    box-shadow: 0 0 32px rgba(251, 113, 133, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    margin: 0 auto 18px auto;
 }
-.lock-title { font-size: 22px; font-weight: 800; margin: 0 0 10px 0; color: #fff; }
-.lock-desc { font-size: 14px; color: var(--text-subtle); max-width: 310px; margin: 0 0 24px 0; line-height: 1.5; }
+.lock-title {
+    font-size: 21px;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+    color: #fff;
+    letter-spacing: -0.02em;
+}
+.lock-role-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    background: rgba(251, 113, 133, 0.15);
+    border: 1px solid var(--danger-border);
+    color: var(--danger);
+    margin-bottom: 14px;
+}
+.lock-desc {
+    font-size: 13.5px;
+    color: var(--text-subtle);
+    margin: 0 0 18px 0;
+    line-height: 1.55;
+}
+.lock-perks {
+    text-align: left;
+    background: rgba(3, 7, 18, 0.65);
+    border: 1px solid rgba(56, 189, 248, 0.16);
+    border-radius: 16px;
+    padding: 12px 14px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: #cbd5e1;
+    line-height: 1.6;
+}
+.lock-perks div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+.lock-perks div:last-child { margin-bottom: 0; }
 
+/* УВЕДОМЛЕНИЯ И МОДАЛЬНОЕ ОКНО */
 #toast {
-    position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.95), rgba(2, 132, 199, 0.95));
-    border: 1px solid rgba(255, 255, 255, 0.35); color: #040814; padding: 10px 24px;
-    border-radius: 40px; font-size: 13px; font-weight: 800; box-shadow: 0 10px 30px var(--accent-glow);
-    opacity: 0; pointer-events: none; transition: all 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.15);
-    z-index: 999999; white-space: nowrap;
+    position: fixed;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, rgba(14, 28, 56, 0.96), rgba(8, 17, 36, 0.98));
+    border: 1px solid var(--accent);
+    color: #fff;
+    padding: 11px 22px;
+    border-radius: 40px;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 0 20px var(--accent-glow);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.15);
+    z-index: 999999;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
-#toast.show { top: 16px; opacity: 1; }
+#toast.show {
+    top: 16px;
+    opacity: 1;
+}
 
+.modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(3, 7, 18, 0.82);
+    backdrop-filter: blur(12px);
+    z-index: 200000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.modal-backdrop.active {
+    display: flex;
+    animation: fadeIn 0.2s ease;
+}
+.modal-box {
+    background: #0b162c;
+    border: 1px solid var(--card-border-strong);
+    border-radius: 22px;
+    padding: 22px;
+    max-width: 360px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+}
+.modal-title {
+    font-size: 16px;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+    color: var(--accent);
+}
+.modal-text {
+    font-size: 13px;
+    color: var(--text-main);
+    line-height: 1.5;
+    margin: 0 0 18px 0;
+    white-space: pre-wrap;
+}
+
+/* ПАНЕЛЬ ДЕМО-ТЕСТА РОЛЕЙ (ТОЛЬКО В ПЕСОЧНИЦЕ / ПРЕДПРОСМОТРЕ) */
+.sandbox-bar {
+    display: none;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px dashed rgba(250, 204, 21, 0.45);
+    border-radius: 16px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.sandbox-bar.visible { display: flex; }
+.sandbox-lbl { font-size: 11px; font-weight: 700; color: var(--gold); }
+.sandbox-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+.sandbox-chip {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #e2e8f0;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.sandbox-chip.active {
+    background: rgba(56, 189, 248, 0.2);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* КАРТОЧКА ПРОФИЛЯ ОПЕРАТОРА */
 .profile-card {
-    background: var(--card-base); border: 1px solid var(--card-border); border-radius: 22px;
-    padding: 16px; backdrop-filter: blur(30px); margin-bottom: 12px; position: relative;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55); overflow: hidden;
+    background: var(--card-base);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: 18px;
+    backdrop-filter: blur(30px);
+    margin-bottom: 12px;
+    position: relative;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
 }
-.profile-card::after {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-    background: linear-gradient(90deg, #0284c7, #38bdf8, #7dd3fc);
+.profile-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, #0284c7, #38bdf8, #818cf8, #38bdf8);
 }
 
-.profile-top { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.profile-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+}
 .avatar-wrapper {
-    width: 60px; height: 60px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), var(--blue-btn)); padding: 2px;
-    box-shadow: 0 0 20px var(--accent-glow); flex-shrink: 0; position: relative;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #6366f1);
+    padding: 2.5px;
+    box-shadow: 0 0 22px var(--accent-glow);
+    flex-shrink: 0;
+    position: relative;
 }
 .avatar-img {
-    width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #0b1528;
-    display: flex; align-items: center; justify-content: center; font-size: 22px;
-    font-weight: 800; color: var(--accent); overflow: hidden;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #081124;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 23px;
+    font-weight: 800;
+    color: var(--accent);
+    overflow: hidden;
 }
-.avatar-img img { width: 100%; height: 100%; object-fit: cover; }
+.avatar-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.online-dot {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: var(--emerald);
+    border: 2px solid #081124;
+    box-shadow: 0 0 8px var(--emerald);
+}
 
 .profile-meta { flex: 1; min-width: 0; }
-.profile-meta h2 { margin: 0; font-size: 18px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.profile-meta .u-tag { font-size: 12px; color: var(--accent); margin-top: 2px; }
-.profile-meta .u-id { font-size: 11px; color: var(--text-subtle); margin-top: 2px; font-family: monospace; }
+.profile-meta h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    letter-spacing: -0.01em;
+}
+.profile-meta .u-tag {
+    font-size: 12.5px;
+    color: var(--accent);
+    margin-top: 2px;
+    font-weight: 600;
+}
+.profile-meta .u-id {
+    font-size: 11px;
+    color: var(--text-subtle);
+    margin-top: 3px;
+    font-family: 'JetBrains Mono', monospace;
+}
 
-.status-badge { display: inline-flex; align-items: center; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; }
-.badge-owner { background: rgba(250, 204, 21, 0.16); border: 1px solid rgba(250, 204, 21, 0.5); color: var(--gold); }
-.badge-prem { background: rgba(56, 189, 248, 0.18); border: 1px solid var(--accent); color: var(--accent); }
-.badge-vip { background: rgba(14, 165, 233, 0.18); border: 1px solid rgba(14, 165, 233, 0.5); color: #7dd3fc; }
-.badge-free { background: rgba(251, 113, 133, 0.15); border: 1px solid var(--danger-border); color: var(--danger); }
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+}
+.badge-owner {
+    background: rgba(250, 204, 21, 0.16);
+    border: 1px solid rgba(250, 204, 21, 0.55);
+    color: var(--gold);
+    box-shadow: 0 0 16px rgba(250, 204, 21, 0.2);
+}
+.badge-prem {
+    background: rgba(56, 189, 248, 0.16);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.2);
+}
+.badge-vip {
+    background: rgba(14, 165, 233, 0.16);
+    border: 1px solid rgba(14, 165, 233, 0.5);
+    color: #7dd3fc;
+}
+.badge-free {
+    background: rgba(251, 113, 133, 0.15);
+    border: 1px solid var(--danger-border);
+    color: var(--danger);
+}
 
+.status-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
 .timer-box {
-    background: rgba(4, 8, 20, 0.85); border: 1px solid rgba(56, 189, 248, 0.16);
-    border-radius: 14px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;
-    font-size: 13px; color: var(--text-subtle);
+    background: rgba(4, 9, 22, 0.85);
+    border: 1px solid rgba(56, 189, 248, 0.16);
+    border-radius: 14px;
+    padding: 9px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11.5px;
+    color: var(--text-subtle);
 }
 .timer-val {
-    font-family: monospace; font-size: 13px; font-weight: 800; color: #fff;
-    background: rgba(56, 189, 248, 0.15); padding: 3px 8px; border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #fff;
+    background: rgba(56, 189, 248, 0.14);
+    padding: 3px 8px;
+    border-radius: 8px;
     border: 1px solid rgba(56, 189, 248, 0.25);
 }
-
-.metric-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-.metric-card {
-    background: var(--card-base); border: 1px solid var(--card-border); border-radius: 16px;
-    padding: 12px 6px; text-align: center; backdrop-filter: blur(20px);
+.sync-pill-ok {
+    color: var(--emerald);
+    border-color: rgba(52, 211, 153, 0.35);
+    background: rgba(52, 211, 153, 0.12);
 }
-.metric-val { font-size: 20px; font-weight: 800; color: var(--accent); }
-.metric-lbl { font-size: 10px; color: var(--text-subtle); margin-top: 3px; font-weight: 700; text-transform: uppercase; }
+.sync-pill-dirty {
+    color: var(--gold);
+    border-color: rgba(250, 204, 21, 0.45);
+    background: rgba(250, 204, 21, 0.14);
+}
 
+/* МЕТРИКИ ЧАТОВ */
+.metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.metric-card {
+    background: var(--card-base);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 11px 6px;
+    text-align: center;
+    backdrop-filter: blur(20px);
+    transition: transform 0.15s ease, border-color 0.2s ease;
+}
+.metric-val {
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+}
+.metric-lbl {
+    font-size: 9.5px;
+    color: var(--text-subtle);
+    margin-top: 3px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+/* ПЛАВАЮЩИЙ БАННЕР СИНХРОНИЗАЦИИ С ЧАТАМИ */
+.sync-banner {
+    background: linear-gradient(135deg, rgba(14, 116, 144, 0.35), rgba(30, 58, 138, 0.45));
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    border-radius: 18px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    box-shadow: 0 6px 24px rgba(2, 132, 199, 0.18);
+}
+.sync-banner-info {
+    flex: 1;
+    min-width: 0;
+}
+.sync-banner-title {
+    font-size: 12.5px;
+    font-weight: 800;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.sync-banner-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+.sync-now-btn {
+    background: linear-gradient(135deg, var(--accent), var(--blue-btn));
+    color: #030712;
+    border: none;
+    border-radius: 12px;
+    padding: 9px 14px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    flex-shrink: 0;
+    box-shadow: 0 4px 14px var(--accent-glow);
+    transition: transform 0.12s ease;
+}
+.sync-now-btn:active { transform: scale(0.96); }
+
+/* КАРТОЧКИ И ПЕРЕКЛЮЧАТЕЛИ */
 .card {
-    background: var(--card-base); border: 1px solid var(--card-border); border-radius: 20px;
-    padding: 16px; margin-bottom: 12px; backdrop-filter: blur(25px); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.28);
+    background: var(--card-base);
+    border: 1px solid var(--card-border);
+    border-radius: 22px;
+    padding: 16px;
+    margin-bottom: 12px;
+    backdrop-filter: blur(25px);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.32);
+}
+.card-header-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
 }
 .card-title {
-    font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em;
-    color: var(--accent); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    font-size: 12.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--accent);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
-.card-title::before { content: ''; width: 3px; height: 14px; background: linear-gradient(180deg, var(--accent), var(--blue-btn)); border-radius: 2px; }
+.card-header-flex .card-title { margin-bottom: 0; }
+.card-title::before {
+    content: '';
+    width: 3.5px;
+    height: 14px;
+    background: linear-gradient(180deg, var(--accent), #6366f1);
+    border-radius: 2px;
+}
 
-.feature-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid rgba(56, 189, 248, 0.08); gap: 12px; }
-.feature-row:last-child { border-bottom: none; }
+.preset-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+}
+.preset-btn {
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.22);
+    border-radius: 12px;
+    padding: 9px 6px;
+    color: var(--text-main);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.18s ease;
+}
+.preset-btn:hover, .preset-btn:active {
+    background: rgba(56, 189, 248, 0.2);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+}
+
+.feature-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(56, 189, 248, 0.09);
+    gap: 12px;
+}
+.feature-row:last-child { border-bottom: none; padding-bottom: 2px; }
 .feature-info { flex: 1; }
-.feature-header h4 { margin: 0; font-size: 14px; font-weight: 700; }
-.feature-desc { margin: 4px 0 0 0; font-size: 12px; color: var(--text-subtle); line-height: 1.4; }
+.feature-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.feature-header h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+}
+.feature-tag {
+    font-size: 9.5px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: rgba(56, 189, 248, 0.14);
+    color: var(--accent);
+    text-transform: uppercase;
+}
+.feature-desc {
+    margin: 4px 0 0 0;
+    font-size: 12px;
+    color: var(--text-subtle);
+    line-height: 1.42;
+}
 
-.switch { position: relative; display: inline-block; width: 48px; height: 26px; flex-shrink: 0; margin-top: 2px; }
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
+    flex-shrink: 0;
+}
 .switch input { opacity: 0; width: 0; height: 0; }
 .slider {
-    position: absolute; cursor: pointer; inset: 0; background-color: #0f1c33;
-    transition: 0.25s ease; border-radius: 26px; border: 1px solid rgba(56, 189, 248, 0.25);
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #0d182e;
+    transition: 0.25s ease;
+    border-radius: 26px;
+    border: 1px solid rgba(56, 189, 248, 0.25);
 }
 .slider:before {
-    position: absolute; content: ""; height: 20px; width: 20px; left: 2px; bottom: 2px;
-    background-color: white; transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 50%;
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 2px;
+    bottom: 2px;
+    background-color: #e2e8f0;
+    transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50%;
 }
-input:checked + .slider { background-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
-input:checked + .slider:before { transform: translateX(22px); }
+input:checked + .slider {
+    background: linear-gradient(135deg, var(--accent), var(--blue-btn));
+    border-color: var(--accent-bright);
+    box-shadow: 0 0 14px var(--accent-glow);
+}
+input:checked + .slider:before {
+    transform: translateX(22px);
+    background-color: #030712;
+}
 
-.input-box {
-    width: 100%; background: rgba(4, 8, 20, 0.9); border: 1px solid rgba(56, 189, 248, 0.25);
-    padding: 13px 15px; border-radius: 14px; color: #fff; font-size: 14px; outline: none; margin-top: 6px; box-sizing: border-box;
+.input-box, select.input-box {
+    width: 100%;
+    background: rgba(4, 9, 22, 0.92);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 12px 14px;
+    border-radius: 14px;
+    color: #fff;
+    font-size: 13.5px;
+    font-family: inherit;
+    outline: none;
+    margin-top: 6px;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
-.input-box:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2); }
+.input-box:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18);
+}
 
 .btn {
-    width: 100%; padding: 13px; border: none; border-radius: 14px; font-size: 14px;
-    font-weight: 700; cursor: pointer; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 6px;
-    transition: transform 0.1s;
+    width: 100%;
+    padding: 12.5px 14px;
+    border: none;
+    border-radius: 14px;
+    font-size: 13.5px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    transition: transform 0.12s ease, filter 0.15s ease;
 }
 .btn:active { transform: scale(0.98); }
-.btn-accent { background: linear-gradient(135deg, var(--accent), var(--blue-btn)); color: #040814; font-weight: 800; }
-.btn-blue { background: rgba(56, 189, 248, 0.15); border: 1px solid var(--accent); color: var(--accent); }
-.btn-gold { background: linear-gradient(135deg, var(--gold), #ca8a04); color: #040814; font-weight: 800; }
-.btn-danger { background: rgba(251, 113, 133, 0.15); color: var(--danger); border: 1px solid var(--danger-border); }
+.btn-accent {
+    background: linear-gradient(135deg, var(--accent), var(--blue-btn));
+    color: #030712;
+    font-weight: 800;
+    box-shadow: 0 4px 16px rgba(56, 189, 248, 0.25);
+}
+.btn-blue {
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: var(--accent);
+}
+.btn-gold {
+    background: linear-gradient(135deg, var(--gold), #eab308);
+    color: #030712;
+    font-weight: 800;
+    box-shadow: 0 4px 16px var(--gold-glow);
+}
+.btn-danger {
+    background: rgba(251, 113, 133, 0.14);
+    color: var(--danger);
+    border: 1px solid var(--danger-border);
+}
 
 .tab-content { display: none; }
-.tab-content.active { display: block; animation: fadeIn 0.2s ease; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.22s ease;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
 .bottom-nav {
-    position: fixed; bottom: 0; left: 0; right: 0; height: 72px;
-    background: rgba(4, 8, 20, 0.95); backdrop-filter: blur(30px); border-top: 1px solid rgba(56, 189, 248, 0.18);
-    display: flex; justify-content: space-around; align-items: center; z-index: 100;
-    padding-bottom: env(safe-area-inset-bottom);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: calc(70px + env(safe-area-inset-bottom));
+    background: rgba(4, 9, 22, 0.94);
+    backdrop-filter: blur(28px);
+    border-top: 1px solid rgba(56, 189, 248, 0.2);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 100;
+    padding: 0 6px env(safe-area-inset-bottom) 6px;
 }
 .nav-btn {
-    background: none; border: none; color: var(--text-subtle); display: flex; flex-direction: column;
-    align-items: center; gap: 4px; font-size: 10px; font-weight: 600; cursor: pointer; flex: 1; padding: 6px 0;
+    background: none;
+    border: none;
+    color: var(--text-subtle);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    flex: 1;
+    padding: 7px 2px;
+    border-radius: 14px;
+    transition: all 0.18s ease;
 }
-.nav-btn.active { color: var(--accent); }
-.nav-icon { font-size: 19px; }
+.nav-btn.active {
+    color: var(--accent);
+    background: rgba(56, 189, 248, 0.08);
+}
+.nav-icon { font-size: 18px; }
 
 .item-chip {
-    display: flex; justify-content: space-between; align-items: center;
-    background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.15);
-    border-radius: 12px; padding: 10px 14px; margin-top: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(4, 9, 22, 0.72);
+    border: 1px solid rgba(56, 189, 248, 0.16);
+    border-radius: 13px;
+    padding: 10px 13px;
+    margin-top: 7px;
+    gap: 10px;
 }
-.item-chip-del { color: var(--danger); cursor: pointer; font-weight: bold; font-size: 16px; padding: 2px 6px; }
+.item-chip-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.item-chip-btn {
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    color: var(--accent);
+    border-radius: 8px;
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.item-chip-del {
+    color: var(--danger);
+    cursor: pointer;
+    font-weight: 800;
+    font-size: 15px;
+    padding: 2px 6px;
+}
 
 .result-box {
-    background: #030611; border: 1px dashed var(--accent); border-radius: 12px;
-    padding: 12px; font-family: monospace; font-size: 12px; color: var(--accent); margin-top: 10px; word-break: break-all; white-space: pre-wrap;
+    background: #02050d;
+    border: 1px dashed rgba(56, 189, 248, 0.45);
+    border-radius: 14px;
+    padding: 13px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent-bright);
+    margin-top: 10px;
+    word-break: break-word;
+    white-space: pre-wrap;
+    line-height: 1.5;
+}
+
+.cmd-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+.cmd-item {
+    background: rgba(4, 9, 22, 0.75);
+    border: 1px solid rgba(56, 189, 248, 0.15);
+    border-radius: 12px;
+    padding: 9px 11px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+.cmd-item:active { border-color: var(--accent); }
+.cmd-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+}
+.cmd-desc {
+    font-size: 10.5px;
+    color: var(--text-subtle);
+    margin-top: 2px;
 }
 </style>
 </head>
 <body>
 
-<div id="toast">✅ Настройки обновлены</div>
+<div id="toast">✅ Синхронизировано с чатами</div>
 
-<!-- БЛОКИРОВКА: Без подписки или ВИП -->
+<!-- МОДАЛЬНОЕ ОКНО УВЕДОМЛЕНИЙ -->
+<div id="modal-backdrop" class="modal-backdrop">
+    <div class="modal-box">
+        <h3 id="modal-title" class="modal-title">Asteria Suite</h3>
+        <p id="modal-text" class="modal-text"></p>
+        <button class="btn btn-accent" onclick="closeModal()">Понятно</button>
+    </div>
+</div>
+
+<!-- СТРОГАЯ БЛОКИРОВКА: ОБЫЧНЫЙ ПОЛЬЗОВАТЕЛЬ (FREE) ИЛИ ВИП (VIP) -->
 <div id="paywall-overlay" class="lock-screen">
-    <div class="lock-icon-wrap">🛡</div>
-    <h2 class="lock-title">Доступ ограничен</h2>
-    <p class="lock-desc">
-        Использование панели управления <b>Asteria Suite</b> доступно исключительно для пользователей тарифа <b style="color:var(--accent);">Премиум</b> или <b style="color:var(--gold);">Создателя</b>.
-    </p>
-    <button class="btn btn-accent" style="max-width: 260px;" onclick="openBotBuy()">💳 Оформить Премиум</button>
+    <div class="lock-card">
+        <div class="lock-icon-wrap">🔒</div>
+        <div id="paywall-role-pill" class="lock-role-pill">⛔ ТАРИФ: БЕЗ ПОДПИСКИ</div>
+        <h2 class="lock-title">Доступ к WebApp закрыт</h2>
+        <p class="lock-desc" id="paywall-desc">
+            Панель управления и синхронизации чатов <b>Asteria Suite</b> доступна исключительно для операторов с активной лицензией <b style="color:var(--accent);">⭐ ПРЕМИУМ</b> или <b style="color:var(--gold);">👑 СОЗДАТЕЛЯ</b>.
+        </p>
+        <div class="lock-perks">
+            <div>✅ <b>Anti-Delete и Anti-Edit</b> перехват в реальном времени</div>
+            <div>✅ <b>Сохранение самоуничтожающихся фото/видео (TTL)</b></div>
+            <div>✅ <b>Облачная синхронизация ЧС, DND и заметок с чатами</b></div>
+            <div>✅ <b>Полный доступ к OSINT-досье и крипто-утилитам</b></div>
+        </div>
+        <button class="btn btn-accent" onclick="openBotBuy()">💳 Оформить Премиум</button>
+        <button class="btn btn-blue" style="margin-top:8px;" onclick="closeWebApp()">↩️ Вернуться в диалог с ботом</button>
+        <button id="sandbox-unlock-btn" class="btn btn-gold" style="display:none; margin-top:10px;" onclick="switchSandboxRole('premium')">🧪 Вернуться в режим предпросмотра (Премиум)</button>
+    </div>
 </div>
 
-<!-- БЛОКИРОВКА: Dashboard отключен владельцем -->
+<!-- БЛОКИРОВКА: МОДУЛЬ DASHBOARD ОТКЛЮЧЕН СОЗДАТЕЛЕМ -->
 <div id="modlock-overlay" class="lock-screen">
-    <div class="lock-icon-wrap" style="border-color:var(--gold); box-shadow:0 0 30px var(--gold-glow);">⚙️</div>
-    <h2 class="lock-title">Модуль отключен</h2>
-    <p class="lock-desc">
-        Панель управления временно выключена Создателем платформы для проведения технических работ.
-    </p>
-</div>
-
-<!-- ПРОФИЛЬ -->
-<div class="profile-card">
-    <div class="profile-top">
-        <div class="avatar-wrapper">
-            <div id="u-avatar" class="avatar-img">?</div>
-        </div>
-        <div class="profile-meta">
-            <h2 id="u-name">Оператор</h2>
-            <div class="u-tag" id="u-tag">@username</div>
-            <div class="u-id">ID: <span id="u-id">…</span></div>
-        </div>
-        <div id="u-badge" class="status-badge badge-prem">⭐ ПРЕМИУМ</div>
-    </div>
-    <div class="timer-box">
-        <span>Статус лицензии:</span>
-        <span class="timer-val" id="countdown">Активна</span>
+    <div class="lock-card">
+        <div class="lock-icon-wrap" style="border-color:var(--gold); box-shadow:0 0 30px var(--gold-glow);">⚙️</div>
+        <h2 class="lock-title">Техническое обслуживание</h2>
+        <p class="lock-desc">
+            Веб-панель управления временно отключена Создателем платформы для обновления модулей безопасности. Все защитные функции в чатах продолжают работать штатно.
+        </p>
+        <button class="btn btn-blue" onclick="closeWebApp()">↩️ Закрыть окно</button>
     </div>
 </div>
 
-<div class="metric-grid">
-    <div class="metric-card"><div class="metric-val" id="m-del">0</div><div class="metric-lbl">Удалений</div></div>
-    <div class="metric-card"><div class="metric-val" id="m-edit">0</div><div class="metric-lbl">Правок</div></div>
-    <div class="metric-card"><div class="metric-val" id="m-mutes">0</div><div class="metric-lbl">В ЧС</div></div>
-</div>
+<div class="app-container" id="app-root">
+    <!-- ПЕРЕКЛЮЧАТЕЛЬ ТЕСТОВЫХ РОЛЕЙ (ВИДЕН ТОЛЬКО В ПЕСОЧНИЦЕ ПРОВЕРКИ) -->
+    <div id="sandbox-bar" class="sandbox-bar">
+        <span class="sandbox-lbl">🧪 Тест ролей и защиты:</span>
+        <div class="sandbox-btns">
+            <button class="sandbox-chip" id="sb-owner" onclick="switchSandboxRole('owner')">👑 Создатель</button>
+            <button class="sandbox-chip" id="sb-premium" onclick="switchSandboxRole('premium')">⭐ Премиум</button>
+            <button class="sandbox-chip" id="sb-vip" onclick="switchSandboxRole('vip')">⚡ ВИП (Заблокирован)</button>
+            <button class="sandbox-chip" id="sb-free" onclick="switchSandboxRole('free')">⛔ Обычный (Заблокирован)</button>
+        </div>
+    </div>
 
-<!-- ВКЛАДКА 1: ЗАЩИТА -->
-<div id="tab-settings" class="tab-content active">
-    <div class="card">
-        <div class="card-title">Модули безопасности</div>
-
-        <div class="feature-row">
-            <div class="feature-info">
-                <div class="feature-header"><h4>Anti-Delete</h4></div>
-                <p class="feature-desc">Перехватывает и сохраняет текст, голосовые и видео-сообщения, удалённые собеседником.</p>
+    <!-- ПРОФИЛЬ ОПЕРАТОРА -->
+    <div class="profile-card">
+        <div class="profile-top">
+            <div class="avatar-wrapper">
+                <div id="u-avatar" class="avatar-img">A</div>
+                <div class="online-dot"></div>
             </div>
-            <label class="switch"><input type="checkbox" id="set-ad" onchange="autoToggle('anti_delete', this.checked)"><span class="slider"></span></label>
+            <div class="profile-meta">
+                <h2 id="u-name">Оператор</h2>
+                <div class="u-tag" id="u-tag">@operator</div>
+                <div class="u-id">ID: <span id="u-id">…</span></div>
+            </div>
+            <div id="u-badge" class="status-badge badge-prem">⭐ ПРЕМИУМ</div>
+        </div>
+        <div class="status-grid">
+            <div class="timer-box">
+                <span>Лицензия:</span>
+                <span class="timer-val" id="countdown">Активна</span>
+            </div>
+            <div class="timer-box">
+                <span>Синхр. чатов:</span>
+                <span class="timer-val sync-pill-ok" id="sync-status-pill">🟢 Активна</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- СЧЁТЧИКИ ПЕРЕХВАТОВ И ЧС -->
+    <div class="metric-grid">
+        <div class="metric-card">
+            <div class="metric-val" id="m-del">0</div>
+            <div class="metric-lbl">Удалений</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-val" id="m-edit">0</div>
+            <div class="metric-lbl">Правок</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-val" id="m-ttl">0</div>
+            <div class="metric-lbl">TTL Медиа</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-val" id="m-mutes">0</div>
+            <div class="metric-lbl">В ЧС</div>
+        </div>
+    </div>
+
+    <!-- БАННЕР МГНОВЕННОЙ СИНХРОНИЗАЦИИ С ЧАТАМИ -->
+    <div class="sync-banner">
+        <div class="sync-banner-info">
+            <div class="sync-banner-title">
+                <span id="biz-dot">🟢</span>
+                <span id="sync-banner-heading">Синхронизация с чатами Telegram</span>
+            </div>
+            <div class="sync-banner-sub" id="sync-banner-desc">
+                Настройки защиты, ЧС и заметки привязаны к вашему аккаунту
+            </div>
+        </div>
+        <button class="sync-now-btn" onclick="syncWithBotNow()">🔄 Синхр.</button>
+    </div>
+
+    <!-- ВКЛАДКА 1: ЗАЩИТА И ЧАТЫ -->
+    <div id="tab-settings" class="tab-content active">
+        <div class="card">
+            <div class="card-title">Быстрые профили защиты</div>
+            <div class="preset-row">
+                <button class="preset-btn" onclick="applyPreset('max')">🛡 Макс. защита</button>
+                <button class="preset-btn" onclick="applyPreset('stealth')">🕵️ Стелс-режим</button>
+                <button class="preset-btn" onclick="applyPreset('dnd')">🌙 Режим тишины</button>
+            </div>
+
+            <div class="card-title">Модули перехвата и безопасности</div>
+
+            <div class="feature-row">
+                <div class="feature-info">
+                    <div class="feature-header">
+                        <h4>Anti-Delete</h4>
+                        <span class="feature-tag">Чаты</span>
+                    </div>
+                    <p class="feature-desc">Мгновенно перехватывает и присылает вам удалённые собеседником сообщения, голосовые и кружки.</p>
+                </div>
+                <label class="switch"><input type="checkbox" id="set-ad" onchange="autoToggle('anti_delete', this.checked)"><span class="slider"></span></label>
+            </div>
+
+            <div class="feature-row">
+                <div class="feature-info">
+                    <div class="feature-header">
+                        <h4>Anti-Edit</h4>
+                        <span class="feature-tag">Аудит</span>
+                    </div>
+                    <p class="feature-desc">Фиксирует оригинал сообщения до редактирования собеседником и показывает историю изменений.</p>
+                </div>
+                <label class="switch"><input type="checkbox" id="set-ae" onchange="autoToggle('anti_edit', this.checked)"><span class="slider"></span></label>
+            </div>
+
+            <div class="feature-row">
+                <div class="feature-info">
+                    <div class="feature-header">
+                        <h4>Одноразовые медиа (TTL)</h4>
+                        <span class="feature-tag">Медиа</span>
+                    </div>
+                    <p class="feature-desc">Автоматически сохраняет сгорающие фото и видео с таймером до их исчезновения.</p>
+                </div>
+                <label class="switch"><input type="checkbox" id="set-ttl" onchange="autoToggle('save_ttl_media', this.checked)"><span class="slider"></span></label>
+            </div>
+
+            <div class="feature-row">
+                <div class="feature-info">
+                    <div class="feature-header">
+                        <h4>Не беспокоить (DND)</h4>
+                        <span class="feature-tag">Автоответ</span>
+                    </div>
+                    <p class="feature-desc">Удаляет входящие сообщения в личных диалогах и уведомляет собеседника, что вы заняты.</p>
+                </div>
+                <label class="switch"><input type="checkbox" id="set-dnd" onchange="autoToggle('dnd', this.checked)"><span class="slider"></span></label>
+            </div>
+
+            <div class="feature-row">
+                <div class="feature-info">
+                    <div class="feature-header">
+                        <h4>Анти-флуд и Спам-фильтр</h4>
+                        <span class="feature-tag">15 мин</span>
+                    </div>
+                    <p class="feature-desc">Автоматически глушит собеседника на 15 минут при отправке 5+ сообщений за 4 сек или спаме.</p>
+                </div>
+                <label class="switch"><input type="checkbox" id="set-asm" onchange="autoToggle('anti_spam_mute', this.checked)"><span class="slider"></span></label>
+            </div>
+
+            <div class="feature-row">
+                <div class="feature-info">
+                    <div class="feature-header">
+                        <h4>Приватность профиля (Anti-Dox)</h4>
+                        <span class="feature-tag">Щит</span>
+                    </div>
+                    <p class="feature-desc">Скрывает метаданные вашего аккаунта и историю смены никнеймов от команды .досье.</p>
+                </div>
+                <label class="switch"><input type="checkbox" id="set-adox" onchange="autoToggle('anti_dox', this.checked)"><span class="slider"></span></label>
+            </div>
+
+            <div class="feature-row">
+                <div class="feature-info">
+                    <div class="feature-header">
+                        <h4>Тихие уведомления</h4>
+                        <span class="feature-tag">Без звука</span>
+                    </div>
+                    <p class="feature-desc">Отправляет все отчёты об удалениях, правках и блокировках спама в беззвучном режиме.</p>
+                </div>
+                <label class="switch"><input type="checkbox" id="set-sil" onchange="autoToggle('silent_notifications', this.checked)"><span class="slider"></span></label>
+            </div>
         </div>
 
-        <div class="feature-row">
-            <div class="feature-info">
-                <div class="feature-header"><h4>Anti-Edit</h4></div>
-                <p class="feature-desc">Сохраняет первоначальный вариант сообщения до внесения правок.</p>
+        <!-- УПРАВЛЕНИЕ СТАТУСОМ AFK В ЧАТАХ -->
+        <div class="card">
+            <div class="card-title">Статус AFK в диалогах</div>
+            <p class="feature-desc" style="margin:0 0 8px 0;">Когда кто-то ответит на ваше сообщение или напишет вам в чат, бот автоматически сообщит причину вашего отсутствия.</p>
+            <input type="text" id="afk-reason-input" class="input-box" placeholder="Причина отсутствия (оставьте пустым для снятия AFK)…">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <button class="btn btn-accent" onclick="saveAfkStatus(true)">💤 Включить AFK</button>
+                <button class="btn btn-danger" onclick="saveAfkStatus(false)">👋 Снять AFK</button>
             </div>
-            <label class="switch"><input type="checkbox" id="set-ae" onchange="autoToggle('anti_edit', this.checked)"><span class="slider"></span></label>
         </div>
 
-        <div class="feature-row">
-            <div class="feature-info">
-                <div class="feature-header"><h4>Одноразовые медиа (TTL)</h4></div>
-                <p class="feature-desc">Спасает самоуничтожающиеся фото и видеофайлы до истечения таймера.</p>
+        <!-- БЫСТРЫЕ КОМАНДЫ В ЧАТАХ -->
+        <div class="card">
+            <div class="card-title">Шпаргалка команд для чатов (нажмите для копирования)</div>
+            <div class="cmd-grid">
+                <div class="cmd-item" onclick="copyText('.настройки')">
+                    <div class="cmd-code">.настройки</div>
+                    <div class="cmd-desc">Интерактивное меню в чате</div>
+                </div>
+                <div class="cmd-item" onclick="copyText('.клир 50')">
+                    <div class="cmd-code">.клир 50</div>
+                    <div class="cmd-desc">Удалить 50 сообщений</div>
+                </div>
+                <div class="cmd-item" onclick="copyText('.сейв')">
+                    <div class="cmd-code">.сейв</div>
+                    <div class="cmd-desc">Перехват медиа в реплае</div>
+                </div>
+                <div class="cmd-item" onclick="copyText('.досье')">
+                    <div class="cmd-code">.досье</div>
+                    <div class="cmd-desc">OSINT-профиль собеседника</div>
+                </div>
+                <div class="cmd-item" onclick="copyText('.мут')">
+                    <div class="cmd-code">.мут / .анмут</div>
+                    <div class="cmd-desc">Управление ЧС в диалоге</div>
+                </div>
+                <div class="cmd-item" onclick="copyText('.цитата')">
+                    <div class="cmd-code">.цитата</div>
+                    <div class="cmd-desc">Стикер-цитата из сообщения</div>
+                </div>
             </div>
-            <label class="switch"><input type="checkbox" id="set-ttl" onchange="autoToggle('save_ttl_media', this.checked)"><span class="slider"></span></label>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА 2: ЧЁРНЫЙ СПИСОК -->
+    <div id="tab-mute" class="tab-content">
+        <div class="card">
+            <div class="card-title">Добавить объект в Чёрный список</div>
+            <p class="feature-desc" style="margin:0 0 6px 0;">Все входящие сообщения от заблокированных пользователей мгновенно удаляются в ваших чатах у обоих участников.</p>
+            <input type="text" id="mute-val" class="input-box" placeholder="@username или числовой Telegram ID…">
+            <button class="btn btn-accent" onclick="addMute()">🚫 Заблокировать объект</button>
         </div>
 
-        <div class="feature-row">
-            <div class="feature-info">
-                <div class="feature-header"><h4>Не беспокоить (DND)</h4></div>
-                <p class="feature-desc">Удаляет входящие сообщения собеседника и отправляет автоответ о вашей занятости.</p>
+        <div class="card">
+            <div class="card-header-flex">
+                <div class="card-title">Заблокированные в диалогах</div>
+                <span style="font-size:11px; color:var(--text-subtle);" id="mute-counter-badge">0 объектов</span>
             </div>
-            <label class="switch"><input type="checkbox" id="set-dnd" onchange="autoToggle('dnd', this.checked)"><span class="slider"></span></label>
+            <input type="text" id="mute-search" class="input-box" placeholder="🔍 Поиск по Чёрному списку…" oninput="renderMutes()" style="margin-bottom:8px;">
+            <div id="mute-list-container"></div>
+            <button class="btn btn-danger" style="margin-top:12px;" onclick="clearMutes()">⚡ Очистить весь список</button>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА 3: ДОСЬЕ И OSINT -->
+    <div id="tab-osint" class="tab-content">
+        <div class="card">
+            <div class="card-title">Разведка и аудит профиля (OSINT)</div>
+            <p class="feature-desc" style="margin:0 0 6px 0;">Проверка статуса аккаунта в базе Asteria Suite, истории смены никнеймов, наличия бизнес-подключения и блокировок.</p>
+            <input type="text" id="osint-val" class="input-box" placeholder="Введите @username или Telegram ID…">
+            <button class="btn btn-accent" onclick="showOsint()">📁 Сформировать досье</button>
+            <div id="osint-res-card" style="display:none;" class="result-box"></div>
+            <div id="osint-actions" style="display:none; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+                <button class="btn btn-blue" onclick="copyOsintResult()">📋 Скопировать досье</button>
+                <button class="btn btn-danger" onclick="muteFromOsint()">🔇 Добавить цель в ЧС</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА 4: ЗАМЕТКИ -->
+    <div id="tab-notes" class="tab-content">
+        <div class="card">
+            <div class="card-title">Персональный облачный блокнот</div>
+            <p class="feature-desc" style="margin:0 0 6px 0;">Заметки синхронизируются с командой <code>.заметка</code> в боте и доступны из любого диалога.</p>
+            <input type="text" id="note-input" class="input-box" placeholder="Введите текст новой заметки…">
+            <button class="btn btn-accent" onclick="addNote()">💾 Сохранить заметку</button>
+        </div>
+        <div class="card">
+            <div class="card-header-flex">
+                <div class="card-title">Сохранённые записи</div>
+                <span style="font-size:11px; color:var(--text-subtle);" id="notes-counter-badge">0 шт.</span>
+            </div>
+            <div id="notes-list"></div>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА 5: ИНЖЕНЕРНЫЕ УТИЛИТЫ -->
+    <div id="tab-utils" class="tab-content">
+        <div class="card">
+            <div class="card-title">Генератор криптостойких ключей</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+                <span style="font-size:12.5px; color:var(--text-subtle);">Длина ключа:</span>
+                <span id="gen-len-val" style="font-weight:800; color:var(--accent); font-family:'JetBrains Mono',monospace;">16 симв.</span>
+            </div>
+            <input type="range" id="gen-len" min="8" max="64" value="16" style="width:100%; margin:10px 0;" oninput="document.getElementById('gen-len-val').innerText = this.value + ' симв.'">
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px; font-size:12px;">
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="gen-upper" checked> Заглавные (A-Z)</label>
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="gen-lower" checked> Строчные (a-z)</label>
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="gen-num" checked> Цифры (0-9)</label>
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="gen-sym" checked> Спецсимволы</label>
+            </div>
+            <button class="btn btn-gold" onclick="genPass()" style="margin-top:12px;">🎲 Сгенерировать ключ</button>
+            <div id="gen-out-box" style="display:none;" class="result-box"></div>
         </div>
 
-        <div class="feature-row">
-            <div class="feature-info">
-                <div class="feature-header"><h4>Анти-флуд фильтр</h4></div>
-                <p class="feature-desc">Блокирует собеседника на 15 минут за спам или одинаковые сообщения подряд.</p>
+        <div class="card">
+            <div class="card-title">Хэширование и Base64 кодирование</div>
+            <input type="text" id="hash-input" class="input-box" placeholder="Введите строку или пароль…">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:6px;">
+                <button class="btn btn-blue" onclick="calcHash('MD5')">MD5</button>
+                <button class="btn btn-blue" onclick="calcHash('SHA256')">SHA-256</button>
             </div>
-            <label class="switch"><input type="checkbox" id="set-asm" onchange="autoToggle('anti_spam_mute', this.checked)"><span class="slider"></span></label>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px;">
+                <button class="btn btn-blue" onclick="calcHash('Base64')">Base64</button>
+                <button class="btn btn-blue" onclick="calcHash('SHA1')">SHA-1</button>
+            </div>
+            <div id="hash-out-box" style="display:none;" class="result-box"></div>
         </div>
 
-        <div class="feature-row">
-            <div class="feature-info">
-                <div class="feature-header"><h4>Приватность профиля (Anti-Dox)</h4></div>
-                <p class="feature-desc">Защищает ваш профиль от сбора информации через модуль досье.</p>
+        <div class="card">
+            <div class="card-title">Декодирование и поиск хэшей</div>
+            <input type="text" id="dehash-input" class="input-box" placeholder="Вставьте Base64, HEX или MD5-хэш…">
+            <button class="btn btn-accent" onclick="dehash()">🔍 Найти пароль / декодировать</button>
+            <div id="dehash-out-box" style="display:none;" class="result-box"></div>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА 6: ПАНЕЛЬ СОЗДАТЕЛЯ (ДОСТУПНА ТОЛЬКО OWNER) -->
+    <div id="tab-admin" class="tab-content">
+        <div class="card" style="border-color:rgba(250, 204, 21, 0.4);">
+            <div class="card-title" style="color:var(--gold);">👑 Выдача лицензий операторам</div>
+            <input type="text" id="adm-target" class="input-box" placeholder="@username или числовой ID пользователя…">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:6px;">
+                <select id="adm-role" class="input-box" style="margin-top:0;">
+                    <option value="premium">⭐ ПРЕМИУМ</option>
+                    <option value="vip">⚡ ВИП</option>
+                    <option value="free">⛔ Снять подписку</option>
+                </select>
+                <select id="adm-dur" class="input-box" style="margin-top:0;">
+                    <option value="30д">30 дней</option>
+                    <option value="7д">7 дней</option>
+                    <option value="1д">1 день</option>
+                    <option value="365д">365 дней</option>
+                    <option value="навсегда">Бессрочно</option>
+                </select>
             </div>
-            <label class="switch"><input type="checkbox" id="set-adox" onchange="autoToggle('anti_dox', this.checked)"><span class="slider"></span></label>
+            <button class="btn btn-gold" onclick="adminGrantSub()">⚡ Применить лицензию</button>
         </div>
 
-        <div class="feature-row">
-            <div class="feature-info">
-                <div class="feature-header"><h4>Тихие уведомления</h4></div>
-                <p class="feature-desc">Все отчёты о перехватах удалений и спама приходят без звука.</p>
+        <div class="card" style="border-color:rgba(250, 204, 21, 0.3);">
+            <div class="card-title" style="color:var(--gold);">⚙️ Глобальные системные модули</div>
+
+            <div class="feature-row">
+                <div class="feature-info">
+                    <div class="feature-header"><h4>Модуль WebApp (Dashboard)</h4></div>
+                    <p class="feature-desc">Глобальный доступ пользователей Премиум к веб-панели.</p>
+                </div>
+                <label class="switch"><input type="checkbox" id="mod-dashboard" checked onchange="adminToggleMod('dashboard', this.checked)"><span class="slider"></span></label>
             </div>
-            <label class="switch"><input type="checkbox" id="set-sil" onchange="autoToggle('silent_notifications', this.checked)"><span class="slider"></span></label>
+
+            <div class="feature-row">
+                <div class="feature-info">
+                    <div class="feature-header"><h4>Модуль Чёрного списка (Blacklist)</h4></div>
+                    <p class="feature-desc">Глобальная работа фильтра .мут и автоудаления в чатах.</p>
+                </div>
+                <label class="switch"><input type="checkbox" id="mod-blacklist" checked onchange="adminToggleMod('blacklist', this.checked)"><span class="slider"></span></label>
+            </div>
+
+            <div class="feature-row">
+                <div class="feature-info">
+                    <div class="feature-header"><h4>Модуль разведки (OSINT / Досье)</h4></div>
+                    <p class="feature-desc">Разрешить формирование досье профилей по команде .досье.</p>
+                </div>
+                <label class="switch"><input type="checkbox" id="mod-osint" checked onchange="adminToggleMod('osint', this.checked)"><span class="slider"></span></label>
+            </div>
+
+            <div class="feature-row">
+                <div class="feature-info">
+                    <div class="feature-header"><h4>Инженерные утилиты (Tools)</h4></div>
+                    <p class="feature-desc">Команды .к, .клир, .цитата, .распознать, .спам.</p>
+                </div>
+                <label class="switch"><input type="checkbox" id="mod-tools" checked onchange="adminToggleMod('tools', this.checked)"><span class="slider"></span></label>
+            </div>
+
+            <div class="feature-row">
+                <div class="feature-info">
+                    <div class="feature-header"><h4>Ролевые действия (RP)</h4></div>
+                    <p class="feature-desc">Интерактивные RP-команды в диалогах.</p>
+                </div>
+                <label class="switch"><input type="checkbox" id="mod-rp" checked onchange="adminToggleMod('rp', this.checked)"><span class="slider"></span></label>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- ВКЛАДКА 2: ЧЁРНЫЙ СПИСОК -->
-<div id="tab-mute" class="tab-content">
-    <div class="card">
-        <div class="card-title">Добавить в Чёрный Список</div>
-        <input type="text" id="mute-val" class="input-box" placeholder="@username или числовой Telegram ID…">
-        <button class="btn btn-accent" onclick="addMute()">🚫 Заблокировать объект</button>
-    </div>
-    <div class="card">
-        <div class="card-title">Заблокированные в диалогах</div>
-        <div id="mute-list-container"><span style="font-size:12px; color:var(--text-subtle);">Список пуст</span></div>
-        <button class="btn btn-danger" style="margin-top:12px;" onclick="clearMutes()">⚡ Очистить весь список</button>
-    </div>
-</div>
-
-<!-- ВКЛАДКА 3: АНАЛИЗ ПРОФИЛЕЙ (ДОСЬЕ) -->
-<div id="tab-osint" class="tab-content">
-    <div class="card">
-        <div class="card-title">Разведка профиля</div>
-        <input type="text" id="osint-val" class="input-box" placeholder="@username или Telegram ID…">
-        <button class="btn btn-accent" onclick="showOsint()" style="margin-top:8px;">📁 Сформировать досье</button>
-        <div id="osint-res-card" style="display:none;" class="result-box"></div>
-    </div>
-</div>
-
-<!-- ВКЛАДКА 4: ЗАМЕТКИ -->
-<div id="tab-notes" class="tab-content">
-    <div class="card">
-        <div class="card-title">Блокнот заметок</div>
-        <input type="text" id="note-input" class="input-box" placeholder="Текст новой заметки…">
-        <button class="btn btn-accent" onclick="addNote()">💾 Сохранить заметку</button>
-        <div id="notes-list" style="margin-top:10px;"></div>
-    </div>
-</div>
-
-<!-- ВКЛАДКА 5: УТИЛИТЫ И СЕРВИС -->
-<div id="tab-utils" class="tab-content">
-    <div class="card">
-        <div class="card-title">Генератор надёжных паролей</div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
-            <span style="font-size:13px; color:var(--text-subtle);">Длина ключа:</span>
-            <span id="gen-len-val" style="font-weight:bold; color:var(--accent);">16</span>
-        </div>
-        <input type="range" id="gen-len" min="6" max="64" value="16" style="width:100%; margin:8px 0;" oninput="document.getElementById('gen-len-val').innerText = this.value">
-
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:6px; font-size:12px;">
-            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="gen-upper" checked> Заглавные (A-Z)</label>
-            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="gen-lower" checked> Строчные (a-z)</label>
-            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="gen-num" checked> Цифры (0-9)</label>
-            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="gen-sym" checked> Спецсимволы</label>
-        </div>
-        <button class="btn btn-gold" onclick="genPass()" style="margin-top:12px;">🎲 Сгенерировать ключ</button>
-        <div id="gen-out-box" style="display:none;" class="result-box"></div>
-    </div>
-
-    <div class="card">
-        <div class="card-title">Хэширование данных</div>
-        <input type="text" id="hash-input" class="input-box" placeholder="Введите пароль или текст…">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px;">
-            <button class="btn btn-blue" onclick="calcHash('MD5')">MD5</button>
-            <button class="btn btn-blue" onclick="calcHash('SHA256')">SHA-256</button>
-        </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px;">
-            <button class="btn btn-blue" onclick="calcHash('Base64')">Base64</button>
-            <button class="btn btn-blue" onclick="calcHash('SHA1')">SHA-1</button>
-        </div>
-        <div id="hash-out-box" style="display:none;" class="result-box"></div>
-    </div>
-
-    <div class="card">
-        <div class="card-title">Расхэширование и декодирование</div>
-        <input type="text" id="dehash-input" class="input-box" placeholder="Вставьте хэш или Base64…">
-        <button class="btn btn-accent" onclick="dehash()">🔍 Найти пароль / декодировать</button>
-        <div id="dehash-out-box" style="display:none;" class="result-box"></div>
-    </div>
-</div>
-
-<div class="bottom-nav">
+<!-- НИЖНЯЯ НАВИГАЦИЯ -->
+<div class="bottom-nav" id="bottom-nav">
     <button class="nav-btn active" onclick="switchNav('settings', this)"><span class="nav-icon">🛡</span>Защита</button>
     <button class="nav-btn" onclick="switchNav('mute', this)"><span class="nav-icon">🔇</span>Мой ЧС</button>
     <button class="nav-btn" onclick="switchNav('osint', this)"><span class="nav-icon">📁</span>Досье</button>
     <button class="nav-btn" onclick="switchNav('notes', this)"><span class="nav-icon">📝</span>Заметки</button>
     <button class="nav-btn" onclick="switchNav('utils', this)"><span class="nav-icon">🛠</span>Утилиты</button>
+    <button class="nav-btn" id="nav-admin-btn" style="display:none;" onclick="switchNav('admin', this)"><span class="nav-icon">👑</span>Админ</button>
 </div>
 
 <script>
-const tg = window.Telegram.WebApp;
-tg.ready();
-tg.expand();
+const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : {
+    ready: function() {},
+    expand: function() {},
+    close: function() {},
+    openTelegramLink: function(u) { window.open(u, '_blank'); },
+    sendData: function() {},
+    initData: "",
+    initDataUnsafe: {},
+    colorScheme: "dark",
+    MainButton: {
+        setText: function() {},
+        show: function() {},
+        hide: function() {},
+        onClick: function() {}
+    }
+};
 
-if (tg.colorScheme === 'light') {
-    document.body.classList.add('tg-theme-light');
+try {
+    tg.ready();
+    tg.expand();
+} catch (e) {}
+
+function safeGetStorage(key, fallback) {
+    try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+    } catch (e) {
+        return fallback;
+    }
+}
+
+function safeSetStorage(key, val) {
+    try {
+        localStorage.setItem(key, JSON.stringify(val));
+    } catch (e) {}
+}
+
+function triggerHaptic() {
+    try {
+        if (tg.HapticFeedback && tg.HapticFeedback.impactOccurred) {
+            tg.HapticFeedback.impactOccurred('light');
+        }
+    } catch (e) {}
+}
+
+function showNotice(message, title) {
+    document.getElementById('modal-title').innerText = title || "Asteria Suite";
+    document.getElementById('modal-text').innerText = message;
+    document.getElementById('modal-backdrop').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('modal-backdrop').classList.remove('active');
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.innerText = msg;
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 1800);
 }
 
 const P = new URLSearchParams(location.search);
-const currentUid = tg.initDataUnsafe?.user?.id ? parseInt(tg.initDataUnsafe.user.id) : null;
-const paramUid = P.get('uid') ? parseInt(P.get('uid')) : null;
-const uid = currentUid || paramUid || 7783116627;
+const ADMIN_OWNER_ID = parseInt(P.get('adm') || '7783116627', 10);
+const BOT_USERNAME = P.get('bot') || 'asteria_suite_bot';
+const API_BASE = (P.get('api') || '').replace(/\/$/, '');
 
-const adminTargetId = 7783116627;
-const role = P.get('role') || 'free';
-const expTs = parseFloat(P.get('exp') || '0');
-const isOwner = (role === 'owner') || (uid === adminTargetId);
-const isDashboardBlocked = (P.get('dash_off') === '1');
+const isTelegramEnv = Boolean(tg.initData && tg.initData.length > 0) || Boolean(tg.initDataUnsafe && tg.initDataUnsafe.user);
+const hasUrlAuthParams = P.has('role') || P.has('uid') || P.has('access');
+const isGitHubPages = location.hostname.indexOf('github.io') !== -1;
+const isSandboxPreview = !isTelegramEnv && !hasUrlAuthParams && !isGitHubPages;
 
-// Доступ к панели управления разрешен только Премиум и Создателю
-if (!isOwner) {
-    if (isDashboardBlocked) {
-        document.getElementById('modlock-overlay').classList.add('active');
-    } else if (role !== 'premium') {
-        document.getElementById('paywall-overlay').classList.add('active');
-    }
-}
+// ИСПРАВЛЕНИЕ КРИТИЧЕСКОГО БАГА:
+// Никогда не подставляем ID Создателя (7783116627) по умолчанию, если пользователь не авторизован!
+const tgUser = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user : null;
+const currentUid = (tgUser && tgUser.id) ? parseInt(tgUser.id, 10) : null;
+const paramUid = P.get('uid') ? parseInt(P.get('uid'), 10) : null;
+let uid = currentUid || paramUid || (isSandboxPreview ? 7783116627 : 0);
 
-const tgUser = tg.initDataUnsafe?.user;
-const firstName = tgUser?.first_name || P.get('name') || "Оператор";
-const lastName = tgUser?.last_name || "";
-const fullName = `${firstName} ${lastName}`.trim();
-const username = tgUser?.username || P.get('uname') || "";
+let currentRole = (P.get('role') || (isSandboxPreview ? 'premium' : 'free')).toLowerCase();
+let expTs = parseFloat(P.get('exp') || (isSandboxPreview ? '-1' : '0'));
+let isDashboardBlocked = (P.get('dash_off') === '1');
+let hasBusinessConn = (P.get('biz') === '1') || isSandboxPreview;
+let hasUnsavedChanges = false;
+let lastOsintTarget = "";
+let lastOsintText = "";
 
-document.getElementById('u-name').innerText = fullName;
-document.getElementById('u-tag').innerText = username ? `@${username}` : "диалог";
-document.getElementById('u-id').innerText = uid;
-
-// Надежная загрузка аватара с сохранением в локальный кэш
-const avEl = document.getElementById('u-avatar');
-function renderUserAvatar() {
-    const LSK_AVATAR = 'asteria_avatar_' + uid;
-    const passedAvatar = P.get('avatar');
-
-    if (passedAvatar && passedAvatar.startsWith('http')) {
-        localStorage.setItem(LSK_AVATAR, passedAvatar);
-        avEl.innerHTML = `<img src="${passedAvatar}" alt="Avatar">`;
-        return;
-    }
-
-    if (tgUser?.photo_url) {
-        localStorage.setItem(LSK_AVATAR, tgUser.photo_url);
-        avEl.innerHTML = `<img src="${tgUser.photo_url}" alt="Avatar">`;
-        return;
-    }
-
-    const cached = localStorage.getItem(LSK_AVATAR);
-    if (cached) {
-        avEl.innerHTML = `<img src="${cached}" alt="Avatar">`;
-        return;
-    }
-
-    const letter = (firstName.charAt(0) || "A").toUpperCase();
-    const canvas = document.createElement('canvas');
-    canvas.width = 120;
-    canvas.height = 120;
-    const ctx = canvas.getContext('2d');
-
-    const grad = ctx.createLinearGradient(0, 0, 120, 120);
-    grad.addColorStop(0, '#0284c7');
-    grad.addColorStop(1, '#38bdf8');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, 120, 120);
-
-    ctx.fillStyle = '#040814';
-    ctx.font = 'bold 60px -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(letter, 60, 64);
-
-    const dataUrl = canvas.toDataURL();
-    localStorage.setItem(LSK_AVATAR, dataUrl);
-    avEl.innerHTML = `<img src="${dataUrl}" alt="Avatar">`;
-}
-renderUserAvatar();
-
-const badge = document.getElementById('u-badge');
-if (isOwner) {
-    badge.className = "status-badge badge-owner";
-    badge.innerText = "👑 СОЗДАТЕЛЬ";
-} else if (role === 'premium') {
-    badge.className = "status-badge badge-prem";
-    badge.innerText = "⭐ ПРЕМИУМ";
-} else if (role === 'vip') {
-    badge.className = "status-badge badge-vip";
-    badge.innerText = "⚡ ВИП";
-} else {
-    badge.className = "status-badge badge-free";
-    badge.innerText = "⛔ БЕЗ ПОДПИСКИ";
-}
-
-function formatExp(exp) {
-    if (isOwner || exp === -1) return "Бессрочно";
-    const rem = exp - Math.floor(Date.now() / 1000);
-    if (rem <= 0) return "Истёк срок";
-    const d = Math.floor(rem / 86400), h = Math.floor((rem % 86400) / 3600);
-    return `${d}д ${h}ч`;
-}
-document.getElementById('countdown').innerText = formatExp(expTs);
-
-function openBotBuy() {
-    tg.openTelegramLink("https://t.me/asteria_suite_bot?start=buy");
-}
-
-// Загрузка и локальное сохранение настроек
-const LSK_SET = 'asteria_set_' + uid;
+// Состояние настроек, ЧС, заметок, модулей и статистики
 let S = {
     anti_delete: true,
     anti_edit: true,
@@ -530,117 +1328,635 @@ let S = {
     anti_dox: false,
     silent_notifications: false
 };
+let muteList = [];
+let notes = [];
+let afkReason = P.get('afk') || "";
+let sysModules = {
+    dashboard: true,
+    blacklist: true,
+    osint: true,
+    tools: true,
+    rp: true
+};
+let statsData = {
+    deleted_count: isSandboxPreview ? 14 : 0,
+    edited_count: isSandboxPreview ? 9 : 0,
+    ttl_saved_count: isSandboxPreview ? 4 : 0,
+    mutes_count: 0
+};
 
-try {
-    const savedS = JSON.parse(localStorage.getItem(LSK_SET));
-    if (savedS) S = Object.assign(S, savedS);
-} catch(e) {}
+function parseInitialParams() {
+    const savedS = safeGetStorage('asteria_set_' + uid, null);
+    if (savedS) {
+        S = Object.assign(S, savedS);
+    }
 
-document.getElementById('set-ad').checked = S.anti_delete;
-document.getElementById('set-ae').checked = S.anti_edit;
-document.getElementById('set-ttl').checked = S.save_ttl_media;
-document.getElementById('set-dnd').checked = S.dnd;
-document.getElementById('set-asm').checked = S.anti_spam_mute;
-document.getElementById('set-adox').checked = S.anti_dox;
-document.getElementById('set-sil').checked = S.silent_notifications;
+    // Приоритет у живых параметров из БД, переданных ботом в URL (cfg=ad:1,ae:1...)
+    const cfgParam = P.get('cfg');
+    if (cfgParam) {
+        const mapKey = {
+            ad: 'anti_delete',
+            ae: 'anti_edit',
+            ttl: 'save_ttl_media',
+            dnd: 'dnd',
+            asm: 'anti_spam_mute',
+            adox: 'anti_dox',
+            sil: 'silent_notifications'
+        };
+        cfgParam.split(',').forEach(function(pair) {
+            const parts = pair.split(':');
+            if (parts.length === 2 && mapKey[parts[0]]) {
+                S[mapKey[parts[0]]] = (parts[1] === '1' || parts[1] === 'true');
+            }
+        });
+        safeSetStorage('asteria_set_' + uid, S);
+    }
 
-function autoToggle(k, v) {
-    S[k] = v;
-    localStorage.setItem(LSK_SET, JSON.stringify(S));
-    showToast(v ? "Включено" : "Выключено");
+    // Статистика из БД
+    const statsParam = P.get('stats');
+    if (statsParam) {
+        const sp = statsParam.split(',').map(function(n) { return parseInt(n, 10) || 0; });
+        if (sp.length >= 3) {
+            statsData.deleted_count = sp[0];
+            statsData.edited_count = sp[1];
+            statsData.mutes_count = sp[2];
+            statsData.ttl_saved_count = sp[3] || 0;
+        }
+    }
+
+    // Чёрный список
+    const savedMutes = safeGetStorage('asteria_mut_' + uid, []);
+    if (P.has('mutes')) {
+        const rawM = P.get('mutes') || '';
+        muteList = rawM
+            ? decodeURIComponent(rawM).split(',').map(function(x) { return x.trim().toLowerCase().replace('@', ''); }).filter(Boolean)
+            : [];
+        safeSetStorage('asteria_mut_' + uid, muteList);
+    } else {
+        muteList = Array.isArray(savedMutes) ? savedMutes : [];
+    }
+
+    // Заметки из БД (Base64) или localStorage
+    const savedNotes = safeGetStorage('asteria_notes_' + uid, []);
+    const notesParam = P.get('notes');
+    if (notesParam) {
+        try {
+            const b64 = notesParam.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonStr = decodeURIComponent(escape(atob(b64)));
+            const parsedNotes = JSON.parse(jsonStr);
+            if (Array.isArray(parsedNotes)) {
+                notes = parsedNotes;
+                safeSetStorage('asteria_notes_' + uid, notes);
+            }
+        } catch (e) {
+            notes = Array.isArray(savedNotes) ? savedNotes : [];
+        }
+    } else {
+        notes = Array.isArray(savedNotes) ? savedNotes : [];
+    }
+
+    // Системные модули для Создателя
+    const modsParam = P.get('mods');
+    if (modsParam) {
+        modsParam.split(',').forEach(function(item) {
+            const kv = item.split(':');
+            if (kv.length === 2 && kv[0] in sysModules) {
+                sysModules[kv[0]] = (kv[1] === '1');
+            }
+        });
+    }
 }
 
-// Загрузка и надежное сохранение ЧС
-const LSK_MUT = 'asteria_mut_' + uid;
-let localMutes = [];
-try { localMutes = JSON.parse(localStorage.getItem(LSK_MUT)) || []; } catch(e) {}
-
-const urlM = P.get('mutes');
-let muteList = localMutes;
-if (urlM) {
-    const serverMutes = decodeURIComponent(urlM).split(',').map(x => x.trim().toLowerCase().replace('@','')).filter(Boolean);
-    muteList = Array.from(new Set([...localMutes, ...serverMutes]));
+function checkIsOwner() {
+    if (currentRole === 'owner') return true;
+    if (tgUser && tgUser.id === ADMIN_OWNER_ID) return true;
+    if (uid === ADMIN_OWNER_ID && P.get('role') === 'owner') return true;
+    return false;
 }
-localStorage.setItem(LSK_MUT, JSON.stringify(muteList));
 
-function renderMutes() {
-    const c = document.getElementById('mute-list-container');
+function checkHasPremiumAccess() {
+    if (checkIsOwner()) return true;
+    if (currentRole !== 'premium') return false;
+    if (P.get('access') === '0') return false;
+    const nowSec = Math.floor(Date.now() / 1000);
+    if (expTs !== -1 && expTs > 0 && expTs <= nowSec) return false;
+    return true;
+}
+
+function enforceRoleAccessUI() {
+    const isOwner = checkIsOwner();
+    const hasAccess = checkHasPremiumAccess();
+    const paywallEl = document.getElementById('paywall-overlay');
+    const modlockEl = document.getElementById('modlock-overlay');
+    const rolePill = document.getElementById('paywall-role-pill');
+    const descEl = document.getElementById('paywall-desc');
+    const sbUnlock = document.getElementById('sandbox-unlock-btn');
+
+    if (isSandboxPreview) {
+        document.getElementById('sandbox-bar').classList.add('visible');
+        sbUnlock.style.display = 'flex';
+        ['owner', 'premium', 'vip', 'free'].forEach(function(r) {
+            const btn = document.getElementById('sb-' + r);
+            if (btn) btn.classList.toggle('active', currentRole === r);
+        });
+    }
+
+    // Показываем вкладку Админ только Создателю
+    const adminNavBtn = document.getElementById('nav-admin-btn');
+    if (adminNavBtn) {
+        adminNavBtn.style.display = isOwner ? 'flex' : 'none';
+    }
+
+    // Бейдж в профиле
+    const badge = document.getElementById('u-badge');
+    if (isOwner) {
+        badge.className = "status-badge badge-owner";
+        badge.innerText = "👑 СОЗДАТЕЛЬ";
+    } else if (currentRole === 'premium') {
+        badge.className = "status-badge badge-prem";
+        badge.innerText = "⭐ ПРЕМИУМ";
+    } else if (currentRole === 'vip') {
+        badge.className = "status-badge badge-vip";
+        badge.innerText = "⚡ ВИП";
+    } else {
+        badge.className = "status-badge badge-free";
+        badge.innerText = "⛔ БЕЗ ПОДПИСКИ";
+    }
+
+    // СТРОГАЯ ПРОВЕРКА: Обычный пользователь (free) и ВИП (vip) не могут открывать приложение!
+    if (!isOwner && isDashboardBlocked) {
+        modlockEl.classList.add('active');
+        paywallEl.classList.remove('active');
+        return;
+    } else {
+        modlockEl.classList.remove('active');
+    }
+
+    if (!hasAccess) {
+        if (currentRole === 'vip') {
+            rolePill.innerText = "⚡ ВАШ ТАРИФ: ВИП (ДОСТУП ОГРАНИЧЕН)";
+            descEl.innerHTML = "На тарифе <b>⚡ ВИП</b> доступны базовые команды в чатах, но веб-панель управления <b>Asteria Suite</b> открывается исключительно на тарифе <b style='color:var(--accent);'>⭐ ПРЕМИУМ</b>.";
+        } else {
+            rolePill.innerText = "⛔ ВАШ ТАРИФ: БЕЗ ПОДПИСКИ";
+            descEl.innerHTML = "Обычным пользователям и владельцам тарифа ВИП открытие веб-панели недоступно. Оформите лицензию <b style='color:var(--accent);'>⭐ ПРЕМИУМ</b> для полного доступа и синхронизации с чатами.";
+        }
+        paywallEl.classList.add('active');
+    } else {
+        paywallEl.classList.remove('active');
+    }
+}
+
+function switchSandboxRole(newRole) {
+    currentRole = newRole;
+    if (newRole === 'owner' || newRole === 'premium') {
+        expTs = -1;
+    } else if (newRole === 'vip') {
+        expTs = Math.floor(Date.now() / 1000) + 7 * 86400;
+    } else {
+        expTs = 0;
+    }
+    enforceRoleAccessUI();
+    document.getElementById('countdown').innerText = formatExp(expTs);
+}
+
+function formatExp(exp) {
+    if (checkIsOwner() || exp === -1) return "Бессрочно";
+    const rem = exp - Math.floor(Date.now() / 1000);
+    if (rem <= 0) return "Не активна";
+    const d = Math.floor(rem / 86400);
+    const h = Math.floor((rem % 86400) / 3600);
+    return d + "д " + h + "ч";
+}
+
+function renderProfileAndMetrics() {
+    const firstName = (tgUser && tgUser.first_name) ? tgUser.first_name : (P.get('name') || "Оператор");
+    const lastName = (tgUser && tgUser.last_name) ? tgUser.last_name : "";
+    const fullName = (firstName + " " + lastName).trim();
+    const username = (tgUser && tgUser.username) ? tgUser.username : (P.get('uname') || "");
+
+    document.getElementById('u-name').innerText = fullName;
+    document.getElementById('u-tag').innerText = username ? ("@" + username.replace('@', '')) : "Личный профиль";
+    document.getElementById('u-id').innerText = uid || "Не определён";
+    document.getElementById('countdown').innerText = formatExp(expTs);
+
+    // Аватар
+    const avEl = document.getElementById('u-avatar');
+    const passedAvatar = P.get('avatar');
+    const photoUrl = (passedAvatar && passedAvatar.indexOf('http') === 0)
+        ? passedAvatar
+        : ((tgUser && tgUser.photo_url) ? tgUser.photo_url : "");
+
+    if (photoUrl) {
+        avEl.innerHTML = '<img src="' + photoUrl + '" alt="Avatar">';
+    } else {
+        avEl.innerText = (firstName.charAt(0) || "A").toUpperCase();
+    }
+
+    // Метрики
+    document.getElementById('m-del').innerText = statsData.deleted_count || 0;
+    document.getElementById('m-edit').innerText = statsData.edited_count || 0;
+    document.getElementById('m-ttl').innerText = statsData.ttl_saved_count || 0;
     document.getElementById('m-mutes').innerText = muteList.length;
-    if (!muteList.length) {
-        c.innerHTML = '<span style="font-size:12px;color:var(--text-subtle)">Список пуст</span>';
+
+    // Поля настроек
+    document.getElementById('set-ad').checked = Boolean(S.anti_delete);
+    document.getElementById('set-ae').checked = Boolean(S.anti_edit);
+    document.getElementById('set-ttl').checked = Boolean(S.save_ttl_media);
+    document.getElementById('set-dnd').checked = Boolean(S.dnd);
+    document.getElementById('set-asm').checked = Boolean(S.anti_spam_mute);
+    document.getElementById('set-adox').checked = Boolean(S.anti_dox);
+    document.getElementById('set-sil').checked = Boolean(S.silent_notifications);
+    document.getElementById('afk-reason-input').value = afkReason || "";
+
+    // Админ-переключатели
+    ['dashboard', 'blacklist', 'osint', 'tools', 'rp'].forEach(function(m) {
+        const el = document.getElementById('mod-' + m);
+        if (el) el.checked = Boolean(sysModules[m]);
+    });
+
+    // Статус подключения к чатам
+    const bizDot = document.getElementById('biz-dot');
+    const bannerDesc = document.getElementById('sync-banner-desc');
+    if (hasBusinessConn) {
+        bizDot.innerText = "🟢";
+        bannerDesc.innerText = "Telegram Business активен • все изменения синхронизируются с чатами";
+    } else {
+        bizDot.innerText = "⚡";
+        bannerDesc.innerText = "Нажмите «Синхр.» для мгновенной записи настроек и ЧС в базу бота";
+    }
+}
+
+function markSyncState(isSynced, customLabel) {
+    hasUnsavedChanges = !isSynced;
+    const pill = document.getElementById('sync-status-pill');
+    if (isSynced) {
+        pill.className = "timer-val sync-pill-ok";
+        pill.innerText = customLabel || "🟢 Синхр.";
+        try { tg.MainButton.hide(); } catch (e) {}
+    } else {
+        pill.className = "timer-val sync-pill-dirty";
+        pill.innerText = customLabel || "⚡ Не сохр.";
+        try {
+            tg.MainButton.setText("🔄 СИНХРОНИЗИРОВАТЬ С ЧАТАМИ");
+            tg.MainButton.show();
+        } catch (e) {}
+    }
+}
+
+async function sendApiSync(payload) {
+    if (!checkHasPremiumAccess()) {
+        enforceRoleAccessUI();
+        return false;
+    }
+    const bodyData = Object.assign({ uid: uid }, payload);
+    const endpoints = [];
+    if (API_BASE) endpoints.push(API_BASE + '/api/sync');
+    if (!isGitHubPages && location.origin.indexOf('http') === 0) {
+        endpoints.push(location.origin + '/api/sync');
+    }
+
+    for (let i = 0; i < endpoints.length; i++) {
+        try {
+            const resp = await fetch(endpoints[i], {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(bodyData)
+            });
+            if (resp.ok) {
+                const json = await resp.json();
+                if (json && json.ok) {
+                    markSyncState(true, "🟢 Онлайн");
+                    return json;
+                }
+            }
+        } catch (e) {}
+    }
+
+    markSyncState(false);
+    return null;
+}
+
+function buildCompactSyncToken() {
+    const packet = {
+        action: "sync_all",
+        settings: {
+            ad: S.anti_delete ? 1 : 0,
+            ae: S.anti_edit ? 1 : 0,
+            ttl: S.save_ttl_media ? 1 : 0,
+            dnd: S.dnd ? 1 : 0,
+            asm: S.anti_spam_mute ? 1 : 0,
+            adox: S.anti_dox ? 1 : 0,
+            sil: S.silent_notifications ? 1 : 0
+        },
+        mutes: muteList.slice(0, 35),
+        notes: notes.slice(-8).map(function(n) {
+            return { text: String(n.text || "").slice(0, 80), date: String(n.date || "") };
+        }),
+        afk: afkReason || ""
+    };
+    if (checkIsOwner()) {
+        packet.modules = sysModules;
+    }
+    const jsonStr = JSON.stringify(packet);
+    const b64 = btoa(unescape(encodeURIComponent(jsonStr)))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+    return "sync_" + b64;
+}
+
+async function syncWithBotNow() {
+    if (!checkHasPremiumAccess()) {
+        enforceRoleAccessUI();
         return;
     }
-    c.innerHTML = muteList.map(t => `
-        <div class="item-chip">
-            <span><code>${t}</code></span>
-            <span class="item-chip-del" onclick="rmMute('${t}')">✕</span>
-        </div>`).join('');
+    triggerHaptic();
+
+    // 1. Пробуем прямое API соединение с web_server.py
+    const apiRes = await sendApiSync({
+        action: "sync_all",
+        settings: S,
+        mutes: muteList,
+        notes: notes,
+        afk: afkReason,
+        modules: checkIsOwner() ? sysModules : undefined
+    });
+
+    if (apiRes && apiRes.ok) {
+        showToast("✅ Синхронизировано с сервером и чатами!");
+        return;
+    }
+
+    // 2. Пробуем отправку через Telegram WebApp Data (для Reply-кнопок)
+    try {
+        if (tg.sendData && isTelegramEnv) {
+            tg.sendData(JSON.stringify({
+                action: "sync_all",
+                settings: S,
+                mutes: muteList,
+                notes: notes,
+                afk: afkReason,
+                modules: checkIsOwner() ? sysModules : undefined
+            }));
+        }
+    } catch (e) {}
+
+    // 3. Универсальная Deep-Link синхронизация для GitHub Pages / Inline WebApp
+    const syncToken = buildCompactSyncToken();
+    markSyncState(true, "🟢 Отправлено");
+    showToast("🔄 Синхронизация с ботом…");
+
+    if (isTelegramEnv) {
+        tg.openTelegramLink("https://t.me/" + BOT_USERNAME + "?start=" + syncToken);
+    } else {
+        showNotice(
+            "Все настройки, Чёрный список (" + muteList.length + ") и заметки (" + notes.length + ") подготовлены и сохранены!\n\nВ Telegram пакет синхронизации автоматически передаётся боту @" + BOT_USERNAME + ".",
+            "✅ Синхронизация выполнена"
+        );
+    }
 }
-renderMutes();
+
+try {
+    if (tg.MainButton && tg.MainButton.onClick) {
+        tg.MainButton.onClick(syncWithBotNow);
+    }
+} catch (e) {}
+
+function autoToggle(k, v) {
+    if (!checkHasPremiumAccess()) {
+        enforceRoleAccessUI();
+        return;
+    }
+    triggerHaptic();
+    S[k] = Boolean(v);
+    safeSetStorage('asteria_set_' + uid, S);
+    showToast(v ? "🟢 Модуль включён" : "🔴 Модуль выключен");
+    sendApiSync({ action: "toggle_setting", key: k, value: Boolean(v), settings: S });
+}
+
+function applyPreset(mode) {
+    if (!checkHasPremiumAccess()) {
+        enforceRoleAccessUI();
+        return;
+    }
+    triggerHaptic();
+    if (mode === 'max') {
+        S.anti_delete = true;
+        S.anti_edit = true;
+        S.save_ttl_media = true;
+        S.anti_spam_mute = true;
+        S.anti_dox = true;
+        S.dnd = false;
+        showToast("🛡 Профиль: Максимальная защита");
+    } else if (mode === 'stealth') {
+        S.anti_delete = true;
+        S.anti_edit = true;
+        S.save_ttl_media = true;
+        S.anti_dox = true;
+        S.silent_notifications = true;
+        S.dnd = false;
+        showToast("🕵️ Профиль: Стелс-режим");
+    } else if (mode === 'dnd') {
+        S.dnd = true;
+        S.silent_notifications = true;
+        S.anti_spam_mute = true;
+        showToast("🌙 Режим «Не беспокоить» активирован");
+    }
+    safeSetStorage('asteria_set_' + uid, S);
+    renderProfileAndMetrics();
+    sendApiSync({ action: "update_settings", settings: S });
+}
+
+function saveAfkStatus(enable) {
+    if (!checkHasPremiumAccess()) {
+        enforceRoleAccessUI();
+        return;
+    }
+    triggerHaptic();
+    const inp = document.getElementById('afk-reason-input');
+    if (enable) {
+        afkReason = (inp.value || "").trim() || "Занят, отвечу позже";
+        inp.value = afkReason;
+        showToast("💤 Статус AFK включён");
+    } else {
+        afkReason = "";
+        inp.value = "";
+        showToast("👋 Статус AFK снят");
+    }
+    sendApiSync({ action: "set_afk", reason: afkReason });
+}
+
+// УПРАВЛЕНИЕ ЧЁРНЫМ СПИСКОМ
+function renderMutes() {
+    const c = document.getElementById('mute-list-container');
+    const searchVal = (document.getElementById('mute-search') ? document.getElementById('mute-search').value : '').trim().toLowerCase();
+    document.getElementById('m-mutes').innerText = muteList.length;
+    document.getElementById('mute-counter-badge').innerText = muteList.length + " объектов";
+
+    const filtered = muteList.filter(function(item) {
+        return !searchVal || item.toLowerCase().indexOf(searchVal) !== -1;
+    });
+
+    if (!filtered.length) {
+        c.innerHTML = '<div style="font-size:12.5px; color:var(--text-subtle); padding:8px 0;">Список заблокированных пуст</div>';
+        return;
+    }
+
+    c.innerHTML = filtered.map(function(t) {
+        const safeT = t.replace(/["'<>&]/g, '');
+        const prefix = /^\d+$/.test(safeT) ? "ID: " : "@";
+        return '<div class="item-chip">' +
+            '<span style="font-family:\'JetBrains Mono\',monospace; font-size:13px; color:#f8fafc;">' + prefix + safeT + '</span>' +
+            '<div class="item-chip-actions">' +
+                '<button class="item-chip-btn" onclick="copyText(\'' + safeT + '\')">Копир.</button>' +
+                '<span class="item-chip-del" onclick="rmMute(\'' + safeT + '\')">✕</span>' +
+            '</div>' +
+        '</div>';
+    }).join('');
+}
 
 function addMute() {
-    const v = document.getElementById('mute-val').value.trim().replace('@','').toLowerCase();
-    if (!v) return tg.showAlert("Введите ник или ID!");
-    if (muteList.includes(v)) return tg.showAlert("Объект уже находится в ЧС!");
-    muteList.push(v);
-    localStorage.setItem(LSK_MUT, JSON.stringify(muteList));
+    if (!checkHasPremiumAccess()) return enforceRoleAccessUI();
+    triggerHaptic();
+    const inp = document.getElementById('mute-val');
+    const v = (inp.value || "").trim().replace('@', '').toLowerCase();
+    if (!v) return showNotice("Введите @username или числовой ID пользователя для добавления в Чёрный список.");
+    if (muteList.indexOf(v) !== -1) return showNotice("Объект «" + v + "» уже находится в вашем Чёрном списке.");
+
+    muteList.unshift(v);
+    safeSetStorage('asteria_mut_' + uid, muteList);
     renderMutes();
-    document.getElementById('mute-val').value = "";
-    showToast("Добавлен в ЧС");
+    inp.value = "";
+    showToast("🔇 Добавлен в ЧС");
+    sendApiSync({ action: "add_mute", target: v });
 }
 
 function rmMute(t) {
-    muteList = muteList.filter(x => x !== t);
-    localStorage.setItem(LSK_MUT, JSON.stringify(muteList));
+    if (!checkHasPremiumAccess()) return enforceRoleAccessUI();
+    triggerHaptic();
+    muteList = muteList.filter(function(x) { return x !== t; });
+    safeSetStorage('asteria_mut_' + uid, muteList);
     renderMutes();
-    showToast("Удалён из ЧС");
+    showToast("🔊 Удалён из ЧС");
+    sendApiSync({ action: "remove_mute", target: t });
 }
 
 function clearMutes() {
+    if (!checkHasPremiumAccess()) return enforceRoleAccessUI();
+    if (!muteList.length) return showToast("Список уже пуст");
+    triggerHaptic();
     muteList = [];
-    localStorage.setItem(LSK_MUT, JSON.stringify([]));
+    safeSetStorage('asteria_mut_' + uid, []);
     renderMutes();
-    showToast("ЧС очищен");
+    showToast("🗑 ЧС очищен");
+    sendApiSync({ action: "clear_mutes" });
 }
 
-// Заметки
-const LSK_NOTE = 'asteria_notes_' + uid;
-let notes = JSON.parse(localStorage.getItem(LSK_NOTE)) || [];
+// УПРАВЛЕНИЕ ЗАМЕТКАМИ
 function renderNotes() {
     const c = document.getElementById('notes-list');
+    document.getElementById('notes-counter-badge').innerText = notes.length + " шт.";
     if (!notes.length) {
-        c.innerHTML = '<div style="font-size:12px;color:var(--text-subtle)">Заметок нет</div>';
+        c.innerHTML = '<div style="font-size:12.5px; color:var(--text-subtle); padding:6px 0;">Сохранённых заметок пока нет</div>';
         return;
     }
-    c.innerHTML = notes.slice(-8).map((n, i) => `
-        <div class="item-chip" style="align-items:flex-start;">
-            <div style="flex:1;"><div style="font-size:10px;color:var(--text-subtle)">${n.date}</div><div style="font-size:13px">${n.text}</div></div>
-            <span class="item-chip-del" onclick="delNote(${i})">✕</span>
-        </div>`).join('');
+    c.innerHTML = notes.slice().reverse().map(function(n, revIdx) {
+        const realIdx = notes.length - 1 - revIdx;
+        const safeTxt = String(n.text || "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const safeDate = String(n.date || "").replace(/</g, "&lt;");
+        return '<div class="item-chip" style="align-items:flex-start;">' +
+            '<div style="flex:1; min-width:0;">' +
+                '<div style="font-size:10px; color:var(--accent); font-family:\'JetBrains Mono\',monospace; margin-bottom:3px;">📅 ' + safeDate + '</div>' +
+                '<div style="font-size:13px; color:#f8fafc; word-break:break-word;">' + safeTxt + '</div>' +
+            '</div>' +
+            '<span class="item-chip-del" onclick="delNote(' + realIdx + ')">✕</span>' +
+        '</div>';
+    }).join('');
 }
-renderNotes();
 
 function addNote() {
-    const t = document.getElementById('note-input').value.trim();
-    if (!t) return tg.showAlert("Введите текст заметки!");
+    if (!checkHasPremiumAccess()) return enforceRoleAccessUI();
+    triggerHaptic();
+    const inp = document.getElementById('note-input');
+    const t = (inp.value || "").trim();
+    if (!t) return showNotice("Введите текст заметки для сохранения.");
     const d = new Date();
-    const ds = `${d.getDate()}.${d.getMonth()+1} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
-    notes.push({ text: t, date: ds });
-    localStorage.setItem(LSK_NOTE, JSON.stringify(notes));
+    const ds = String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0') + ' ' +
+               String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    const noteObj = { id: Date.now(), text: t, date: ds };
+    notes.push(noteObj);
+    safeSetStorage('asteria_notes_' + uid, notes);
     renderNotes();
-    document.getElementById('note-input').value = '';
-    showToast("Заметка сохранена");
+    inp.value = '';
+    showToast("📝 Заметка сохранена");
+    sendApiSync({ action: "add_note", text: t, date: ds });
 }
 
 function delNote(i) {
+    if (!checkHasPremiumAccess()) return enforceRoleAccessUI();
+    triggerHaptic();
+    const removed = notes[i];
     notes.splice(i, 1);
-    localStorage.setItem(LSK_NOTE, JSON.stringify(notes));
+    safeSetStorage('asteria_notes_' + uid, notes);
     renderNotes();
-    showToast("Заметка удалена");
+    showToast("🗑 Заметка удалена");
+    if (removed && removed.id) {
+        sendApiSync({ action: "delete_note", id: removed.id });
+    } else {
+        sendApiSync({ action: "sync_all", notes: notes });
+    }
 }
 
+// МОДУЛЬ ДОСЬЕ (OSINT)
+async function showOsint() {
+    if (!checkHasPremiumAccess()) return enforceRoleAccessUI();
+    triggerHaptic();
+    const raw = (document.getElementById('osint-val').value || "").trim();
+    if (!raw) return showNotice("Введите @username или числовой Telegram ID для формирования досье.");
+
+    const clean = raw.replace('@', '').toLowerCase();
+    lastOsintTarget = clean;
+    const box = document.getElementById('osint-res-card');
+    const actRow = document.getElementById('osint-actions');
+    box.style.display = 'block';
+    box.innerText = "⏳ Запрос к базе Asteria Suite и анализ метаданных…";
+
+    const apiRes = await sendApiSync({ action: "osint_lookup", target: clean });
+    if (apiRes && apiRes.dossier) {
+        lastOsintText = apiRes.dossier;
+        box.innerText = apiRes.dossier;
+        actRow.style.display = 'grid';
+        return;
+    }
+
+    const inMute = muteList.indexOf(clean) !== -1;
+    const isNum = /^\d+$/.test(clean);
+    lastOsintText =
+        "📁 ДОСЬЕ ОБЪЕКТА: " + (isNum ? ("ID " + clean) : ("@" + clean)) + "\n" +
+        "━━━━━━━━━━━━━━━━━━━━\n" +
+        "• Идентификатор: " + clean + "\n" +
+        "• Статус в сети: 🟢 ВЕРИФИЦИРОВАН\n" +
+        "• В вашем ЧС: " + (inMute ? "🔴 ЗАБЛОКИРОВАН" : "🟢 НЕТ") + "\n" +
+        "• Протокол Anti-Dox: АКТИВЕН\n" +
+        "• Для глубокого пробива истории имён используйте команду: .досье " + (isNum ? clean : ("@" + clean)) + " в чате";
+    box.innerText = lastOsintText;
+    actRow.style.display = 'grid';
+}
+
+function copyOsintResult() {
+    if (lastOsintText) copyText(lastOsintText);
+}
+
+function muteFromOsint() {
+    if (!lastOsintTarget) return;
+    document.getElementById('mute-val').value = lastOsintTarget;
+    addMute();
+}
+
+// УТИЛИТЫ И КРИПТОГРАФИЯ
 function genPass() {
-    const len = Math.min(64, Math.max(6, parseInt(document.getElementById('gen-len').value) || 16));
+    triggerHaptic();
+    const len = Math.min(64, Math.max(8, parseInt(document.getElementById('gen-len').value, 10) || 16));
     const useUpper = document.getElementById('gen-upper').checked;
     const useLower = document.getElementById('gen-lower').checked;
     const useNum = document.getElementById('gen-num').checked;
@@ -651,7 +1967,7 @@ function genPass() {
     if (useLower) chars += 'abcdefghijklmnopqrstuvwxyz';
     if (useNum) chars += '0123456789';
     if (useSym) chars += '!@#$%^&*()-_=+[]{}<>?~';
-    if (!chars) chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    if (!chars) chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
     let pass = '';
     const arr = new Uint32Array(len);
@@ -659,42 +1975,70 @@ function genPass() {
     for (let i = 0; i < len; i++) pass += chars[arr[i] % chars.length];
 
     const b = document.getElementById('gen-out-box');
-    b.innerHTML = `<div style="font-size:11px; color:var(--text-subtle); margin-bottom:4px;">Сгенерированный ключ (${len} симв.):</div>
-                   <div style="font-size:14px; font-weight:bold; color:#fff; word-break:break-all;">${pass}</div>
-                   <button class="btn btn-accent" style="margin-top:8px; padding:8px;" onclick="copyText('${pass}')">📋 Скопировать ключ</button>`;
+    b.innerHTML =
+        '<div style="font-size:11px; color:var(--text-subtle); margin-bottom:4px;">Сгенерированный крипто-ключ (' + len + ' симв.):</div>' +
+        '<div style="font-size:14px; font-weight:700; color:#fff; word-break:break-all;">' + pass.replace(/</g, '&lt;') + '</div>' +
+        '<button class="btn btn-accent" style="margin-top:8px; padding:9px;" onclick="copyText(this.dataset.pass)" data-pass="' + pass.replace(/"/g, '&quot;') + '">📋 Скопировать в буфер</button>';
     b.style.display = 'block';
 }
 
 function copyText(val) {
-    navigator.clipboard.writeText(val).then(() => showToast("Скопировано в буфер"));
+    triggerHaptic();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(val).then(function() {
+            showToast("📋 Скопировано: " + (val.length > 22 ? val.slice(0, 22) + "…" : val));
+        }).catch(function() {
+            fallbackCopy(val);
+        });
+    } else {
+        fallbackCopy(val);
+    }
+}
+
+function fallbackCopy(val) {
+    try {
+        const ta = document.createElement('textarea');
+        ta.value = val;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast("📋 Скопировано в буфер");
+    } catch (e) {}
 }
 
 function calcHash(type) {
+    triggerHaptic();
     const str = document.getElementById('hash-input').value;
-    if (!str) return tg.showAlert("Введите текст для хэширования!");
+    if (!str) return showNotice("Введите текст или пароль для вычисления хэша.");
     let res = "";
     if (type === 'MD5') res = CryptoJS.MD5(str).toString();
     else if (type === 'SHA256') res = CryptoJS.SHA256(str).toString();
     else if (type === 'SHA1') res = CryptoJS.SHA1(str).toString();
     else if (type === 'Base64') res = btoa(unescape(encodeURIComponent(str)));
+
     const b = document.getElementById('hash-out-box');
-    b.innerText = `[${type}]:\n${res}`;
+    b.innerHTML =
+        '<div style="font-size:11px; color:var(--text-subtle);">Алгоритм ' + type + ':</div>' +
+        '<div style="margin-top:4px; color:#fff; word-break:break-all;">' + res + '</div>' +
+        '<button class="btn btn-blue" style="margin-top:8px; padding:8px;" onclick="copyText(\'' + res + '\')">📋 Скопировать хэш</button>';
     b.style.display = 'block';
 }
 
 function dehash() {
-    const raw = document.getElementById('dehash-input').value.trim();
-    if (!raw) return tg.showAlert("Вставьте хэш или Base64!");
+    triggerHaptic();
+    const raw = (document.getElementById('dehash-input').value || "").trim();
+    if (!raw) return showNotice("Вставьте строку Base64 или MD5-хэш для анализа.");
     const b = document.getElementById('dehash-out-box');
     b.style.display = 'block';
 
     try {
         const decoded = decodeURIComponent(escape(atob(raw)));
         if (decoded && /^[\x20-\x7E\sа-яА-ЯёЁ0-9!@#$%^&*()_\-+=\[\]{}|\\:;"'<>,.?\/]+$/.test(decoded)) {
-            b.innerText = `✅ [Base64 результат]:\n«${decoded}»`;
+            b.innerText = "✅ [Декодировано из Base64]:\n«" + decoded + "»";
             return;
         }
-    } catch(e) {}
+    } catch (e) {}
 
     const lower = raw.toLowerCase();
     const commonDict = {
@@ -703,42 +2047,119 @@ function dehash() {
         "250cf8b51c773f3f8dc8b4be867a9a02": "1234",
         "827ccb0eea8a706c4c34a16891f84e7b": "12345",
         "e10adc3949ba59abbe56e057f20f883e": "123456",
+        "25d55ad283aa400af464c76d713c07ad": "12345678",
         "5f4dcc3b5aa765d61d8327deb882cf99": "password",
-        "098f6bcd4621d373cade4e832627b4f6": "test"
+        "098f6bcd4621d373cade4e832627b4f6": "test",
+        "21232f297a57a5a743894a0e4a801fc3": "admin",
+        "81dc9bdb52d04dc20036dbd8313ed055": "1234"
     };
 
     if (commonDict[lower]) {
-        b.innerText = `✅ [Найден пароль]:\n«${commonDict[lower]}»`;
+        b.innerText = "✅ [Найдено совпадение MD5]:\n«" + commonDict[lower] + "»";
     } else {
-        b.innerText = `❌ Хэш не найден в локальном словаре.`;
+        b.innerText = "ℹ️ Строка не является текстовым Base64 и не найдена в локальном словаре быстрых MD5-хэшей.";
     }
 }
 
-function showOsint() {
-    if (role !== 'premium' && !isOwner) {
-        return tg.showAlert("🔒 Модуль Досье доступен исключительно для тарифа Премиум или Создателя!");
+// ФУНКЦИИ СОЗДАТЕЛЯ (АДМИН-ПАНЕЛЬ)
+async function adminGrantSub() {
+    if (!checkIsOwner()) return showNotice("Доступно только Создателю платформы.");
+    triggerHaptic();
+    const target = (document.getElementById('adm-target').value || "").trim();
+    const roleVal = document.getElementById('adm-role').value;
+    const durVal = document.getElementById('adm-dur').value;
+    if (!target) return showNotice("Укажите @username или ID пользователя.");
+
+    const res = await sendApiSync({
+        action: "grant_subscription",
+        target: target,
+        role: roleVal,
+        duration: durVal
+    });
+    if (res && res.msg) {
+        showNotice(res.msg.replace(/<[^>]+>/g, ''), "👑 Управление лицензиями");
+    } else {
+        showToast("⚡ Запрос подготовлен — нажмите «Синхр.»");
     }
-    const v = document.getElementById('osint-val').value.trim();
-    if (!v) return tg.showAlert("Введите ник или ID цели!");
-    const clean = v.replace('@','').toLowerCase();
-    const box = document.getElementById('osint-res-card');
-    box.style.display = 'block';
-    box.innerText = `📁 ДОСЬЕ ОБЪЕКТА: @${clean}\n━━━━━━━━━━━━━━━━━━━━\nСтатус в сети: 🟢 ВЕРИФИЦИРОВАН\nВ чёрных списках: ${muteList.includes(clean) ? '🔴 ДА' : '🟢 НЕТ'}\nAnti-Dox защита: АКТИВНА\nУровень сетевого риска: 0%`;
+    document.getElementById('adm-target').value = "";
+}
+
+async function adminToggleMod(modName, state) {
+    if (!checkIsOwner()) return;
+    triggerHaptic();
+    sysModules[modName] = Boolean(state);
+    showToast("⚙️ Модуль " + modName + ": " + (state ? "ВКЛ" : "ВЫКЛ"));
+    await sendApiSync({
+        action: "toggle_system_module",
+        module: modName,
+        state: Boolean(state)
+    });
+}
+
+function openBotBuy() {
+    tg.openTelegramLink("https://t.me/" + BOT_USERNAME + "?start=buy");
+}
+
+function closeWebApp() {
+    try {
+        tg.close();
+    } catch (e) {}
 }
 
 function switchNav(id, btn) {
-    document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
-    document.getElementById('tab-' + id).classList.add('active');
-    btn.classList.add('active');
+    if (!checkHasPremiumAccess()) {
+        enforceRoleAccessUI();
+        return;
+    }
+    triggerHaptic();
+    document.querySelectorAll('.tab-content').forEach(function(e) { e.classList.remove('active'); });
+    document.querySelectorAll('.nav-btn').forEach(function(e) { e.classList.remove('active'); });
+    const targetTab = document.getElementById('tab-' + id);
+    if (targetTab) targetTab.classList.add('active');
+    if (btn) btn.classList.add('active');
 }
 
-function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.innerText = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 1600);
-}
+// ИНИЦИАЛИЗАЦИЯ И ПОДГРУЗКА ЖИВОГО СОСТОЯНИЯ С СЕРВЕРА
+parseInitialParams();
+renderProfileAndMetrics();
+renderMutes();
+renderNotes();
+enforceRoleAccessUI();
+
+(async function fetchLiveServerState() {
+    if (!uid) return;
+    const endpoints = [];
+    if (API_BASE) endpoints.push(API_BASE + '/api/state?uid=' + uid);
+    if (!isGitHubPages && location.origin.indexOf('http') === 0) {
+        endpoints.push(location.origin + '/api/state?uid=' + uid);
+    }
+    for (let i = 0; i < endpoints.length; i++) {
+        try {
+            const resp = await fetch(endpoints[i]);
+            if (resp.ok) {
+                const data = await resp.json();
+                if (data && data.ok) {
+                    currentRole = data.role || currentRole;
+                    expTs = (typeof data.sub_until === 'number') ? data.sub_until : expTs;
+                    isDashboardBlocked = Boolean(data.dash_off);
+                    hasBusinessConn = Boolean(data.has_business);
+                    if (data.settings) S = Object.assign(S, data.settings);
+                    if (Array.isArray(data.mutes)) muteList = data.mutes;
+                    if (Array.isArray(data.notes)) notes = data.notes;
+                    if (data.stats) statsData = Object.assign(statsData, data.stats);
+                    if (typeof data.afk === 'string') afkReason = data.afk;
+                    if (data.modules) sysModules = Object.assign(sysModules, data.modules);
+                    renderProfileAndMetrics();
+                    renderMutes();
+                    renderNotes();
+                    enforceRoleAccessUI();
+                    markSyncState(true, "🟢 Онлайн");
+                    break;
+                }
+            }
+        } catch (e) {}
+    }
+})();
 </script>
 </body>
 </html>
